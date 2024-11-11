@@ -1,0 +1,11 @@
+jeu de données : entités :
+annonces
+restaurants
+produits
+chauffeurs
+utilisateurs
+clients
+départements
+réservations
+règlements
+références de carte bancaire

@@ -1,0 +1,119 @@
+VÉLO:
+- id (INT, PK)
+- numéro (VARCHAR)
+- statut (ENUM: disponible, réservé)
+- localisation (VARCHAR)
+
+RELATIONS:
+ASSOCIER_3, 0N RÉSERVATION_VÉLO, 1N VÉLO, 1N UTILISATEUR: Lier, associer
+
+REQUÉRIR, 1N UTILISATEUR, 0N COURSE: Déterminer, réserver, effectuer
+
+COURSE:
+- id (INT, PK)
+- date_et_heure_de_départ (DATETIME)
+- lieu_de_départ (VARCHAR)
+- lieu_d_arrivée (VARCHAR)
+- statut (ENUM: demandée, en_cours, terminée, annulée)
+- prix (DECIMAL)
+- pourboire (DECIMAL)
+- note_chauffeur (DECIMAL)
+- commentaire_note (TEXT)
+- client_id (INT, FK)
+- chauffeur_id (INT, FK)
+
+RELATIONS:
+DIRIGER, 0N CHAUFFEUR, 0N COURSE: Conduire, réaliser
+
+VÉHICULE:
+- id (INT, PK)
+- immatriculation (VARCHAR)
+- modèle (VARCHAR)
+- couleur (VARCHAR)
+- type (ENUM: berline, van, véhicule_adapté)
+- catégorie (ENUM: Green, XL, Pet, Confort, Berline, X)
+- chauffeur_id (INT, FK)
+
+RÉSERVATION_VÉLO:
+- id (INT, PK)
+- date_et_heure_de_début (DATETIME)
+- date_et_heure_de_fin (DATETIME)
+- lieu_de_départ (VARCHAR)
+- lieu_d_arrivée (VARCHAR)
+- client_id (INT, FK)
+- vélo_id (INT, FK)
+
+RELATIONS:
+RÉSERVER, 1N UTILISATEUR, 0N RÉSERVATION_VÉLO: Réserver, réserver
+
+UTILISATEUR:
+- id (INT, PK)
+- nom (VARCHAR)
+- prénom (VARCHAR)
+- email (VARCHAR)
+- mot_de_passe (chiffré, VARCHAR)
+- type (ENUM: particulier, entreprise)
+- photo (BLOB)
+- lieux_de_départ_favoris (TEXT)
+- informations_de_carte_bancaire (chiffrées, VARCHAR)
+
+RELATIONS:
+EXÉCUTER, 0N COURSE, 1N CHAUFFEUR, 1N UTILISATEUR: Effectuer, réaliser
+
+CHAUFFEUR:
+- id (INT, PK)
+- nom (VARCHAR)
+- prénom (VARCHAR)
+- statut (ENUM: micro_entreprise, EI, société)
+- numéro_de_carte_VTC (VARCHAR)
+- numéro_de_licence_VTC (VARCHAR)
+- RIB (VARCHAR)
+- date_de_début_d_activité (DATE)
+- type_de_prestation (ENUM: Green, XL, Pet, Confort, Berline, X)
+- note_moyenne (DECIMAL)
+
+RELATIONS:
+APPARTIENT, 0N VÉHICULE, 1N CHAUFFEUR: Être attribué, être affecté
+
+RESTAURANT:
+- id (INT, PK)
+- nom (VARCHAR)
+- adresse (VARCHAR)
+- type_de_cuisine (VARCHAR)
+- temps_estimé_de_livraison (INT)
+
+RELATIONS:
+ASSOCIER_1, 1N COMMANDE, 1N RESTAURANT, 1N UTILISATEUR: Placer, associer
+
+COMMANDER, 1N UTILISATEUR, 0N COMMANDE: Passer, effectuer
+
+LIVRER, 1N LIVRAISON, 1N CHAUFFEUR: Livrer, transporter
+
+PRODUIT:
+- id (INT, PK)
+- nom (VARCHAR)
+- description (TEXT)
+- prix (DECIMAL)
+- catégorie (VARCHAR)
+- restaurant_id (INT, FK)
+
+RELATIONS:
+FOURNIR, 1N RESTAURANT, 1N PRODUIT: Fournir, proposer
+
+COMMANDE:
+- id (INT, PK)
+- date_et_heure_de_commande (DATETIME)
+- type (ENUM: livraison, à_emporter)
+- statut (ENUM: en_attente, en_préparation, livrée, annulée)
+- prix_total (DECIMAL)
+- client_id (INT, FK)
+- restaurant_id (INT, FK)
+
+RELATIONS:
+ASSOCIER_2, 1N COMMANDE, 1N LIVRAISON: Lier, associer
+
+LIVRAISON:
+- id (INT, PK)
+- date_et_heure_de_livraison (DATETIME)
+- chauffeur_id (INT, FK)
+- commande_id (INT, FK)
