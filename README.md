@@ -1,7 +1,3 @@
-Here’s a **README** for a project based on the Uber-like application with all deliverables, including design, database creation, security considerations, and more, written in English:
-
----
-
 # **Uber - Data Management and Application Design**
 
 Welcome to the **Uber** project repository. This project involves the complete design and development of a data management system for an Uber-like application. It covers all aspects of database design, modeling, query creation, and security, from conceptualization to final deployment.
@@ -60,14 +56,14 @@ The goal of this project is to build a data management system that supports the 
 ### **Database Setup and Usage**
 1. **Clone the GitHub Repository:**
    ```bash
-   git clone [UBER](https://github.com/melih0132/UBER.git)
+   git clone https://github.com/melih0132/UBER.git
    ```
 
 2. **Setup PostgreSQL Database:**
    - Install PostgreSQL and pgAdmin.
    - Create a new database and run the provided SQL scripts to create tables and populate them with sample data.
-   - Testing querys.
-  
+   - Test queries.
+
 ---
 
 ### **Development**
@@ -78,7 +74,7 @@ The goal of this project is to build a data management system that supports the 
    - All source code is available in the repository, including backend API and database handling.
 
 3. **Architecture Summary:**
-   - The application utilizes the **ORM (Object-Relational Mapping)** for database management, PostgreSQL for storage, and a simple API for managing requests between the frontend and the database.
+   - The application utilizes **ORM (Object-Relational Mapping)** for database management, PostgreSQL for storage, and a simple API for managing requests between the frontend and the database.
 
 ---
 
