@@ -102,7 +102,7 @@ CREATE TABLE CARTE_BANCAIRE (
    CONSTRAINT UQ_CARTE_NUMEROCB UNIQUE (NUMEROCB),
    DATEEXPIRECB DATE NOT NULL,
    CONSTRAINT CK_CARTE_DATEEXPIRECB CHECK (DATEEXPIRECB > CURRENT_DATE),
-   CRYPTOGRAMME NUMERIC(4, 1) NOT NULL,
+   CRYPTOGRAMME NUMERIC(3, 0) NOT NULL,
    TYPECARTE VARCHAR(30) NOT NULL,
    TYPERESEAUX VARCHAR(30) NOT NULL,
    CONSTRAINT PK_CARTE_BANCAIRE PRIMARY KEY (IDCB)
@@ -254,8 +254,9 @@ CREATE TABLE ENTREPRISE (
    IDADRESSE INT4 NOT NULL,
    SIRETENTREPRISE VARCHAR(20) NOT NULL,
    CONSTRAINT CK_SIRET_ENTREPRISE CHECK (SIRETENTREPRISE ~ '^[0-9]{14}$'),
-   NOMENTREPRISE VARCHAR(50) NULL,
-   TAILLE VARCHAR(30) NULL,
+   NOMENTREPRISE VARCHAR(50) NOT NULL,
+   TAILLE VARCHAR(30) NOT NULL,
+   CONSTRAINT CK_ENTREPRISE_TAILLE CHECK (TAILLE IN ('PME', 'ETI', 'GE')),
    CONSTRAINT PK_ENTREPRISE PRIMARY KEY (IDENTREPRISE)
 );
 
@@ -4522,277 +4523,172 @@ INSERT INTO COURSIER (
    4.3
 );
 
-INSERT INTO DEPARTEMENT (
-   IDDEPARTEMENT,
-   IDPAYS,
-   CODEDEPARTEMENT,
-   LIBELLEDEPARTEMENT
-) VALUES (
-   1,
-   1,
-   '75',
-   'Paris'
-),
-(
-   2,
-   1,
-   '13',
-   'Bouches-du-Rhône'
-),
-(
-   3,
-   1,
-   '69',
-   'Rhône'
-),
-(
-   4,
-   1,
-   '33',
-   'Gironde'
-),
-(
-   5,
-   1,
-   '06',
-   'Alpes-Maritimes'
-),
-(
-   6,
-   1,
-   '44',
-   'Loire-Atlantique'
-),
-(
-   7,
-   1,
-   '59',
-   'Nord'
-),
-(
-   8,
-   1,
-   '34',
-   'Hérault'
-),
-(
-   9,
-   1,
-   '31',
-   'Haute-Garonne'
-),
-(
-   10,
-   1,
-   '85',
-   'Vendée'
-),
-(
-   11,
-   1,
-   '62',
-   'Pas-de-Calais'
-),
-(
-   12,
-   1,
-   '76',
-   'Seine-Maritime'
-),
-(
-   13,
-   1,
-   '94',
-   'Val-de-Marne'
-),
-(
-   14,
-   1,
-   '75',
-   'Paris'
-),
-(
-   15,
-   1,
-   '77',
-   'Seine-et-Marne'
-),
-(
-   16,
-   1,
-   '91',
-   'Essonne'
-),
-(
-   17,
-   1,
-   '93',
-   'Seine-Saint-Denis'
-),
-(
-   18,
-   1,
-   '92',
-   'Hauts-de-Seine'
-),
-(
-   19,
-   1,
-   '95',
-   'Val-d Oise'
-),
-(
-   20,
-   1,
-   '60',
-   'Oise'
-);
-
 INSERT INTO ENTREPRISE (
    IDENTREPRISE,
    IDCLIENT,
    IDADRESSE,
    SIRETENTREPRISE,
+   NOMENTREPRISE,
    TAILLE
 ) VALUES (
    1,
    1,
    1,
    '12345678901234',
-   'Petite'
+   'Entreprise A',
+   'PME'
 ),
 (
    2,
    2,
    2,
    '23456789012345',
-   'Moyenne'
+   'Entreprise B',
+   'ETI'
 ),
 (
    3,
    3,
    3,
    '34567890123456',
-   'Grande'
+   'Entreprise C',
+   'GE'
 ),
 (
    4,
    4,
    4,
    '45678901234567',
-   'Petite'
+   'Entreprise D',
+   'PME'
 ),
 (
    5,
    5,
    5,
    '56789012345678',
-   'Moyenne'
+   'Entreprise E',
+   'ETI'
 ),
 (
    6,
    6,
    6,
    '67890123456789',
-   'Grande'
+   'Entreprise F',
+   'GE'
 ),
 (
    7,
    7,
    7,
    '78901234567890',
-   'Petite'
+   'Entreprise G',
+   'PME'
 ),
 (
    8,
    8,
    8,
    '89012345678901',
-   'Moyenne'
+   'Entreprise H',
+   'ETI'
 ),
 (
    9,
    9,
    9,
    '90123456789012',
-   'Grande'
+   'Entreprise I',
+   'GE'
 ),
 (
    10,
    10,
    10,
    '01234567890123',
-   'Petite'
+   'Entreprise J',
+   'PME'
 ),
 (
    11,
    11,
    11,
    '12345678901234',
-   'Moyenne'
+   'Entreprise K',
+   'ETI'
 ),
 (
    12,
    12,
    12,
    '23456789012345',
-   'Grande'
+   'Entreprise L',
+   'GE'
 ),
 (
    13,
    13,
    13,
    '34567890123456',
-   'Petite'
+   'Entreprise M',
+   'PME'
 ),
 (
    14,
    14,
    14,
    '45678901234567',
-   'Moyenne'
+   'Entreprise N',
+   'ETI'
 ),
 (
    15,
    15,
    15,
    '56789012345678',
-   'Grande'
+   'Entreprise O',
+   'GE'
 ),
 (
    16,
    16,
    16,
    '67890123456789',
-   'Petite'
+   'Entreprise P',
+   'PME'
 ),
 (
    17,
    17,
    17,
    '78901234567890',
-   'Moyenne'
+   'Entreprise Q',
+   'ETI'
 ),
 (
    18,
    18,
    18,
    '89012345678901',
-   'Grande'
+   'Entreprise R',
+   'GE'
 ),
 (
    19,
    19,
    19,
    '90123456789012',
-   'Petite'
+   'Entreprise S',
+   'PME'
 ),
 (
    20,
    20,
    20,
    '01234567890123',
-   'Moyenne'
+   'Entreprise T',
+   'ETI'
 );
 
 INSERT INTO EST_SITUE_A_2 (
