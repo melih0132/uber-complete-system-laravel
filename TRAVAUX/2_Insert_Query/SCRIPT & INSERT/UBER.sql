@@ -4775,6 +4775,132 @@ INSERT INTO EST_SITUE_A_2 (
    20
 );
 
+INSERT INTO DEPARTEMENT (
+   IDDEPARTEMENT,
+   IDPAYS,
+   CODEDEPARTEMENT,
+   LIBELLEDEPARTEMENT
+) VALUES (
+   1,
+   1,
+   '75',
+   'Paris'
+),
+(
+   2,
+   1,
+   '13',
+   'Bouches-du-Rhône'
+),
+(
+   3,
+   1,
+   '69',
+   'Rhône'
+),
+(
+   4,
+   1,
+   '33',
+   'Gironde'
+),
+(
+   5,
+   1,
+   '06',
+   'Alpes-Maritimes'
+),
+(
+   6,
+   1,
+   '44',
+   'Loire-Atlantique'
+),
+(
+   7,
+   1,
+   '59',
+   'Nord'
+),
+(
+   8,
+   1,
+   '34',
+   'Hérault'
+),
+(
+   9,
+   1,
+   '31',
+   'Haute-Garonne'
+),
+(
+   10,
+   1,
+   '85',
+   'Vendée'
+),
+(
+   11,
+   1,
+   '62',
+   'Pas-de-Calais'
+),
+(
+   12,
+   1,
+   '76',
+   'Seine-Maritime'
+),
+(
+   13,
+   1,
+   '94',
+   'Val-de-Marne'
+),
+(
+   14,
+   1,
+   '75',
+   'Paris'
+),
+(
+   15,
+   1,
+   '77',
+   'Seine-et-Marne'
+),
+(
+   16,
+   1,
+   '91',
+   'Essonne'
+),
+(
+   17,
+   1,
+   '93',
+   'Seine-Saint-Denis'
+),
+(
+   18,
+   1,
+   '92',
+   'Hauts-de-Seine'
+),
+(
+   19,
+   1,
+   '95',
+   'Val-d Oise'
+),
+(
+   20,
+   1,
+   '60',
+   'Oise'
+);
+
 INSERT INTO ETABLISSEMENT (
    IDETABLISSEMENT,
    IDADRESSE,
