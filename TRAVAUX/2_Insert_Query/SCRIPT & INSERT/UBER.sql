@@ -160,13 +160,15 @@ CREATE TABLE COMMANDE (
    IDCOMMANDE INT4 NOT NULL,
    IDPANIER INT4 NOT NULL,
    IDCOURSIER INT4 NULL,
+   IDADRESSE INT4 NOT NULL,
+   ADR_IDADRESSE INT4 NOT NULL,
    PRIXCOMMANDE DECIMAL(5, 2) NOT NULL,
    CONSTRAINT CK_COMMANDE_PRIX CHECK (PRIXCOMMANDE >= 0),
    TEMPSCOMMANDE INT4 NOT NULL,
    CONSTRAINT CK_TEMPS_COMMANDE CHECK (TEMPSCOMMANDE >= 0),
-   ESTLIVRAISION BOOL NOT NULL,
-   STATUTCOURSE VARCHAR(20) NOT NULL,
-   CONSTRAINT CK_STATUT_COMMANDE CHECK ( STATUTCOURSE IN ('En attente', 'En cours', 'Livrée', 'Annulée') ),
+   ESTLIVRAISON BOOL NOT NULL,
+   STATUTCOMMANDE VARCHAR(20) NOT NULL,
+   CONSTRAINT CK_STATUT_COMMANDE CHECK ( STATUTCOMMANDE IN ('En attente', 'En cours', 'Livrée', 'Annulée') ),
    CONSTRAINT PK_COMMANDE PRIMARY KEY (IDCOMMANDE)
 );
 
@@ -211,7 +213,6 @@ CREATE TABLE COURSE (
 /*==============================================================*/
 CREATE TABLE COURSIER (
    IDCOURSIER INT4 NOT NULL,
-   IDCOMMANDE INT4 NULL,
    IDENTREPRISE INT4 NOT NULL,
    IDADRESSE INT4 NOT NULL,
    IDRESERVATION INT4 NULL,
@@ -1356,7 +1357,6 @@ INSERT INTO CATEGORIE_PRODUIT (
    'Aliments pour bébés'
 );
 
--- Table CLIENT
 INSERT INTO CLIENT (
    IDCLIENT,
    IDPANIER,
@@ -2282,14 +2282,18 @@ INSERT INTO COMMANDE (
    IDCOMMANDE,
    IDPANIER,
    IDCOURSIER,
+   IDADRESSE,
+   ADR_IDADRESSE,
    PRIXCOMMANDE,
    TEMPSCOMMANDE,
-   ESTLIVRAISION,
-   STATUTCOURSE
+   ESTLIVRAISON,
+   STATUTCOMMANDE
 ) VALUES (
    1,
    1,
    1,
+   17,
+   25,
    130.00,
    30,
    TRUE,
@@ -2299,6 +2303,8 @@ INSERT INTO COMMANDE (
    2,
    2,
    2,
+   5,
+   35,
    95.00,
    25,
    TRUE,
@@ -2308,6 +2314,8 @@ INSERT INTO COMMANDE (
    3,
    3,
    NULL,
+   85,
+   74,
    120.00,
    20,
    FALSE,
@@ -2317,6 +2325,8 @@ INSERT INTO COMMANDE (
    4,
    4,
    4,
+   28,
+   41,
    120.00,
    15,
    TRUE,
@@ -2326,6 +2336,8 @@ INSERT INTO COMMANDE (
    5,
    5,
    5,
+   2,
+   88,
    95.00,
    30,
    TRUE,
@@ -2335,6 +2347,8 @@ INSERT INTO COMMANDE (
    6,
    6,
    NULL,
+   69,
+   72,
    70.00,
    30,
    FALSE,
@@ -2344,6 +2358,8 @@ INSERT INTO COMMANDE (
    7,
    7,
    7,
+   76,
+   43,
    170.00,
    25,
    TRUE,
@@ -2353,6 +2369,8 @@ INSERT INTO COMMANDE (
    8,
    8,
    8,
+   77,
+   42,
    40.00,
    25,
    TRUE,
@@ -2362,6 +2380,8 @@ INSERT INTO COMMANDE (
    9,
    9,
    9,
+   85,
+   28,
    85.00,
    50,
    TRUE,
@@ -2371,6 +2391,8 @@ INSERT INTO COMMANDE (
    10,
    10,
    10,
+   85,
+   56,
    100.00,
    50,
    FALSE,
@@ -2380,6 +2402,8 @@ INSERT INTO COMMANDE (
    11,
    11,
    1,
+   9,
+   22,
    80.00,
    50,
    TRUE,
@@ -2389,6 +2413,8 @@ INSERT INTO COMMANDE (
    12,
    12,
    2,
+   56,
+   100,
    115.00,
    40,
    TRUE,
@@ -2398,6 +2424,8 @@ INSERT INTO COMMANDE (
    13,
    13,
    NULL,
+   99,
+   18,
    130.00,
    25,
    FALSE,
@@ -2407,6 +2435,8 @@ INSERT INTO COMMANDE (
    14,
    14,
    4,
+   65,
+   17,
    90.00,
    60,
    TRUE,
@@ -2416,6 +2446,8 @@ INSERT INTO COMMANDE (
    15,
    15,
    5,
+   92,
+   16,
    80.00,
    12,
    TRUE,
@@ -2425,6 +2457,8 @@ INSERT INTO COMMANDE (
    16,
    16,
    NULL,
+   25,
+   41,
    75.00,
    25,
    FALSE,
@@ -2434,6 +2468,8 @@ INSERT INTO COMMANDE (
    17,
    17,
    7,
+   7,
+   44,
    140.00,
    75,
    TRUE,
@@ -2443,6 +2479,8 @@ INSERT INTO COMMANDE (
    18,
    18,
    8,
+   22,
+   33,
    45.00,
    14,
    TRUE,
@@ -2452,6 +2490,8 @@ INSERT INTO COMMANDE (
    19,
    19,
    9,
+   30,
+   51,
    120.00,
    10,
    FALSE,
@@ -2461,6 +2501,8 @@ INSERT INTO COMMANDE (
    20,
    20,
    10,
+   7,
+   44,
    100.00,
    20,
    TRUE,
@@ -2477,6 +2519,15 @@ INSERT INTO CONTIENT_2 (
 (
    2,
    2
+),(
+   2,
+   3
+),(
+   2,
+   10
+),(
+   2,
+   4
 ),
 (
    3,
@@ -2497,6 +2548,16 @@ INSERT INTO CONTIENT_2 (
 (
    7,
    7
+),
+(
+   7,
+   6
+),(
+   7,
+   4
+),(
+   7,
+   13
 ),
 (
    8,
@@ -4068,7 +4129,6 @@ INSERT INTO COURSE (
 
 INSERT INTO COURSIER (
    IDCOURSIER,
-   IDCOMMANDE,
    IDENTREPRISE,
    IDADRESSE,
    IDRESERVATION,
@@ -4084,7 +4144,6 @@ INSERT INTO COURSIER (
    DATEDEBUTACTIVITE,
    NOTEMOYENNE
 ) VALUES (
-   1,
    1,
    1,
    1,
@@ -4106,7 +4165,6 @@ INSERT INTO COURSIER (
    2,
    2,
    2,
-   2,
    'Monsieur',
    'Dupont',
    'Paul',
@@ -4120,7 +4178,6 @@ INSERT INTO COURSIER (
    4.3
 ),
 (
-   3,
    3,
    3,
    3,
@@ -4142,7 +4199,6 @@ INSERT INTO COURSIER (
    4,
    4,
    4,
-   4,
    'Monsieur',
    'Lopez',
    'Marc',
@@ -4156,7 +4212,6 @@ INSERT INTO COURSIER (
    4.0
 ),
 (
-   5,
    5,
    5,
    5,
@@ -4178,7 +4233,6 @@ INSERT INTO COURSIER (
    6,
    6,
    6,
-   6,
    'Monsieur',
    'Richard',
    'Julien',
@@ -4192,7 +4246,6 @@ INSERT INTO COURSIER (
    4.6
 ),
 (
-   7,
    7,
    7,
    7,
@@ -4214,7 +4267,6 @@ INSERT INTO COURSIER (
    8,
    8,
    8,
-   8,
    'Monsieur',
    'Petit',
    'François',
@@ -4228,7 +4280,6 @@ INSERT INTO COURSIER (
    4.1
 ),
 (
-   9,
    9,
    9,
    9,
@@ -4250,7 +4301,6 @@ INSERT INTO COURSIER (
    10,
    10,
    10,
-   10,
    'Monsieur',
    'Faure',
    'Pierre',
@@ -4264,7 +4314,6 @@ INSERT INTO COURSIER (
    4.3
 ),
 (
-   11,
    11,
    11,
    11,
@@ -4286,7 +4335,6 @@ INSERT INTO COURSIER (
    12,
    12,
    12,
-   12,
    'Monsieur',
    'Mercier',
    'Xavier',
@@ -4300,7 +4348,6 @@ INSERT INTO COURSIER (
    4.2
 ),
 (
-   13,
    13,
    13,
    13,
@@ -4322,7 +4369,6 @@ INSERT INTO COURSIER (
    14,
    14,
    14,
-   14,
    'Monsieur',
    'Robert',
    'Maxime',
@@ -4336,7 +4382,6 @@ INSERT INTO COURSIER (
    4.0
 ),
 (
-   15,
    15,
    15,
    15,
@@ -4358,7 +4403,6 @@ INSERT INTO COURSIER (
    16,
    16,
    16,
-   16,
    'Monsieur',
    'Marchand',
    'Thierry',
@@ -4372,7 +4416,6 @@ INSERT INTO COURSIER (
    4.1
 ),
 (
-   17,
    17,
    17,
    17,
@@ -4394,7 +4437,6 @@ INSERT INTO COURSIER (
    18,
    18,
    18,
-   18,
    'Monsieur',
    'Perrot',
    'Michel',
@@ -4408,7 +4450,6 @@ INSERT INTO COURSIER (
    4.4
 ),
 (
-   19,
    19,
    19,
    19,
@@ -4430,7 +4471,6 @@ INSERT INTO COURSIER (
    20,
    20,
    20,
-   20,
    'Monsieur',
    'Leroy',
    'Pierre',
@@ -4445,7 +4485,6 @@ INSERT INTO COURSIER (
 ),
 (
    21,
-   1,
    1,
    1,
    21,
@@ -4465,7 +4504,6 @@ INSERT INTO COURSIER (
    22,
    2,
    2,
-   2,
    22,
    'Monsieur',
    'Hebert',
@@ -4481,7 +4519,6 @@ INSERT INTO COURSIER (
 ),
 (
    23,
-   3,
    3,
    3,
    23,
@@ -4501,7 +4538,6 @@ INSERT INTO COURSIER (
    24,
    4,
    4,
-   4,
    24,
    'Monsieur',
    'Robert',
@@ -4517,7 +4553,6 @@ INSERT INTO COURSIER (
 ),
 (
    25,
-   5,
    5,
    5,
    25,
@@ -4537,7 +4572,6 @@ INSERT INTO COURSIER (
    26,
    6,
    6,
-   6,
    26,
    'Monsieur',
    'Leclerc',
@@ -4553,7 +4587,6 @@ INSERT INTO COURSIER (
 ),
 (
    27,
-   7,
    7,
    7,
    27,
@@ -4573,7 +4606,6 @@ INSERT INTO COURSIER (
    28,
    8,
    8,
-   8,
    28,
    'Monsieur',
    'Faure',
@@ -4591,7 +4623,6 @@ INSERT INTO COURSIER (
    29,
    9,
    9,
-   9,
    29,
    'Monsieur',
    'Vidal',
@@ -4607,7 +4638,6 @@ INSERT INTO COURSIER (
 ),
 (
    30,
-   10,
    10,
    10,
    30,
@@ -8844,14 +8874,6 @@ ALTER TABLE COURSIER
    )
       REFERENCES RESERVATION (
          IDRESERVATION
-      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE COURSIER
-   ADD CONSTRAINT FK_COURSIER_EST_LIVRE_COMMANDE FOREIGN KEY (
-      IDCOMMANDE
-   )
-      REFERENCES COMMANDE (
-         IDCOMMANDE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSIER
