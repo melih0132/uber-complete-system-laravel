@@ -6675,7 +6675,7 @@ INSERT INTO RESERVATION (
    27,
    29,
    12,
-   1,
+   NULL,
    NULL,
    '2024-11-21',
    '18:00:00',
