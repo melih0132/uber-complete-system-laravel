@@ -1110,6 +1110,11 @@ INSERT INTO ADRESSE (
    130,
    11,
    'avenue Montaigne'
+),
+(
+   131,
+   11,
+   '134 Avenue de Genève'
 );
 
 INSERT INTO APPARTIENT_2 (
@@ -5267,7 +5272,7 @@ INSERT INTO ETABLISSEMENT (
    1,
    'Restaurant',
    101,
-   'McDonald s',
+   'McDonald s Paris',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
    '09:00:00',
    '18:00:00',
@@ -5482,6 +5487,17 @@ INSERT INTO ETABLISSEMENT (
    '23:00:00',
    TRUE,
    TRUE
+),
+(
+   21,
+   'Restaurant',
+   131,
+   'McDonald s Annecy',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   '09:00:00',
+   '18:00:00',
+   TRUE,
+   FALSE
 );
 
 INSERT INTO FACTURE_COURSE (
