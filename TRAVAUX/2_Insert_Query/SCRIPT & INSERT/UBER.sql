@@ -1,7 +1,8 @@
 /*==============================================================*/
 /* Nom de SGBD :  PostgreSQL 8                                  */
-/* Date de création :  28/11/2024 15:20:22                      */
+/* Date de création :  01/01/2001                      */
 /*==============================================================*/
+
 DROP TABLE IF EXISTS ADRESSE CASCADE;
 
 DROP TABLE IF EXISTS APPARTIENT_2 CASCADE;
