@@ -8,9 +8,13 @@ DROP TABLE IF EXISTS APPARTIENT_2 CASCADE;
 
 DROP TABLE IF EXISTS A_3 CASCADE;
 
+DROP TABLE IF EXISTS A_COMME_CATEGORIE CASCADE;
+
 DROP TABLE IF EXISTS A_COMME_TYPE CASCADE;
 
 DROP TABLE IF EXISTS CARTE_BANCAIRE CASCADE;
+
+DROP TABLE IF EXISTS CATEGORIE_PRESTATION CASCADE;
 
 DROP TABLE IF EXISTS CATEGORIE_PRODUIT CASCADE;
 
@@ -101,7 +105,7 @@ CREATE TABLE CARTE_BANCAIRE (
    NUMEROCB NUMERIC(17, 1) NOT NULL,
    CONSTRAINT UQ_CARTE_NUMEROCB UNIQUE (NUMEROCB),
    DATEEXPIRECB DATE NOT NULL,
-   CONSTRAINT CK_CARTE_DATEEXPIRECB CHECK (DATEEXPIRECB > CURRENT_DATE),
+   CONSTRAINT CK_CARTE_DATEEXPIRECB CHECK (DATEEXPIRECB >= CURRENT_DATE),
    CRYPTOGRAMME NUMERIC(3, 0) NOT NULL,
    TYPECARTE VARCHAR(30) NOT NULL,
    TYPERESEAUX VARCHAR(30) NOT NULL,
@@ -113,7 +117,7 @@ CREATE TABLE CARTE_BANCAIRE (
 /*==============================================================*/
 CREATE TABLE CATEGORIE_PRODUIT (
    IDCATEGORIE INT4 NOT NULL,
-   NOMCATEGORIE VARCHAR(50) NULL,
+   NOMCATEGORIE VARCHAR(100) NULL,
    CONSTRAINT PK_CATEGORIE_PRODUIT PRIMARY KEY (IDCATEGORIE)
 );
 
@@ -186,6 +190,7 @@ CREATE TABLE CONTIENT_2 (
 /*==============================================================*/
 CREATE TABLE COURSE (
    IDCOURSE INT4 NOT NULL,
+   IDCOURSIER INT4 NULL,
    IDCB INT4 NOT NULL,
    IDADRESSE INT4 NOT NULL,
    IDRESERVATION INT4 NOT NULL,
@@ -215,7 +220,6 @@ CREATE TABLE COURSIER (
    IDCOURSIER INT4 NOT NULL,
    IDENTREPRISE INT4 NOT NULL,
    IDADRESSE INT4 NOT NULL,
-   IDRESERVATION INT4 NULL,
    GENREUSER VARCHAR(20) NOT NULL,
    CONSTRAINT CK_COURSIER_GENRE CHECK(GENREUSER IN ('Monsieur', 'Madame')),
    NOMUSER VARCHAR(50) NOT NULL,
@@ -277,9 +281,15 @@ CREATE TABLE EST_SITUE_A_2 (
 /*==============================================================*/
 CREATE TABLE ETABLISSEMENT (
    IDETABLISSEMENT INT4 NOT NULL,
+   TYPEETABLISSEMENT VARCHAR(50) NOT NULL,
+   CONSTRAINT CK_TYPEETABLISSEMENT CHECK (TYPEETABLISSEMENT IN ('Restaurant', 'Épicerie')),
    IDADRESSE INT4 NOT NULL,
    NOMETABLISSEMENT VARCHAR(50) NULL,
    IMAGEETABLISSEMENT VARCHAR(200) NULL,
+   HORAIRESOUVERTURE TIME NULL,
+   HORAIRESFERMETURE TIME NULL,
+   LIVRAISON BOOL NULL,
+   AEMPORTER BOOL NULL,
    CONSTRAINT PK_ETABLISSEMENT PRIMARY KEY (IDETABLISSEMENT)
 );
 
@@ -335,7 +345,7 @@ CREATE TABLE PLANNING_RESERVATION (
 /*==============================================================*/
 CREATE TABLE PRODUIT (
    IDPRODUIT INT4 NOT NULL,
-   NOMPRODUIT VARCHAR(50) NULL,
+   NOMPRODUIT VARCHAR(200) NULL,
    PRIXPRODUIT NUMERIC(5, 2) NULL,
    CONSTRAINT CK_PRODUIT_PRIX CHECK (PRIXPRODUIT > 0),
    IMAGEPRODUIT VARCHAR(300) NULL,
@@ -361,8 +371,6 @@ CREATE TABLE RESERVATION (
    IDRESERVATION INT4 NOT NULL,
    IDCLIENT INT4 NOT NULL,
    IDPLANNING INT4 NOT NULL,
-   IDCOURSE INT4 NULL,
-   IDCOURSIER INT4 NULL,
    IDVELO INT4 NULL,
    DATERESERVATION DATE NULL,
    CONSTRAINT CK_RESERVATION_DATE CHECK (DATERESERVATION <= CURRENT_DATE),
@@ -380,6 +388,26 @@ CREATE TABLE TYPE_PRESTATION (
    DESCRIPTIONPRESTATION VARCHAR(500) NULL,
    IMAGEPRESTATION VARCHAR(300) NULL,
    CONSTRAINT PK_TYPE_PRESTATION PRIMARY KEY (IDPRESTATION)
+);
+
+/*==============================================================*/
+/* Table : CATEGORIE_PRESTATION                                 */
+/*==============================================================*/
+CREATE TABLE CATEGORIE_PRESTATION (
+   IDCATEGORIEPRESTATION INT4 NOT NULL,
+   LIBELLECATEGORIEPRESTATION VARCHAR(50) NULL,
+   DESCRIPTIONCATEGORIEPRESTATION VARCHAR(500) NULL,
+   IMAGECATEGORIEPRESTATION VARCHAR(300) NULL,
+   CONSTRAINT PK_CATEGORIE_PRESTATION PRIMARY KEY (IDCATEGORIEPRESTATION)
+);
+
+/*==============================================================*/
+/* Table : A_COMME_CATEGORIE                                    */
+/*==============================================================*/
+CREATE TABLE A_COMME_CATEGORIE (
+   IDCATEGORIEPRESTATION INT4 NOT NULL,
+   IDETABLISSEMENT INT4 NOT NULL,
+   CONSTRAINT PK_A_COMME_CATEGORIE PRIMARY KEY (IDCATEGORIEPRESTATION, IDETABLISSEMENT)
 );
 
 /*==============================================================*/
@@ -409,7 +437,6 @@ CREATE TABLE VEHICULE (
 /*==============================================================*/
 CREATE TABLE VELO (
    IDVELO INT4 NOT NULL,
-   IDRESERVATION INT4 NOT NULL,
    IDADRESSE INT4 NOT NULL,
    NUMEROVELO INT4 NOT NULL,
    CONSTRAINT UQ_VELO_NUMERO UNIQUE (NUMEROVELO),
@@ -436,502 +463,652 @@ INSERT INTO ADRESSE (
 ) VALUES (
    1,
    1,
-   '10 Rue de Paris'
+   '1 Rue de l Épée de Bois'
 ),
 (
    2,
-   2,
-   '20 Boulevard Haussmann'
+   1,
+   '15 Rue du Général Foy'
 ),
 (
    3,
-   3,
-   '15 Avenue de Lyon'
+   1,
+   '27 Rue Navier'
 ),
 (
    4,
-   4,
-   '5 Place de la République'
+   1,
+   '18 Rue Chaligny'
 ),
 (
    5,
-   5,
-   '12 Rue des Lilas'
+   1,
+   '51 Rue Censier'
 ),
 (
    6,
-   6,
-   '3 Impasse des Églantines'
+   1,
+   '1 Place Etienne Pernet'
 ),
 (
    7,
-   7,
-   '7 Place de la Liberté'
+   1,
+   '7 Rue du Commerce'
 ),
 (
    8,
-   8,
-   '19 Avenue des Champs'
+   1,
+   '90 Rue Saint-Dominique'
 ),
 (
    9,
-   9,
-   '2 Rue Victor Hugo'
+   1,
+   '49 Rue de Babylone'
 ),
 (
    10,
-   10,
-   '8 Boulevard Saint-Michel'
+   1,
+   '98 Avenue Denfert Rochereau'
 ),
 (
    11,
-   1,
-   '11 Place du Capitole'
+   2,
+   '17 Rue Antoine Lumière'
 ),
 (
    12,
    2,
-   '25 Avenue Jean Jaurès'
+   '8 Rue Rossan'
 ),
 (
    13,
-   3,
-   '6 Rue des Acacias'
+   2,
+   '15 Rue Etienne Dolet'
 ),
 (
    14,
-   4,
-   '18 Rue des Fleurs'
+   2,
+   '154 Avenue Thiers'
 ),
 (
    15,
-   5,
-   '22 Boulevard Pasteur'
+   2,
+   '1 Rue Burdeau'
 ),
 (
    16,
-   6,
-   '30 Avenue des Pyrénées'
+   2,
+   '6 Rue Victor Hugo'
 ),
 (
    17,
-   7,
-   '45 Rue de la Gare'
+   2,
+   '27 Rue Pierre Delore Bis'
 ),
 (
    18,
-   8,
-   '50 Place du Marché'
+   2,
+   '12 Rue Wakatsuki'
 ),
 (
    19,
-   9,
-   '9 Impasse des Peupliers'
+   2,
+   '38 rue de la Charité'
 ),
 (
    20,
-   10,
-   '14 Avenue des Pins'
+   2,
+   '59 rue de la Part-Dieu'
 ),
 (
    21,
-   1,
-   '3 Rue de la Paix'
+   3,
+   '23 rue Saint-Ferréol'
 ),
 (
    22,
-   2,
-   '7 Avenue des Ternes'
+   3,
+   '5 boulevard Longchamp'
 ),
 (
    23,
    3,
-   '8 Rue des Roses'
+   '58 Rue Charles Kaddouz'
 ),
 (
    24,
-   4,
-   '10 Boulevard Montparnasse'
+   3,
+   '34 rue de la Canebière'
 ),
 (
    25,
-   5,
-   '6 Rue de la République'
+   3,
+   '7 rue du Panier'
 ),
 (
    26,
-   6,
-   '20 Rue des Écoles'
+   3,
+   '61 Rue Aviateur le Brix'
 ),
 (
    27,
-   7,
-   '25 Boulevard de la Gare'
+   3,
+   '2 Avenue du Frêne'
 ),
 (
    28,
-   8,
-   '3 Place des Vosges'
+   3,
+   '390 Chemin du Roucas Blanc'
 ),
 (
    29,
-   9,
-   '12 Rue de la Liberté'
+   3,
+   '5 Avenue Edmond Oraison'
 ),
 (
    30,
-   10,
-   '21 Boulevard de la Mer'
+   3,
+   '31 Rue Vauvenargues'
 ),
 (
    31,
-   1,
-   '14 Rue Montmartre'
+   4,
+   '20 Rue Beyssac'
 ),
 (
    32,
-   2,
-   '16 Rue de la Madeleine'
+   4,
+   '16 Rue Nérigean'
 ),
 (
    33,
-   3,
-   '2 Rue de la Concorde'
+   4,
+   '8 Place Camille Pelletan'
 ),
 (
    34,
    4,
-   '4 Place de la Bastille'
+   '22 Rue de Causserouge'
 ),
 (
    35,
-   5,
-   '23 Rue des Champs-Élysées'
+   4,
+   '93 Rue Manon Cormier'
 ),
 (
    36,
-   6,
-   '5 Rue des Carrières'
+   4,
+   '27 Rue Charles Péguy'
 ),
 (
    37,
-   7,
-   '19 Avenue du Général Leclerc'
+   4,
+   '9 Rue Alfred Dalancourt'
 ),
 (
    38,
-   8,
-   '13 Rue Saint-Denis'
+   4,
+   '10 Avenue des 3 Cardinaux'
 ),
 (
    39,
-   9,
-   '7 Rue de la Montagne'
+   4,
+   '13 Rue de la Concorde'
 ),
 (
    40,
-   10,
-   '15 Avenue de la Mer'
+   4,
+   '6 Rue Bossuet'
 ),
 (
    41,
-   1,
-   '8 Rue de la Sainte-Croix'
+   5,
+   '58 Chemin du Vallon Sabatier'
 ),
 (
    42,
-   2,
-   '18 Rue de l’Opéra'
+   5,
+   '203 Route de Saint-Pierre de Féric'
 ),
 (
    43,
-   3,
-   '5 Place de la Bourse'
+   5,
+   '144 Chemin de la Costière'
 ),
 (
    44,
-   4,
-   '22 Rue de la Paix'
+   5,
+   '28 Chemin du Haut Magnan'
 ),
 (
    45,
    5,
-   '24 Boulevard de Sébastopol'
+   '32 Avenue du Dom. du Piol'
 ),
 (
    46,
-   6,
-   '10 Place des Invalides'
+   5,
+   '78 Av. du Bois de Cythère'
 ),
 (
    47,
-   7,
-   '27 Rue des Arts'
+   5,
+   '9 Rue Roger Martin du Gard'
 ),
 (
    48,
-   8,
-   '28 Boulevard des Capucines'
+   5,
+   '5 Avenue Suzanne Lenglen'
 ),
 (
    49,
-   9,
-   '6 Rue du Faubourg Saint-Antoine'
+   5,
+   '40 Rue Trachel'
 ),
 (
    50,
-   10,
-   '17 Avenue des Alpes'
+   5,
+   '7 Chemin de la Colline de Magnan'
 ),
 (
    51,
-   1,
-   '9 Rue de la Place des Vosges'
+   6,
+   '4 Avenue de la Paix'
 ),
 (
    52,
-   2,
-   '3 Rue de la Cité'
+   6,
+   '34 Rue Massenet'
 ),
 (
    53,
-   3,
-   '16 Rue du Faubourg Saint-Honoré'
+   6,
+   '8 Rue des Reinettes'
 ),
 (
    54,
-   4,
-   '7 Avenue des Gobelins'
+   6,
+   '36 Rue du Chanoine Poupard'
 ),
 (
    55,
-   5,
-   '11 Rue de la Paix'
+   6,
+   '22 Rue Jean Baptiste Olivaux'
 ),
 (
    56,
    6,
-   '3 Rue de la Chapelle'
+   '1 Chemin des Noisetiers'
 ),
 (
    57,
-   7,
-   '10 Rue de l’Indépendance'
+   6,
+   '6 Rue de Bellevue Bis'
 ),
 (
    58,
-   8,
-   '12 Rue des Moulins'
+   6,
+   '40 Rue Thomas Maisonneuve'
 ),
 (
    59,
-   9,
-   '18 Rue du Pont Neuf'
+   6,
+   '2 Avenue du Bonheur'
 ),
 (
    60,
-   10,
-   '11 Rue des Grandes Alpes'
+   6,
+   '73 Rue de Coulmiers'
 ),
 (
    61,
-   1,
-   '2 Place de la République'
+   7,
+   '701 Av. de Toulouse'
 ),
 (
    62,
-   2,
-   '12 Avenue Montaigne'
+   7,
+   '6 Rue Jean Vachet'
 ),
 (
    63,
-   3,
-   '25 Rue du Faubourg Saint-Antoine'
+   7,
+   '380 Avenue du Maréchal Leclerc'
 ),
 (
    64,
-   4,
-   '16 Place de la Nation'
+   7,
+   '15 Rue Sainte-Catherine'
 ),
 (
    65,
-   5,
-   '4 Rue du Vieux-Colombier'
+   7,
+   '125 Rue de Cante Gril'
 ),
 (
    66,
-   6,
-   '17 Rue des Boulevards'
+   7,
+   '6 Rue de la Felouque'
 ),
 (
    67,
    7,
-   '14 Rue de l’Arcade'
+   '1167 Allée de la Martelle'
 ),
 (
    68,
-   8,
-   '9 Rue des Bouquinistes'
+   7,
+   '1482 Rue de St - Priest'
 ),
 (
    69,
-   9,
-   '10 Rue de Montmartre'
+   7,
+   '208 Avenue des Apothicaires'
 ),
 (
    70,
-   10,
-   '23 Rue de Saint-Germain'
+   7,
+   '425 Rue de la Croix de Lavit'
 ),
 (
    71,
-   1,
-   '1 Rue de Rivoli'
+   8,
+   '67 Rue de Ribeauvillé'
 ),
 (
    72,
-   2,
-   '20 Rue de la Sarrazine'
+   8,
+   '20 Route de Mittelhausbergen'
 ),
 (
    73,
-   3,
-   '8 Rue de la République'
+   8,
+   '31 Rue de Dettwiller'
 ),
 (
    74,
-   4,
-   '15 Avenue du Parc des Princes'
+   8,
+   '34 Rue Becquerel'
 ),
 (
    75,
-   5,
-   '22 Rue de la Villette'
+   8,
+   '69 Avenue Molière'
 ),
 (
    76,
-   6,
-   '13 Rue du Trône'
+   8,
+   '58 Allee des Comtes'
 ),
 (
    77,
-   7,
-   '6 Avenue de la Plage'
+   8,
+   '17 Route des Romains'
 ),
 (
    78,
    8,
-   '4 Rue de l’Église'
+   '1 Rue des Bosquets'
 ),
 (
    79,
-   9,
-   '7 Place de la Liberté'
+   8,
+   'Chemin Raltauweg'
 ),
 (
    80,
-   10,
-   '8 Rue du Palais des Congrès'
+   8,
+   'Rue de la Montagne Verte'
 ),
 (
    81,
-   1,
-   '17 Boulevard Saint-Germain'
+   9,
+   '52 Rue Chaudronnerie'
 ),
 (
    82,
-   2,
+   9,
    '4 Rue des Francs-Bourgeois'
 ),
 (
    83,
-   3,
-   '19 Rue de la Ville'
+   9,
+   '81 Rue Monge'
 ),
 (
    84,
-   4,
-   '6 Boulevard de l’Étoile'
+   9,
+   '48 Avenue Garibaldi'
 ),
 (
    85,
-   5,
-   '5 Rue des Mimosas'
+   9,
+   '1 Rue Pontus de Tyard'
 ),
 (
    86,
-   6,
+   9,
    '1 Rue de la Gare'
 ),
 (
    87,
-   7,
-   '23 Avenue des Tuileries'
+   9,
+   '13 Rue Sainte-Claire Déville'
 ),
 (
    88,
-   8,
-   '11 Rue de la Pomme'
+   9,
+   '19 Rue la Fontaine'
 ),
 (
    89,
    9,
-   '14 Rue de Saint-Roch'
+   '9 Rue Racine'
 ),
 (
    90,
-   10,
-   '7 Avenue des Neiges'
+   9,
+   '28 Rue Gustave Flaubert'
 ),
 (
    91,
-   1,
-   '3 Rue des Lilas'
+   10,
+   '9 Rue de Condé'
 ),
 (
    92,
-   2,
-   '12 Rue de la République'
+   10,
+   '69 Rue Jean de la Fontaine'
 ),
 (
    93,
-   3,
-   '22 Rue des Acacias'
+   10,
+   '50 Avenue Fourcault de Pavant'
 ),
 (
    94,
-   4,
-   '18 Boulevard de la Liberté'
+   10,
+   '6 Avenue du Général Mangin Bis'
 ),
 (
    95,
-   5,
-   '10 Place de la Concorde'
+   10,
+   '28 Rue des Missionnaires Bis'
 ),
 (
    96,
-   6,
-   '13 Rue des Oliviers'
+   10,
+   '2 Rue de Beauvau'
 ),
 (
    97,
-   7,
-   '14 Rue du Rocher'
+   10,
+   '32 Rue Berthier'
 ),
 (
    98,
-   8,
-   '20 Rue des Pères'
+   10,
+   '70 Rue de la Paroisse'
 ),
 (
    99,
-   9,
-   '16 Rue du Pont'
+   10,
+   '2 Place Charost'
 ),
 (
    100,
    10,
-   '9 Rue des Pêcheurs'
+   '6 Rue des Tournelles'
+),
+(
+   101,
+   1,
+   '87 Avenue De Flandre'
+),
+(
+   102,
+   1,
+   '5 Rue Du Cinema'
+),
+(
+   103,
+   3,
+   '1 Place Ernest Delibes'
+),
+(
+   104,
+   11,
+   '80 Rue Carnot'
+),
+(
+   105,
+   2,
+   '8 Place De La Croix-Rousse'
+),
+(
+   106,
+   11,
+   '5 Rue De LIndustrie'
+),
+(
+   107,
+   4,
+   '57 Rue Du Château DEau'
+),
+(
+   108,
+   11,
+   '5 Rue De L Industrie'
+),
+(
+   109,
+   3,
+   '11 Avenue de St antoine'
+),
+(
+   110,
+   5,
+   '39 Avenue Georges Clemenceau'
+),
+(
+   111,
+   11,
+   '3bis Avenue De Chevêne'
+),
+(
+   112,
+   6,
+   '3 Rue Léon Maître'
+),
+(
+   113,
+   7,
+   '5 Boulevard De L Observatoire'
+),
+(
+   114,
+   7,
+   '7 Rue De La Loge'
+),
+(
+   115,
+   9,
+   '65 Rue du Bourg'
+),
+(
+   116,
+   10,
+   '76 Rue de la Paroisse'
+),
+(
+   117,
+   10,
+   'Rue de Montreuil 7'
+),
+(
+   118,
+   11,
+   '52 Rue Du Pont'
+),
+(
+   119,
+   1,
+   '22 Rue De La Sablonnière'
+),
+(
+   120,
+   8,
+   'Rue Des Chevaliers'
+),
+(
+   121,
+   11,
+   '20 Rue de la République'
+),
+(
+   122,
+   11,
+   '9 rue de larc en ciel'
+),
+(
+   123,
+   11,
+   '6 Avenue du Rhône'
+),
+(
+   124,
+   11,
+   'Rue de la gare'
+),
+(
+   125,
+   11,
+   'rue des chasseurs'
+),
+(
+   126,
+   11,
+   '10 Place de la Concorde'
+),
+(
+   127,
+   11,
+   'Rue Sommeiller'
+),
+(
+   128,
+   11,
+   '2 Rue Jacqueline Auriol'
+),
+(
+   129,
+   11,
+   '16 Rue de Lachat'
+),
+(
+   130,
+   11,
+   'avenue Montaigne'
 );
 
 INSERT INTO APPARTIENT_2 (
@@ -983,27 +1160,455 @@ INSERT INTO A_3 (
    IDCATEGORIE
 ) VALUES (
    1,
-   1
+   7
+), -- 'BIG MAC™' -> Plats préparés et Surgelés
+(
+   2,
+   7
+), -- 'P TIT WRAP RANCH' -> Plats préparés et Surgelés
+(
+   3,
+   7
+), -- 'CHEESEBURGER' -> Plats préparés et Surgelés
+(
+   4,
+   5
+), -- 'McFLURRY™ SAVEUR VANILLE DAIM®' -> Pâtisseries, Desserts et Glaces
+(
+   5,
+   7
+), -- 'Waffine à composer' -> Plats préparés et Surgelés
+(
+   6,
+   7
+), -- 'Menu Complet' -> Plats préparés et Surgelés
+(
+   7,
+   11
+), -- 'Tropico Tropical 33cl' -> Boissons (alcoolisées et non alcoolisées)
+(
+   8,
+   5
+), -- 'Supplément Chocolat Blanc' -> Pâtisseries, Desserts et Glaces
+(
+   9,
+   7
+), -- 'Menu sandwich froid' -> Plats préparés et Surgelés
+(
+   10,
+   2
+), -- 'La salade PAUL' -> Fruits, Légumes et Produits frais
+(
+   11,
+   7
+), -- 'La part de pizza provençale' -> Plats préparés et Surgelés
+(
+   12,
+   6
+), -- 'Le pain nordique 300g' -> Épicerie (salée et sucrée)
+(
+   13,
+   5
+), -- 'Empanada carne' -> Pâtisseries, Desserts et Glaces
+(
+   14,
+   5
+), -- 'Empanada jamon y queso' -> Pâtisseries, Desserts et Glaces
+(
+   15,
+   11
+), -- 'Kombucha mate' -> Boissons (alcoolisées et non alcoolisées)
+(
+   16,
+   11
+), -- 'Fuzetea' -> Boissons (alcoolisées et non alcoolisées)
+(
+   17,
+   7
+), -- '2 MENUS + 2 EXTRAS' -> Plats préparés et Surgelés
+(
+   18,
+   7
+), -- '3 MENUS + 3 EXTRAS' -> Plats préparés et Surgelés
+(
+   19,
+   7
+), -- 'KINGBOX 10 King Nuggets® + 10 Chili Cheese' -> Plats préparés et Surgelés
+(
+   20,
+   7
+), -- 'Veggie Chicken Louisiane Steakhouse' -> Plats préparés et Surgelés
+(
+   21,
+   7
+), -- 'Chicken' -> Plats préparés et Surgelés
+(
+   22,
+   7
+), -- 'Rustic' -> Plats préparés et Surgelés
+(
+   23,
+   5
+), -- 'Cordon Bleu' -> Pâtisseries, Desserts et Glaces
+(
+   24,
+   7
+), -- 'Camembert Bites' -> Plats préparés et Surgelés
+(
+   25,
+   7
+), -- 'Menu West Coast' -> Plats préparés et Surgelés
+(
+   26,
+   10
+), -- 'Mozzarella Sticks' -> Snacks, Apéritifs et Confiseries
+(
+   27,
+   7
+), -- 'Menu KO Burger' -> Plats préparés et Surgelés
+(
+   28,
+   5
+), -- 'Mexico' -> Pâtisseries, Desserts et Glaces
+(
+   29,
+   7
+), -- 'Frites XL' -> Plats préparés et Surgelés
+(
+   30,
+   7
+), -- 'Chicken ' -> Plats préparés et Surgelés
+(
+   31,
+   5
+), -- 'Tiramisu Nutella Spéculos' -> Pâtisseries, Desserts et Glaces
+(
+   32,
+   7
+), -- 'Farmer' -> Plats préparés et Surgelés
+(
+   33,
+   13
+), -- 'Nettoyant vitres' -> Hygiène, Beauté et Entretien
+(
+   34,
+   13
+), -- 'Carrefour Essential - Papier toilette confort doux (12)' -> Hygiène, Beauté et Entretien
+(
+   35,
+   4
+), -- 'Kiri - Fromage enfant crème à tartiner (8)' -> Produits laitiers et Fromages
+(
+   36,
+   3
+), -- 'Carrefour Le Marché - Viande hachée pur bœuf (350g)' -> Viandes, Poissons et Charcuterie
+(
+   37,
+   6
+), -- 'Brioche Pasquier - Pains au lait (10)' -> Épicerie (salée et sucrée)
+(
+   38,
+   7
+), -- 'Le Cordon Bleu' -> Plats préparés et Surgelés
+(
+   39,
+   7
+), -- 'Le Western' -> Plats préparés et Surgelés
+(
+   40,
+   5
+), -- 'Wings' -> Pâtisseries, Desserts et Glaces
+(
+   41,
+   10
+), -- 'Sauce Harissa' -> Sauces, Condiments et Épices
+(
+   42,
+   7
+), -- 'Bao Poulet croustillant' -> Plats préparés et Surgelés
+(
+   43,
+   7
+), -- 'Menu Poké & Boisson' -> Plats préparés et Surgelés
+(
+   44,
+   7
+), -- 'Bobun boeuf' -> Plats préparés et Surgelés
+(
+   45,
+   7
+), -- 'Beignets de crevettes tempura' -> Plats préparés et Surgelés
+(
+   46,
+   7
+), -- 'PLAT + BOISSON CLASSIQUE' -> Plats préparés et Surgelés
+(
+   47,
+   7
+), -- 'CRUNCHY THAÏ BOX' -> Plats préparés et Surgelés
+(
+   48,
+   7
+), -- 'CHICKEN ou BEEF THAI' -> Plats préparés et Surgelés
+(
+   49,
+   7
+), -- 'Le Cook Mie extra' -> Plats préparés et Surgelés
+(
+   50,
+   7
+), -- 'Le Cook Mie Bistro' -> Plats préparés et Surgelés
+(
+   51,
+   6
+), -- '3 Cookies Caramel achetés le 4ème offert' -> Épicerie (salée et sucrée)
+(
+   52,
+   6
+), -- 'Cookiz duo de choc' -> Épicerie (salée et sucrée)
+(
+   53,
+   7
+), -- 'MENU AUTHENTIQUE THON CRUDITÉS' -> Plats préparés et Surgelés
+(
+   54,
+   7
+), -- 'TOASTÉ POULET CURRY' -> Plats préparés et Surgelés
+(
+   55,
+   7
+), -- 'Quiche Lorraine' -> Plats préparés et Surgelés
+(
+   56,
+   5
+), -- 'FUSETTE CITRON MERINGUÉE' -> Pâtisseries, Desserts et Glaces
+(
+   57,
+   5
+), -- 'FROMAGE BLANC 0% FRUITS ET COULIS DE FRUITS' -> Pâtisseries, Desserts et Glaces
+(
+   58,
+   11
+), -- 'ALLONGÉ' -> Boissons (alcoolisées et non alcoolisées)
+(
+   59,
+   11
+), -- 'Pur jus de pomme Franprix 1l' -> Boissons (alcoolisées et non alcoolisées)
+(
+   60,
+   10
+), -- 'Barre chocolatée Kit Kat unité 41.5g' -> Snacks, Apéritifs et Confiseries
+(
+   61,
+   4
+), -- 'Fromage Compté aux lait cru Franprix' -> Produits laitiers et Fromages
+(
+   62,
+   7
+), -- '2 cuisses de canard du Sud-Ouest confites' -> Plats préparés et Surgelés
+(
+   63,
+   5
+), -- '2 moelleux au chocolat' -> Pâtisseries, Desserts et Glaces
+(
+   64,
+   5
+), -- 'Pizza chèvre, miel, noix' -> Pâtisseries, Desserts et Glaces
+(
+   65,
+   7
+), -- 'Boulettes de viande kefta' -> Plats préparés et Surgelés
+(
+   66,
+   10
+), -- 'Bret s - Chips de pommes de terre, fromage (125g)' -> Snacks, Apéritifs et Confiseries
+(
+   67,
+   6
+), -- 'Granola Choco Lait' -> Épicerie (salée et sucrée)
+(
+   68,
+   5
+), -- 'Ben & Jerry s - Crème glacée, vanille, cookie dough (406g)' -> Pâtisseries, Desserts et Glaces
+(
+   69,
+   7
+), -- 'Justin Bridou - Saucisson petits bâton de berger nature (100g)' -> Viandes, Poissons et Charcuterie
+(
+   70,
+   5
+), -- 'Donut nutella billes' -> Pâtisseries, Desserts et Glaces
+(
+   71,
+   7
+), -- 'Bagel R. Charles' -> Plats préparés et Surgelés
+(
+   72,
+   7
+), -- 'Bagel N. Simone' -> Plats préparés et Surgelés
+(
+   73,
+   10
+), -- 'Röstis x6' -> Snacks, Apéritifs et Confiseries
+(
+   74,
+   7
+), -- 'SUB15 Dinde' -> Plats préparés et Surgelés
+(
+   75,
+   7
+), -- 'Wrap Crispy Avocado' -> Plats préparés et Surgelés
+(
+   76,
+   7
+), -- 'SUB30 Xtreme Raclette Steakhouse' -> Plats préparés et Surgelés
+(
+   77,
+   7
+), -- 'Menu SUB30 Poulet ' -> Plats préparés et Surgelés
+(
+   78,
+   10
+), -- 'Jalapenos' -> Snacks, Apéritifs et Confiseries
+(
+   79,
+   7
+), -- 'Menu 6 HOT WINGS' -> Plats préparés et Surgelés
+(
+   80,
+   7
+),
+(
+   81,
+   13
+),
+(
+   82,
+   13
+),
+(
+   83,
+   18
+),
+(
+   84,
+   13
+),
+(
+   85,
+   13
+),
+(
+   86,
+   11
+),
+(
+   87,
+   13
+),
+(
+   88,
+   13
+),
+(
+   89,
+   16
+),
+(
+   90,
+   16
+),
+(
+   91,
+   13
+),
+(
+   92,
+   18
+),
+(
+   93,
+   18
+),
+(
+   94,
+   18
+),
+(
+   95,
+   18
+),
+(
+   96,
+   13
+),
+(
+   97,
+   18
+),
+(
+   98,
+   13
+),
+(
+   99,
+   18
+),
+(
+   100,
+   18
+);
+
+INSERT INTO A_COMME_CATEGORIE (
+   IDETABLISSEMENT,
+   IDCATEGORIEPRESTATION
+) VALUES (
+   1,
+   8
+),
+(
+   1,
+   34
+),
+(
+   1,
+   7
 ),
 (
    2,
-   2
+   7
 ),
 (
    3,
-   3
+   16
+),
+(
+   3,
+   21
 ),
 (
    4,
-   4
+   41
+),
+(
+   4,
+   21
 ),
 (
    5,
-   5
+   8
+),
+(
+   5,
+   7
 ),
 (
    6,
-   6
+   22
+),
+(
+   7,
+   8
 ),
 (
    7,
@@ -1011,55 +1616,119 @@ INSERT INTO A_3 (
 ),
 (
    8,
-   8
+   41
+),
+(
+   8,
+   21
 ),
 (
    9,
-   9
+   6
+),
+(
+   9,
+   36
 ),
 (
    10,
-   10
+   7
 ),
 (
-   11,
-   1
+   10,
+   21
 ),
 (
-   12,
-   2
-),
-(
-   13,
-   3
-),
-(
-   14,
+   10,
    4
 ),
 (
+   11,
+   41
+),
+(
+   11,
+   7
+),
+(
+   12,
+   7
+),
+(
+   12,
+   11
+),
+(
+   13,
+   6
+),
+(
+   13,
+   16
+),
+(
+   14,
+   6
+),
+(
+   14,
+   36
+),
+(
    15,
-   5
+   6
+),
+(
+   15,
+   36
 ),
 (
    16,
    6
 ),
 (
+   16,
+   36
+),
+(
    17,
-   7
+   16
+),
+(
+   17,
+   36
 ),
 (
    18,
-   8
+   41
+),
+(
+   18,
+   40
+),
+(
+   18,
+   24
 ),
 (
    19,
-   9
+   41
+),
+(
+   19,
+   7
+),
+(
+   19,
+   24
 ),
 (
    20,
-   10
+   7
+),
+(
+   20,
+   21
 );
 
 INSERT INTO A_COMME_TYPE (
@@ -1279,83 +1948,83 @@ INSERT INTO CATEGORIE_PRODUIT (
    NOMCATEGORIE
 ) VALUES (
    1,
-   'Fruits et Légumes'
+   'Alimentation générale'
 ),
 (
    2,
-   'Viandes et Poissons'
+   'Fruits, Légumes et Produits frais'
 ),
 (
    3,
-   'Produits laitiers'
+   'Viandes, Poissons et Charcuterie'
 ),
 (
    4,
-   'Pâtisseries et Desserts'
+   'Produits laitiers et Fromages'
 ),
 (
    5,
-   'Boissons'
+   'Pâtisseries, Desserts et Glaces'
 ),
 (
    6,
-   'Épicerie salée'
+   'Épicerie (salée et sucrée)'
 ),
 (
    7,
-   'Épicerie sucrée'
+   'Plats préparés et Surgelés'
 ),
 (
    8,
-   'Congelés'
+   'Snacks, Apéritifs et Confiseries'
 ),
 (
    9,
-   'Céréales et Pâtes'
+   'Céréales, Pâtes et Conserves'
 ),
 (
    10,
-   'Snacks et Apéritifs'
+   'Sauces, Condiments et Épices'
 ),
 (
    11,
-   'Sauces et Condiments'
+   'Boissons (alcoolisées et non alcoolisées)'
 ),
 (
    12,
-   'Produits bio'
+   'Produits bio et Spécifiques (sans gluten, sans lactose)'
 ),
 (
    13,
-   'Boulangerie'
+   'Hygiène, Beauté et Entretien'
 ),
 (
    14,
-   'Repas préparés'
+   'Produits pour bébés et enfants'
 ),
 (
    15,
-   'Produits végétariens'
+   'Produits pour animaux'
 ),
 (
    16,
-   'Fromages'
+   'Produits locaux et de luxe'
 ),
 (
    17,
-   'Charcuterie'
+   'Produits pour fêtes et occasions spéciales'
 ),
 (
    18,
-   'Plats cuisinés'
+   'Accessoires et Articles divers (papeterie, cuisine)'
 ),
 (
    19,
-   'Boissons alcoolisées'
+   'Produits végétariens et végétaliens'
 ),
 (
    20,
-   'Aliments pour bébés'
+   'Compléments alimentaires et Sport'
 );
 
 INSERT INTO CLIENT (
@@ -2181,102 +2850,57 @@ INSERT INTO CODE_POSTAL (
 ) VALUES (
    1,
    1,
-   '75001'
+   '75000'
 ),
 (
    2,
    1,
-   '75002'
+   '69000'
 ),
 (
    3,
    1,
-   '75003'
+   '13000'
 ),
 (
    4,
    1,
-   '75004'
+   '33000'
 ),
 (
    5,
    1,
-   '75005'
+   '06000'
 ),
 (
    6,
    1,
-   '75006'
+   '44000'
 ),
 (
    7,
    1,
-   '75007'
+   '34000'
 ),
 (
    8,
    1,
-   '75008'
+   '67000'
 ),
 (
    9,
    1,
-   '75009'
+   '21000'
 ),
 (
    10,
    1,
-   '75010'
+   '78000'
 ),
 (
    11,
-   2,
-   '33000'
-),
-(
-   12,
-   2,
-   '33100'
-),
-(
-   13,
-   2,
-   '33200'
-),
-(
-   14,
-   2,
-   '33300'
-),
-(
-   15,
-   2,
-   '33400'
-),
-(
-   16,
-   3,
-   '69001'
-),
-(
-   17,
-   3,
-   '69002'
-),
-(
-   18,
-   3,
-   '69003'
-),
-(
-   19,
-   3,
-   '69004'
-),
-(
-   20,
-   3,
-   '69005'
+   1,
+   '74000'
 );
 
 INSERT INTO COMMANDE (
@@ -2620,6 +3244,7 @@ INSERT INTO CONTIENT_2 (
 
 INSERT INTO COURSE (
    IDCOURSE,
+   IDCOURSIER,
    IDCB,
    IDADRESSE,
    IDRESERVATION,
@@ -2634,9 +3259,10 @@ INSERT INTO COURSE (
    TEMPS
 ) VALUES (
    1,
+   NULL,
    7,
    32,
-   2,
+   50,
    56,
    7,
    52.43,
@@ -2649,9 +3275,10 @@ INSERT INTO COURSE (
 ),
 (
    2,
+   NULL,
    6,
    35,
-   4,
+   51,
    59,
    6,
    59.36,
@@ -2664,9 +3291,10 @@ INSERT INTO COURSE (
 ),
 (
    3,
+   3,
    4,
    37,
-   6,
+   52,
    46,
    7,
    19.51,
@@ -2679,9 +3307,10 @@ INSERT INTO COURSE (
 ),
 (
    4,
+   4,
    7,
    70,
-   8,
+   53,
    55,
    3,
    50.1,
@@ -2694,9 +3323,10 @@ INSERT INTO COURSE (
 ),
 (
    5,
+   5,
    8,
    78,
-   10,
+   54,
    8,
    1,
    90.94,
@@ -2709,9 +3339,10 @@ INSERT INTO COURSE (
 ),
 (
    6,
+   6,
    5,
    18,
-   12,
+   55,
    14,
    7,
    96.49,
@@ -2724,9 +3355,10 @@ INSERT INTO COURSE (
 ),
 (
    7,
+   NULL,
    3,
    16,
-   14,
+   56,
    39,
    3,
    21.68,
@@ -2739,9 +3371,10 @@ INSERT INTO COURSE (
 ),
 (
    8,
+   8,
    1,
    89,
-   16,
+   57,
    31,
    2,
    46.52,
@@ -2754,9 +3387,10 @@ INSERT INTO COURSE (
 ),
 (
    9,
+   9,
    4,
    92,
-   18,
+   58,
    74,
    2,
    18.64,
@@ -2769,9 +3403,10 @@ INSERT INTO COURSE (
 ),
 (
    10,
+   10,
    5,
    82,
-   20,
+   60,
    44,
    2,
    96.53,
@@ -2784,9 +3419,10 @@ INSERT INTO COURSE (
 ),
 (
    11,
+   11,
    1,
    37,
-   22,
+   61,
    17,
    1,
    98.49,
@@ -2799,9 +3435,10 @@ INSERT INTO COURSE (
 ),
 (
    12,
+   12,
    6,
    24,
-   24,
+   62,
    88,
    5,
    97.43,
@@ -2814,9 +3451,10 @@ INSERT INTO COURSE (
 ),
 (
    13,
+   13,
    1,
    27,
-   26,
+   63,
    74,
    1,
    18.83,
@@ -2829,9 +3467,10 @@ INSERT INTO COURSE (
 ),
 (
    14,
+   14,
    6,
    26,
-   28,
+   64,
    11,
    5,
    67.23,
@@ -2844,9 +3483,10 @@ INSERT INTO COURSE (
 ),
 (
    15,
+   15,
    7,
    18,
-   30,
+   65,
    4,
    5,
    31.06,
@@ -2859,9 +3499,10 @@ INSERT INTO COURSE (
 ),
 (
    16,
+   16,
    10,
    46,
-   32,
+   66,
    35,
    4,
    96.34,
@@ -2874,9 +3515,10 @@ INSERT INTO COURSE (
 ),
 (
    17,
+   17,
    3,
    25,
-   34,
+   67,
    49,
    7,
    33.63,
@@ -2889,9 +3531,10 @@ INSERT INTO COURSE (
 ),
 (
    18,
+   18,
    10,
    96,
-   36,
+   68,
    6,
    7,
    84.81,
@@ -2904,9 +3547,10 @@ INSERT INTO COURSE (
 ),
 (
    19,
+   NULL,
    1,
    88,
-   38,
+   69,
    31,
    3,
    11.63,
@@ -2919,9 +3563,10 @@ INSERT INTO COURSE (
 ),
 (
    20,
+   20,
    6,
    30,
-   40,
+   70,
    7,
    4,
    65.47,
@@ -2934,9 +3579,10 @@ INSERT INTO COURSE (
 ),
 (
    21,
+   NULL,
    5,
    93,
-   42,
+   71,
    72,
    2,
    31.93,
@@ -2949,9 +3595,10 @@ INSERT INTO COURSE (
 ),
 (
    22,
+   22,
    5,
    67,
-   44,
+   72,
    96,
    6,
    61.06,
@@ -2964,9 +3611,10 @@ INSERT INTO COURSE (
 ),
 (
    23,
+   NULL,
    8,
    5,
-   46,
+   73,
    30,
    3,
    42.47,
@@ -2979,9 +3627,10 @@ INSERT INTO COURSE (
 ),
 (
    24,
+   24,
    1,
    7,
-   48,
+   74,
    30,
    5,
    81.93,
@@ -2994,9 +3643,10 @@ INSERT INTO COURSE (
 ),
 (
    25,
+   NULL,
    10,
    38,
-   50,
+   75,
    58,
    2,
    47.53,
@@ -3009,9 +3659,10 @@ INSERT INTO COURSE (
 ),
 (
    26,
+   26,
    3,
    18,
-   52,
+   76,
    14,
    5,
    23.9,
@@ -3024,9 +3675,10 @@ INSERT INTO COURSE (
 ),
 (
    27,
+   27,
    6,
    97,
-   54,
+   77,
    38,
    2,
    87.78,
@@ -3039,9 +3691,10 @@ INSERT INTO COURSE (
 ),
 (
    28,
+   28,
    6,
    62,
-   56,
+   78,
    39,
    7,
    64.99,
@@ -3054,9 +3707,10 @@ INSERT INTO COURSE (
 ),
 (
    29,
+   29,
    4,
    23,
-   58,
+   79,
    42,
    3,
    11.06,
@@ -3069,9 +3723,10 @@ INSERT INTO COURSE (
 ),
 (
    30,
+   30,
    2,
    94,
-   60,
+   80,
    27,
    6,
    76.18,
@@ -3084,9 +3739,10 @@ INSERT INTO COURSE (
 ),
 (
    31,
+   NULL,
    2,
    83,
-   62,
+   81,
    13,
    5,
    96.23,
@@ -3099,9 +3755,10 @@ INSERT INTO COURSE (
 ),
 (
    32,
+   2,
    1,
    55,
-   64,
+   82,
    42,
    3,
    12.51,
@@ -3114,9 +3771,10 @@ INSERT INTO COURSE (
 ),
 (
    33,
+   3,
    5,
    8,
-   66,
+   83,
    6,
    4,
    93.94,
@@ -3129,9 +3787,10 @@ INSERT INTO COURSE (
 ),
 (
    34,
+   NULL,
    3,
    25,
-   68,
+   84,
    89,
    3,
    54.66,
@@ -3144,9 +3803,10 @@ INSERT INTO COURSE (
 ),
 (
    35,
+   5,
    10,
    31,
-   70,
+   85,
    76,
    1,
    16.46,
@@ -3159,9 +3819,10 @@ INSERT INTO COURSE (
 ),
 (
    36,
+   NULL,
    10,
    79,
-   72,
+   86,
    32,
    6,
    25.25,
@@ -3174,9 +3835,10 @@ INSERT INTO COURSE (
 ),
 (
    37,
+   NULL,
    4,
    100,
-   74,
+   87,
    56,
    4,
    41.65,
@@ -3189,9 +3851,10 @@ INSERT INTO COURSE (
 ),
 (
    38,
+   8,
    9,
    49,
-   76,
+   88,
    44,
    6,
    96.12,
@@ -3204,9 +3867,10 @@ INSERT INTO COURSE (
 ),
 (
    39,
+   9,
    6,
    93,
-   78,
+   89,
    55,
    2,
    25.02,
@@ -3219,9 +3883,10 @@ INSERT INTO COURSE (
 ),
 (
    40,
+   10,
    9,
    24,
-   80,
+   90,
    84,
    3,
    84.02,
@@ -3234,9 +3899,10 @@ INSERT INTO COURSE (
 ),
 (
    41,
+   11,
    4,
    86,
-   82,
+   91,
    63,
    7,
    47.46,
@@ -3249,9 +3915,10 @@ INSERT INTO COURSE (
 ),
 (
    42,
+   NULL,
    5,
    54,
-   84,
+   92,
    30,
    7,
    31.21,
@@ -3264,9 +3931,10 @@ INSERT INTO COURSE (
 ),
 (
    43,
+   13,
    6,
    72,
-   86,
+   93,
    56,
    2,
    81.99,
@@ -3279,9 +3947,10 @@ INSERT INTO COURSE (
 ),
 (
    44,
+   14,
    3,
    37,
-   88,
+   94,
    75,
    5,
    28.33,
@@ -3294,9 +3963,10 @@ INSERT INTO COURSE (
 ),
 (
    45,
+   15,
    5,
    25,
-   90,
+   95,
    83,
    5,
    14.08,
@@ -3309,9 +3979,10 @@ INSERT INTO COURSE (
 ),
 (
    46,
+   16,
    2,
    10,
-   92,
+   96,
    9,
    2,
    13.3,
@@ -3324,9 +3995,10 @@ INSERT INTO COURSE (
 ),
 (
    47,
+   17,
    2,
    82,
-   94,
+   97,
    80,
    5,
    77.08,
@@ -3339,9 +4011,10 @@ INSERT INTO COURSE (
 ),
 (
    48,
+   18,
    6,
    44,
-   96,
+   98,
    28,
    2,
    99.36,
@@ -3354,9 +4027,10 @@ INSERT INTO COURSE (
 ),
 (
    49,
+   19,
    5,
    63,
-   98,
+   99,
    39,
    4,
    13.28,
@@ -3369,6 +4043,7 @@ INSERT INTO COURSE (
 ),
 (
    50,
+   NULL,
    3,
    64,
    100,
@@ -3387,7 +4062,6 @@ INSERT INTO COURSIER (
    IDCOURSIER,
    IDENTREPRISE,
    IDADRESSE,
-   IDRESERVATION,
    GENREUSER,
    NOMUSER,
    PRENOMUSER,
@@ -3400,7 +4074,6 @@ INSERT INTO COURSIER (
    DATEDEBUTACTIVITE,
    NOTEMOYENNE
 ) VALUES (
-   1,
    1,
    1,
    1,
@@ -3420,7 +4093,6 @@ INSERT INTO COURSIER (
    2,
    2,
    2,
-   2,
    'Monsieur',
    'Dupont',
    'Paul',
@@ -3434,7 +4106,6 @@ INSERT INTO COURSIER (
    4.3
 ),
 (
-   3,
    3,
    3,
    3,
@@ -3454,7 +4125,6 @@ INSERT INTO COURSIER (
    4,
    4,
    4,
-   4,
    'Monsieur',
    'Lopez',
    'Marc',
@@ -3468,7 +4138,6 @@ INSERT INTO COURSIER (
    4.0
 ),
 (
-   5,
    5,
    5,
    5,
@@ -3488,7 +4157,6 @@ INSERT INTO COURSIER (
    6,
    6,
    6,
-   6,
    'Monsieur',
    'Richard',
    'Julien',
@@ -3502,7 +4170,6 @@ INSERT INTO COURSIER (
    4.6
 ),
 (
-   7,
    7,
    7,
    7,
@@ -3522,7 +4189,6 @@ INSERT INTO COURSIER (
    8,
    8,
    8,
-   8,
    'Monsieur',
    'Petit',
    'François',
@@ -3536,7 +4202,6 @@ INSERT INTO COURSIER (
    4.1
 ),
 (
-   9,
    9,
    9,
    9,
@@ -3556,7 +4221,6 @@ INSERT INTO COURSIER (
    10,
    10,
    10,
-   10,
    'Monsieur',
    'Faure',
    'Pierre',
@@ -3570,7 +4234,6 @@ INSERT INTO COURSIER (
    4.3
 ),
 (
-   11,
    11,
    11,
    11,
@@ -3590,7 +4253,6 @@ INSERT INTO COURSIER (
    12,
    12,
    12,
-   12,
    'Monsieur',
    'Mercier',
    'Xavier',
@@ -3604,7 +4266,6 @@ INSERT INTO COURSIER (
    4.2
 ),
 (
-   13,
    13,
    13,
    13,
@@ -3624,7 +4285,6 @@ INSERT INTO COURSIER (
    14,
    14,
    14,
-   14,
    'Monsieur',
    'Robert',
    'Maxime',
@@ -3638,7 +4298,6 @@ INSERT INTO COURSIER (
    4.0
 ),
 (
-   15,
    15,
    15,
    15,
@@ -3658,7 +4317,6 @@ INSERT INTO COURSIER (
    16,
    16,
    16,
-   16,
    'Monsieur',
    'Marchand',
    'Thierry',
@@ -3672,7 +4330,6 @@ INSERT INTO COURSIER (
    4.1
 ),
 (
-   17,
    17,
    17,
    17,
@@ -3692,7 +4349,6 @@ INSERT INTO COURSIER (
    18,
    18,
    18,
-   18,
    'Monsieur',
    'Perrot',
    'Michel',
@@ -3706,7 +4362,6 @@ INSERT INTO COURSIER (
    4.4
 ),
 (
-   19,
    19,
    19,
    19,
@@ -3726,7 +4381,6 @@ INSERT INTO COURSIER (
    20,
    20,
    20,
-   20,
    'Monsieur',
    'Leroy',
    'Pierre',
@@ -3743,7 +4397,6 @@ INSERT INTO COURSIER (
    21,
    1,
    1,
-   21,
    'Monsieur',
    'Fournier',
    'Julien',
@@ -3760,7 +4413,6 @@ INSERT INTO COURSIER (
    22,
    2,
    2,
-   22,
    'Monsieur',
    'Hebert',
    'Alain',
@@ -3777,7 +4429,6 @@ INSERT INTO COURSIER (
    23,
    3,
    3,
-   23,
    'Monsieur',
    'Lemoine',
    'Vincent',
@@ -3794,7 +4445,6 @@ INSERT INTO COURSIER (
    24,
    4,
    4,
-   24,
    'Monsieur',
    'Robert',
    'Louis',
@@ -3811,7 +4461,6 @@ INSERT INTO COURSIER (
    25,
    5,
    5,
-   25,
    'Monsieur',
    'Perrin',
    'Claude',
@@ -3828,7 +4477,6 @@ INSERT INTO COURSIER (
    26,
    6,
    6,
-   26,
    'Monsieur',
    'Leclerc',
    'Gérard',
@@ -3845,7 +4493,6 @@ INSERT INTO COURSIER (
    27,
    7,
    7,
-   27,
    'Monsieur',
    'Hamon',
    'Antoine',
@@ -3862,7 +4509,6 @@ INSERT INTO COURSIER (
    28,
    8,
    8,
-   28,
    'Monsieur',
    'Faure',
    'François',
@@ -3879,7 +4525,6 @@ INSERT INTO COURSIER (
    29,
    9,
    9,
-   29,
    'Monsieur',
    'Vidal',
    'Bruno',
@@ -3896,7 +4541,6 @@ INSERT INTO COURSIER (
    30,
    10,
    10,
-   30,
    'Monsieur',
    'Gauthier',
    'Denis',
@@ -4087,27 +4731,27 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    2,
-   2
+   1
 ),
 (
    3,
-   3
+   1
 ),
 (
    4,
-   4
+   1
 ),
 (
    5,
-   5
+   2
 ),
 (
    6,
-   6
+   1
 ),
 (
    7,
-   7
+   8
 ),
 (
    8,
@@ -4119,7 +4763,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    10,
-   10
+   3
 ),
 (
    11,
@@ -4127,39 +4771,359 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    12,
-   12
-),
-(
-   13,
    13
 ),
 (
+   13,
+   4
+),
+(
    14,
-   14
+   4
 ),
 (
    15,
-   15
+   11
 ),
 (
    16,
-   16
+   15
 ),
 (
    17,
-   17
+   1
 ),
 (
    18,
-   18
+   1
 ),
 (
    19,
-   19
+   5
 ),
 (
    20,
-   20
+   7
+),
+(
+   21,
+   6
+),
+(
+   22,
+   6
+),
+(
+   23,
+   5
+),
+(
+   24,
+   5
+),
+(
+   25,
+   5
+),
+(
+   26,
+   1
+),
+(
+   27,
+   7
+),
+(
+   28,
+   4
+),
+(
+   29,
+   1
+),
+(
+   30,
+   7
+),
+(
+   31,
+   2
+),
+(
+   32,
+   7
+),
+(
+   33,
+   9
+),
+(
+   34,
+   9
+),
+(
+   35,
+   15
+),
+(
+   36,
+   9
+),
+(
+   37,
+   13
+),
+(
+   38,
+   6
+),
+(
+   39,
+   6
+),
+(
+   40,
+   5
+),
+(
+   41,
+   9
+),
+(
+   42,
+   11
+),
+(
+   43,
+   11
+),
+(
+   44,
+   4
+),
+(
+   45,
+   7
+),
+(
+   46,
+   7
+),
+(
+   47,
+   12
+),
+(
+   48,
+   12
+),
+(
+   49,
+   3
+),
+(
+   50,
+   3
+),
+(
+   51,
+   3
+),
+(
+   52,
+   3
+),
+(
+   53,
+   3
+),
+(
+   54,
+   3
+),
+(
+   55,
+   9
+),
+(
+   56,
+   9
+),
+(
+   57,
+   13
+),
+(
+   58,
+   3
+),
+(
+   59,
+   9
+),
+(
+   60,
+   9
+),
+(
+   61,
+   15
+),
+(
+   62,
+   15
+),
+(
+   63,
+   15
+),
+(
+   64,
+   15
+),
+(
+   65,
+   4
+),
+(
+   66,
+   4
+),
+(
+   67,
+   4
+),
+(
+   68,
+   16
+),
+(
+   69,
+   16
+),
+(
+   70,
+   16
+),
+(
+   71,
+   16
+),
+(
+   72,
+   16
+),
+(
+   73,
+   16
+),
+(
+   74,
+   10
+),
+(
+   75,
+   10
+),
+(
+   76,
+   10
+),
+(
+   77,
+   10
+),
+(
+   78,
+   10
+),
+(
+   79,
+   19
+),
+(
+   80,
+   19
+),
+(
+   81,
+   9
+),
+(
+   82,
+   9
+),
+(
+   83,
+   9
+),
+(
+   84,
+   9
+),
+(
+   85,
+   9
+),
+(
+   86,
+   9
+),
+(
+   87,
+   9
+),
+(
+   88,
+   9
+),
+(
+   89,
+   9
+),
+(
+   90,
+   9
+),
+(
+   91,
+   9
+),
+(
+   92,
+   9
+),
+(
+   93,
+   9
+),
+(
+   94,
+   9
+),
+(
+   95,
+   9
+),
+(
+   96,
+   9
+),
+(
+   97,
+   9
+),
+(
+   98,
+   9
+),
+(
+   99,
+   9
+),
+(
+   100,
+   9
 );
 
 INSERT INTO DEPARTEMENT (
@@ -4290,128 +5254,233 @@ INSERT INTO DEPARTEMENT (
 
 INSERT INTO ETABLISSEMENT (
    IDETABLISSEMENT,
+   TYPEETABLISSEMENT,
    IDADRESSE,
    NOMETABLISSEMENT,
-   IMAGEETABLISSEMENT
+   IMAGEETABLISSEMENT,
+   HORAIRESOUVERTURE,
+   HORAIRESFERMETURE,
+   LIVRAISON,
+   AEMPORTER
 ) VALUES (
    1,
-   1,
-   'Le Gourmet Parisien',
-   'image1.jpg'
+   'Restaurant',
+   101,
+   'McDonald s',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   '09:00:00',
+   '18:00:00',
+   TRUE,
+   FALSE
 ),
 (
    2,
-   2,
-   'Le Bistrot Lyonnais',
-   'image2.jpg'
+   'Restaurant',
+   102,
+   'Waffle Factory',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/66ba7e9963cfdbe3126a79bd39dcf405/fb86662148be855d931b37d6c1e5fcbe.jpeg',
+   '10:00:00',
+   '20:00:00',
+   FALSE,
+   TRUE
 ),
 (
    3,
-   3,
-   'Chez Mamma',
-   'image3.jpg'
+   'Épicerie',
+   103,
+   'PAUL',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/923496b75901cda79df0e9f8676a63ef/c73ecc27d2a9eaa735b1ee95304ba588.jpeg',
+   '08:00:00',
+   '22:00:00',
+   TRUE,
+   TRUE
 ),
 (
    4,
-   4,
-   'Le Petit Savoyard',
-   'image4.jpg'
+   'Restaurant',
+   104,
+   'El Chaltén',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/39c402fdde3d6556e82959a6a1875629/783282f6131ef2258e5bcd87c46aa87e.jpeg',
+   '11:00:00',
+   '23:00:00',
+   FALSE,
+   FALSE
 ),
 (
    5,
-   5,
-   'L’Épicurienne',
-   'image5.jpg'
+   'Restaurant',
+   105,
+   'Burger King',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/7ddafa6aaf2de203eb347fecc6104779/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   '09:30:00',
+   '19:30:00',
+   TRUE,
+   FALSE
 ),
 (
    6,
-   6,
-   'La Table du Chef',
-   'image6.jpg'
+   'Restaurant',
+   106,
+   'Street Pasta',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/73557525500196231ccc1aa93616ed6f/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
+   '07:00:00',
+   '21:00:00',
+   FALSE,
+   TRUE
+),
+(
+   7,
+   'Restaurant',
+   107,
+   'Black And White Burger',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/73b96ac84870d9f13a58811443662dc0/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
+   '10:00:00',
+   '22:00:00',
+   TRUE,
+   FALSE
 ),
 (
    8,
-   7,
-   'La Brasserie de la Gare',
-   'image8.jpg'
-),
-(
-   7,
-   8,
-   'Le Bistro du Marché',
-   'image7.jpg'
+   'Restaurant',
+   108,
+   'Ben s Food',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/2587cc6c5b933f5d9bc5064249bbe575/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   '09:00:00',
+   '20:00:00',
+   TRUE,
+   TRUE
 ),
 (
    9,
-   9,
-   'Géant',
-   'image9.jpg'
+   'Épicerie',
+   109,
+   'Carrefour',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/2a4e8791c1196c02939b70b106c4c1ae/e00617ce8176680d1c4c1a6fb65963e2.png',
+   '08:00:00',
+   '20:00:00',
+   FALSE,
+   FALSE
 ),
 (
    10,
-   10,
-   'Le Palais des Pâtes',
-   'image10.jpg'
+   'Restaurant',
+   110,
+   'Fat Kebab',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/c570cbbeec2420d1ccdeb75ac2d58231/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
+   '11:00:00',
+   '23:00:00',
+   TRUE,
+   FALSE
 ),
 (
    11,
-   11,
-   'Le Comptoir du Vin',
-   'image11.jpg'
+   'Restaurant',
+   111,
+   'Island Bowls',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/57efbcd5e197184d730502035e58bd84/fb86662148be855d931b37d6c1e5fcbe.jpeg',
+   '10:00:00',
+   '00:00:00',
+   FALSE,
+   TRUE
 ),
 (
    12,
-   12,
-   'Le Jardin Gourmand',
-   'image12.jpg'
+   'Restaurant',
+   112,
+   'Pitaya',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/40ecc6916fbbd0cd7287694a97bd1d90/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
+   '09:00:00',
+   '18:00:00',
+   TRUE,
+   FALSE
 ),
 (
    13,
-   13,
-   'L’Oasis de Saveurs',
-   'image13.jpg'
+   'Épicerie',
+   113,
+   'La Mie Câline',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/6f02c35928e2bd90b78a8091edb5976f/fb86662148be855d931b37d6c1e5fcbe.jpeg',
+   '08:30:00',
+   '22:30:00',
+   TRUE,
+   TRUE
 ),
 (
    14,
-   14,
-   'Les Folies Gourmandes',
-   'image14.jpg'
+   'Épicerie',
+   114,
+   'Brioche Dorée',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/23b865a8185355fdedf2ab992ec28c72/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
+   '10:00:00',
+   '20:00:00',
+   FALSE,
+   FALSE
 ),
 (
    15,
-   15,
-   'Chez Jean-Claude',
-   'image15.jpg'
+   'Épicerie',
+   115,
+   'Franprix',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/95e959904e811d23b4162516842d57f5/e00617ce8176680d1c4c1a6fb65963e2.png',
+   '11:00:00',
+   '23:00:00',
+   TRUE,
+   FALSE
 ),
 (
    16,
-   16,
-   'La Cuisine de Mamie',
-   'image16.jpg'
+   'Épicerie',
+   116,
+   'Picard',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/a5b4df5effe99c1e6459b51137f07938/029e6f4e0c81c14572126109dfe867f3.png',
+   '08:00:00',
+   '21:00:00',
+   TRUE,
+   TRUE
 ),
 (
    17,
-   17,
-   'Auchan',
-   'image17.jpg'
+   'Épicerie',
+   117,
+   'Vival',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/7148418810e489efe27be264ba3694ec/a70f5c9df440d10213e93244e9eb7cad.jpeg',
+   '08:00:00',
+   '20:00:00',
+   FALSE,
+   FALSE
 ),
 (
    18,
-   18,
-   'La Grange à Manger',
-   'image18.jpg'
+   'Restaurant',
+   118,
+   'Instant Rétro',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/4be8ea88c2b77663ce2d387b2a7924aa/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   '10:00:00',
+   '22:00:00',
+   TRUE,
+   FALSE
 ),
 (
    19,
-   19,
-   'Le Marché de Provence',
-   'image19.jpg'
+   'Restaurant',
+   119,
+   'Chicken HOT',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/dcdd6f59af11b38bfaba9961f80fa0ec/cc592037c936600295e9961933037e19.jpeg',
+   '09:00:00',
+   '18:00:00',
+   FALSE,
+   TRUE
 ),
 (
    20,
-   20,
-   'Les Délices de la Mer',
-   'image20.jpg'
+   'Restaurant',
+   120,
+   'Subway',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/6fc5ab9e3adaa71256b0ef5d6619159f/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
+   '11:00:00',
+   '23:00:00',
+   TRUE,
+   TRUE
 );
 
 INSERT INTO FACTURE_COURSE (
@@ -5375,563 +6444,703 @@ INSERT INTO PRODUIT (
    DESCRIPTION
 ) VALUES (
    1,
-   'Pizza Margherita',
-   12.50,
-   'pizza_margherita.jpg',
+   'BIG MAC™',
+   14.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/187f0969e27fd45fb5e70a302aa6ccd6/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Pizza classique avec tomate, mozzarella et basilic frais'
 ),
 (
    2,
-   'Pasta Carbonara',
-   15.00,
-   'pasta_carbonara.jpg',
+   'P TIT WRAP RANCH',
+   3.80,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/211f0fb68762b32b5baf490fef00bba3/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Pâtes avec une sauce crémeuse au lard et parmesan'
 ),
 (
    3,
-   'Burger Cheeseburger',
-   9.90,
-   'cheeseburger.jpg',
+   'CHEESEBURGER',
+   3.95,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/4c2baf71a483ac6bf90fe57309159566/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Burger avec du fromage cheddar fondu, laitue et tomate'
 ),
 (
    4,
-   'Salade César',
-   10.00,
-   'salade_cesar.jpg',
+   'McFLURRY™ SAVEUR VANILLE DAIM®',
+   5.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/d00bfd22b007f99cc299f5e0acb8284f/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Salade verte avec du poulet grillé, croutons et sauce César'
 ),
 (
    5,
-   'Spaghetti Bolognese',
-   14.50,
-   'spaghetti_bolognese.jpg',
+   'Waffine à composer',
+   5.60,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/60b5defd7ce81e7e4594406b1bbeb533/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Spaghetti accompagnés d une sauce à la viande épicée'
 ),
 (
    6,
-   'Tiramisu',
-   6.00,
-   'tiramisu.jpg',
+   'Menu Complet',
+   15.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/fe706ef5f42b6630ce697439389633b5/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Dessert italien à base de café, mascarpone et cacao'
 ),
 (
    7,
-   'Gâteau au chocolat',
-   5.50,
-   'gateau_chocolat.jpg',
+   'Tropico Tropical 33cl',
+   3.80,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/80421cc360d5895fc62ddda20a908c1e/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Gâteau fondant au chocolat avec un cœur coulant'
 ),
 (
    8,
-   'Café Latte',
-   3.50,
-   'cafe_latte.jpg',
+   'Supplément Chocolat Blanc',
+   1.10,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/5eaff7fba1662e5abe050186d80ee358/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Café latte avec du lait mousseux et une touche de sucre'
 ),
 (
    9,
-   'Sushi Roll',
-   12.00,
-   'sushi_roll.jpg',
+   'Menu sandwich froid',
+   10.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/a66f63bc26d4a10caaf715ad81c3245c/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
    'Assortiment de rouleaux de sushi avec poisson frais et légumes'
 ),
 (
    10,
-   'Poulet rôti',
-   18.00,
-   'poulet_roti.jpg',
+   'La salade PAUL',
+   8.80,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/1ab11b6a052383b311a05cce8d3b1090/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Poulet rôti avec des herbes et légumes de saison'
 ),
 (
    11,
-   'Tacos',
-   8.00,
-   'tacos.jpg',
+   'La part de pizza provençale',
+   6.00,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/0497c9f6af91be7a7efa0eeb8a7f0160/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Tacos avec viande, légumes et sauce épicée'
 ),
 (
    12,
-   'Ravioli aux champignons',
-   13.00,
-   'ravioli_champignons.jpg',
+   'Le pain nordique 300g',
+   4.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/f9daf45bba1c9b5edaabac3a895251aa/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Ravioli farcis aux champignons et sauce crémeuse'
 ),
 (
    13,
-   'Crepes Nutella',
-   7.50,
-   'crepes_nutella.jpg',
+   'Empanada carne',
+   3.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/7f5ea07b946ef58e7b8c0ba245d3c195/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
    'Crêpes garnies de Nutella et de bananes fraîches'
 ),
 (
    14,
-   'Panna Cotta',
-   6.80,
-   'panna_cotta.jpg',
+   'Empanada jamon y queso',
+   3.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/b67188ae5e5fdd83dc84edc88799f3aa/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
    'Crème dessert à la vanille servie avec un coulis de fruits rouges'
 ),
 (
    15,
-   'Salmon Tartare',
-   16.00,
-   'salmon_tartare.jpg',
+   'Kombucha mate',
+   6.00,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/1821d8c777baa704713db996835c53ac/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
    'Tartare de saumon frais, avocat et citron'
 ),
 (
    16,
-   'Croissant',
-   2.50,
-   'croissant.jpg',
+   'Fuzetea',
+   3.00,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/65aeec1897aadd2f4aad333c123d21ca/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
    'Pâtisserie légère et beurrée, parfaite pour le petit-déjeuner'
 ),
 (
    17,
-   'Baguette',
-   1.20,
-   'baguette.jpg',
+   '2 MENUS + 2 EXTRAS',
+   24.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/b442c5f045ac1003dfa0955d57a3f5f8/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
    'Baguette française croustillante, idéale pour accompagner vos repas'
 ),
 (
    18,
-   'Falafel',
-   7.00,
-   'falafel.jpg',
+   '3 MENUS + 3 EXTRAS',
+   31.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/7984c960f6c32300353e68c2b64c8afb/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
    'Boules de pois chiches épicées, servies avec du pain pita'
 ),
 (
    19,
-   'Paella',
-   18.50,
-   'paella.jpg',
+   'KINGBOX 10 King Nuggets® + 10 Chili Cheese',
+   11.70,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/0c5a593f78e02d00f3edd7a43921cdd4/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Plat espagnol à base de riz, fruits de mer et légumes'
 ),
 (
    20,
-   'Gourmet Burger',
-   13.50,
-   'gourmet_burger.jpg',
+   'Veggie Chicken Louisiane Steakhouse',
+   11.10,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/a80c346a4df799f7011edf6080b9ab4f/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Burger avec du fromage bleu, oignons caramélisés et sauce maison'
 ),
 (
    21,
-   'Pizza Pepperoni',
-   13.50,
-   'pizza_pepperoni.jpg',
+   'Chicken',
+   11.10,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/89da09264832798a80dd0edea34585b5/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Pizza avec du pepperoni, tomate et mozzarella'
 ),
 (
    22,
-   'Lasagne Bolognese',
-   16.00,
-   'lasagne_bolognese.jpg',
+   'Rustic',
+   12.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/02a2ae4683161602e5aaaabd38c75cca/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Lasagne avec sauce bolognese, viande et béchamel'
 ),
 (
    23,
-   'Chocolat chaud',
-   4.00,
-   'chocolat_chaud.jpg',
+   'Cordon Bleu',
+   15.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/dbc21188817723938eb6b73a82313a6d/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Boisson chaude à base de chocolat fondu et lait crémeux'
 ),
 (
    24,
-   'Gaspacho',
-   7.20,
-   'gaspacho.jpg',
+   'Camembert Bites',
+   5.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/47f7c16188a930e67364e79de8e0c0e5/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Soupe froide à base de tomates, poivrons et concombres'
 ),
 (
    25,
-   'Mousse au chocolat',
-   5.80,
-   'mousse_chocolat.jpg',
+   'Menu West Coast',
+   16.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/dab35dc563cbcd50e95518268ca151f2/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Dessert léger et aérien au chocolat noir'
 ),
 (
    26,
-   'Steak Frites',
-   19.00,
-   'steak_frites.jpg',
+   'Mozzarella Sticks',
+   3.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/3b6d8a07677b2afc6712b2bc665c6e7f/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Steak grillé accompagné de frites croustillantes'
 ),
 (
    27,
-   'Risotto aux champignons',
-   14.00,
-   'risotto_champignons.jpg',
+   'Menu KO Burger',
+   15.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/aa8aa7de050c2d0c6f123e6be9fa6161/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Risotto crémeux avec des champignons frais'
 ),
 (
    28,
-   'Macaron',
-   2.00,
-   'macaron.jpg',
+   'Mexico',
+   14.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/ca94f98a5e134e355245065a275c2340/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Délicat biscuit meringué fourré de ganache parfumée'
 ),
 (
    29,
-   'Maki au saumon',
-   12.00,
-   'maki_saumon.jpg',
+   'Frites XL',
+   5.00,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/f5f24d75d579ddbf2e54e93fd8d35247/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Rouleaux de maki garnis de saumon frais et légumes'
 ),
 (
    30,
-   'Soupe à l’oignon',
-   6.50,
-   'soupe_oignon.jpg',
+   'Chicken ',
+   12.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/89da09264832798a80dd0edea34585b5/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Soupe savoureuse à base d’oignons caramélisés et gratinée de fromage'
 ),
 (
    31,
-   'Wok de légumes',
-   10.50,
-   'wok_legumes.jpg',
+   'Tiramisu Nutella Spéculos',
+   4.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/3aaafb7b062923a04ef0ba83ee7e2fd4/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Mélange de légumes sautés au wok avec sauce soja'
 ),
 (
    32,
-   'Burger Végétarien',
-   11.00,
-   'burger_vegetarien.jpg',
+   'Farmer',
+   12.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/2a371e731b10487a219a717773edeee2/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Burger végétarien avec galette de légumes et sauce mayo maison'
 ),
 (
    33,
-   'Salade Niçoise',
-   12.50,
-   'salade_nicoise.jpg',
+   'Nettoyant vitres',
+   2.21,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/b6afbbfc3c5c6447a0d6e437567159d3/957777de4e8d7439bef56daddbfae227.jpeg',
    'Salade composée de thon, œufs, tomates et olives'
 ),
 (
    34,
-   'Crêpes Suzette',
-   8.00,
-   'crepes_suzette.jpg',
+   'Carrefour Essential - Papier toilette confort doux (12)',
+   4.00,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/54290cec7e96e73a88ecf97d5a32c4a4/0e5313be7a8831b8ed60f8dab3c2df10.jpeg',
    'Crêpes flambées avec une sauce à l’orange et au Grand Marnier'
 ),
 (
    35,
-   'Tarte Tatin',
-   7.20,
-   'tarte_tatin.jpg',
+   'Kiri - Fromage enfant crème à tartiner (8)',
+   2.77,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/90b7a5e4812f845a9d8f131052dda3b7/0e5313be7a8831b8ed60f8dab3c2df10.jpeg',
    'Tarte aux pommes caramélisées, servie chaude'
 ),
 (
    36,
-   'Poulet Korma',
-   16.50,
-   'poulet_korma.jpg',
+   'Carrefour Le Marché - Viande hachée pur bœuf (350g)',
+   6.63,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/53f823882f73d9ec73513c4930a13ae0/957777de4e8d7439bef56daddbfae227.jpeg',
    'Poulet dans une sauce au curry doux et noix de cajou'
 ),
 (
    37,
-   'Pizza Quatre Saisons',
-   14.50,
-   'pizza_quatre_saisons.jpg',
+   'Brioche Pasquier - Pains au lait (10)',
+   2.41,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/193aeef2bac1aa55636feb9bad10584d/957777de4e8d7439bef56daddbfae227.jpeg',
    'Pizza avec jambon, champignons, artichauts et olives'
 ),
 (
    38,
-   'Paella Végétarienne',
-   17.00,
-   'paella_vegetarienne.jpg',
+   'Le Cordon Bleu',
+   7.63,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/5b0b83c1202bf16f533886399945ac73/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Paella avec des légumes de saison et riz parfumé'
 ),
 (
    39,
-   'Tartare de thon',
-   17.50,
-   'tartare_thon.jpg',
+   'Le Western',
+   11.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/b14503a31169e0a453d4c65fbebcdb80/a19bb09692310dfd41e49a96c424b3a6.jpeg',
    'Tartare de thon frais accompagné de légumes et d’avocat'
 ),
 (
    40,
-   'Churros',
-   5.00,
-   'churros.jpg',
+   'Wings',
+   5.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/b0ce32b34888a8d04607bb2a42e6fefb/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Beignets sucrés frits, servis avec du chocolat chaud'
 ),
 (
    41,
-   'Poulet au curry',
-   16.00,
-   'poulet_curry.jpg',
+   'Sauce Harissa',
+   0.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYzM0YWJhYjc5OWEzMmZhNWU1ZWJiZDhkNmFkZjJiNTYvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Poulet cuit dans une sauce crémeuse au curry et lait de coco'
 ),
 (
    42,
-   'Riz Pilaf',
-   5.50,
-   'riz_pilaf.jpg',
+   'Bao Poulet croustillant',
+   8.90,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNTA3Y2I2YTJjN2I0OGNhNTcyYmJkYzU0YWZlODE3OTkvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Riz basmati parfumé cuit avec des épices et des légumes'
 ),
 (
    43,
-   'Pizza Hawaïenne',
-   13.00,
-   'pizza_hawaiienne.jpg',
+   'Menu Poké & Boisson',
+   17.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYjI1NmI0ODdmYzYwYmFkYjFkOTg3MmYyZjdmNDRlNjgvN2Y0YWU5Y2EwNDQ2Y2JjMjNlNzFkOGQzOTVhOTg0MjguanBlZw==',
    'Pizza avec jambon, ananas, tomate et mozzarella'
 ),
 (
    44,
-   'Gâteau au fromage',
-   6.50,
-   'gateau_fromage.jpg',
+   'Bobun boeuf',
+   13.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvY2Q3NTc3MjAyYmY0YTBlN2ViYzRhMWEzODUxMGQ4YTIvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Gâteau crémeux au fromage avec une base biscuitée'
 ),
 (
    45,
-   'Moules marinières',
-   18.00,
-   'moules_mariniere.jpg',
+   'Beignets de crevettes tempura',
+   7.60,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvOGYxYjU3Mjg5ODczZTBhZDhjZjQ4NWE1NTBlZWMwN2MvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Moules cuites dans un bouillon de vin blanc, ail et persil'
 ),
 (
    46,
-   'Curry de légumes',
-   13.00,
-   'curry_legumes.jpg',
+   'PLAT + BOISSON CLASSIQUE',
+   16.90,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYTFmNjUzYzJhOTIxYmUxZTYyOTZkZDY3MTY2ODE3MzAvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Mélange de légumes épicés cuits dans une sauce au curry'
 ),
 (
    47,
-   'Ramen au porc',
-   12.00,
-   'ramen_porc.jpg',
+   'CRUNCHY THAÏ BOX',
+   13.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMmYzY2RhZjIwZWRlMTdjMjdiZTUxNjMxMjg4ZmQ4MmQvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Soupe de ramen avec du porc, œuf et légumes'
 ),
 (
    48,
-   'Pâté en croûte',
-   8.50,
-   'pate_en_croute.jpg',
+   'CHICKEN ou BEEF THAI',
+   15.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMDY2NTVjOTkxZDgzNzQxYzU1ZmE0YzAzZWJlM2FmNGIvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Viande en pâte feuilletée servie avec une salade verte'
 ),
 (
    49,
-   'Boeuf Bourguignon',
-   20.00,
-   'boeuf_bourguignon.jpg',
+   'Le Cook Mie extra',
+   13.80,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNTJiZmZkZTRjZjkwYWQ2N2MyZDFhZTFiM2Y3YjA3NmUvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Boeuf braisé dans une sauce au vin rouge avec des légumes'
 ),
 (
    50,
-   'Gâteau aux fruits',
-   5.00,
-   'gateau_fruits.jpg',
+   'Le Cook Mie Bistro',
+   12.30,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYjJmZDBiMTFlOWI3ZDkzYjQxOGU2OGU1N2RlNTI3MmEvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Gâteau moelleux aux fruits frais de saison'
 ),
 (
    51,
-   'Tartare de bœuf',
-   16.50,
-   'tartare_boeuf.jpg',
+   '3 Cookies Caramel achetés le 4ème offert',
+   6.75,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZjA5ZTNlOGE0M2Q0Y2FkZDMxZDBjYTg5ZmM1Zjk1OTYvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Tartare de bœuf frais, accompagné de frites et sauce à part'
 ),
 (
    52,
-   'Crevettes à l’ail',
-   14.00,
-   'crevettes_ail.jpg',
+   'Cookiz duo de choc',
+   2.25,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYTQ0OGYyZjE5MGJlMWUwZWQwMTZjYzBhNmUzN2Y3ZWUvZjBkMTc2MmI5MWZkODIzYTFhYTliZDBkYWI1YzY0OGQuanBlZw==',
    'Crevettes sautées à l’ail et au persil, servies avec du pain grillé'
 ),
 (
    53,
-   'Frittata aux légumes',
-   10.00,
-   'frittata_legumes.jpg',
+   'MENU AUTHENTIQUE THON CRUDITÉS',
+   11.10,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZGQ1MjZiZGUzOGJkZjVlMDgzNDQyNGUyMjViMTBjNWUvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Omelette italienne aux légumes et herbes fraîches'
 ),
 (
    54,
-   'Sushi Maki',
-   11.50,
-   'sushi_maki.jpg',
+   'TOASTÉ POULET CURRY',
+   7.20,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvOGFhMjUxZDM0NGZmZDMwMTFkZTA3NThjZmUzMWIyODUvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Assortiment de makis avec poisson cru et légumes'
 ),
 (
    55,
    'Quiche Lorraine',
-   9.00,
-   'quiche_lorraine.jpg',
+   5.90,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNjcxYzQ3YjAyMmY2OWMwODNhZjc1OWYxM2ViMzJjZTcvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Quiche avec lardons, crème fraîche et fromage'
 ),
 (
    56,
-   'Calzone',
-   13.00,
-   'calzone.jpg',
+   'FUSETTE CITRON MERINGUÉE',
+   4.20,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNGE3Y2ZhZWI4MGU2MDI2ZjNjNTliY2NiMzRmOTc3N2YvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Pizza repliée avec mozzarella, tomate et jambon'
 ),
 (
    57,
-   'Gâteau de riz',
-   4.00,
-   'gateau_riz.jpg',
+   'FROMAGE BLANC 0% FRUITS ET COULIS DE FRUITS',
+   3.70,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYjRhN2M4YmQ3YzE4NTRiZDczZDdjYjE4MWQ3MDcyNzQvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Dessert crémeux à base de riz au lait et cannelle'
 ),
 (
    58,
-   'Salade de fruits',
-   5.00,
-   'salade_fruits.jpg',
+   'ALLONGÉ',
+   2.10,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvM2QxMGQxNjRhMjk5Mzc2MTdhMThiYTMxZTNmNTNlMmEvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Mélange frais de fruits de saison'
 ),
 (
    59,
-   'Pizza au saumon',
-   15.00,
-   'pizza_saumon.jpg',
+   'Pur jus de pomme Franprix 1l',
+   2.05,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMjllYjZiNDEzNDAyMjI2NTliZDI3ODk1MmJjMmVlOTkvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Pizza garnie de saumon fumé, crème fraîche et aneth'
 ),
 (
    60,
-   'Soupe de poisson',
-   9.50,
-   'soupe_poisson.jpg',
+   'Barre chocolatée Kit Kat unité 41.5g',
+   1.30,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZTVlZWQwMGRkZjQxNjEyYmQ4NzQwOWZjNjljYzA0ZmEvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Soupe de poisson avec des légumes et du pain grillé'
 ),
 (
    61,
-   'Pizza végétarienne',
-   13.50,
-   'pizza_vegetarienne.jpg',
+   'Fromage Compté aux lait cru Franprix',
+   5.02,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZjRjYmZhMjAwN2UxMWQzMjNiN2I2NGQyMGMwZWI0NWQvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Pizza avec légumes grillés, tomate, mozzarella et basilic'
 ),
 (
    62,
-   'Côtelettes d’agneau',
-   22.00,
-   'cotelettes_agneau.jpg',
+   '2 cuisses de canard du Sud-Ouest confites',
+   10.81,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNWNkNjk3NTllOWEzMjExMjdjYTliY2RhOTBiZmU3OTkvOTU3Nzc3ZGU0ZThkNzQzOWJlZjU2ZGFkZGJmYWUyMjcuanBlZw==',
    'Côtelettes d’agneau grillées avec une sauce au romarin'
 ),
 (
    63,
-   'Gnocchis à la crème',
-   14.00,
-   'gnocchis_creme.jpg',
+   '2 moelleux au chocolat',
+   4.19,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZTcwZTQyMTdjYjU3N2MwYjg1OTFjOTBmNTdhMWU3NGMvOTU3Nzc3ZGU0ZThkNzQzOWJlZjU2ZGFkZGJmYWUyMjcuanBlZw==',
    'Gnocchis accompagnés d’une sauce crémeuse au parmesan'
 ),
 (
    64,
-   'Pâtisserie choux',
-   3.50,
-   'patisserie_choux.jpg',
+   'Pizza chèvre, miel, noix',
+   4.83,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNWM4NTlhY2ViM2ZmOTY2ZTAyZmM4Y2E2ZTJhMWJmZjcvOTU3Nzc3ZGU0ZThkNzQzOWJlZjU2ZGFkZGJmYWUyMjcuanBlZw==',
    'Choux remplis de crème pâtissière et enrobés de chocolat'
 ),
 (
    65,
-   'Tartelette au citron',
-   6.00,
-   'tartelette_citron.jpg',
+   'Boulettes de viande kefta',
+   4.49,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMTJiNjMxOTAzOTdjNzQxODAzNzVhNjc5Y2Y3NzVkOGEvOTU3Nzc3ZGU0ZThkNzQzOWJlZjU2ZGFkZGJmYWUyMjcuanBlZw==',
    'Tartelette avec une crème au citron acidulée et croûte sablée'
 ),
 (
    66,
-   'Pizza 4 fromages',
-   14.00,
-   'pizza_4fromages.jpg',
+   'Bret s - Chips de pommes de terre, fromage (125g)',
+   4.10,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMzUxNTk0MDA2NmU0MTIwMDBlNmU3OGE3ZTQ2NzQwMzQvMGU1MzEzYmU3YTg4MzFiOGVkNjBmOGRhYjNjMmRmMTAuanBlZw==',
    'Pizza garnie de mozzarella, gorgonzola, chèvre et parmesan'
 ),
 (
    67,
-   'Salade de quinoa',
-   10.00,
-   'salade_quinoa.jpg',
+   'Granola Choco Lait',
+   2.67,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYjdmMDYxZTQ2N2UzOTZmYzk1YTIxZDI0OWY3NzM4OTIvOTU3Nzc3ZGU0ZThkNzQzOWJlZjU2ZGFkZGJmYWUyMjcuanBlZw==',
    'Salade de quinoa avec légumes frais et vinaigrette au citron'
 ),
 (
    68,
-   'Ragoût de légumes',
-   13.50,
-   'ragout_legumes.jpg',
+   'Ben & Jerry s - Crème glacée, vanille, cookie dough (406g)',
+   10.77,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYTg3MzZkMTFkZDIxYTMyNTI0MzM0ZGQ1M2EwMGQ0YjYvMGU1MzEzYmU3YTg4MzFiOGVkNjBmOGRhYjNjMmRmMTAuanBlZw==',
    'Ragoût végétarien avec des légumes mijotés et épicés'
 ),
 (
    69,
-   'Hamburger BBQ',
-   13.50,
-   'hamburger_barbeque.jpg',
+   'Justin Bridou - Saucisson petits bâton de berger nature (100g)',
+   6.44,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvOTUxZjRlNDczN2I2NGYzMDYwZGJiMmExN2U4OGI1Y2IvMGU1MzEzYmU3YTg4MzFiOGVkNjBmOGRhYjNjMmRmMTAuanBlZw==',
    'Burger avec sauce barbecue, bacon, et oignons grillés'
 ),
 (
    70,
-   'Moules frites',
-   17.50,
-   'moules_frites.jpg',
+   'Donut nutella billes',
+   4.55,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMGNkMjlhZThhNGJhMzhjN2M4YWQ3YWE2OWYzNDQyOWIvNDIxOGNhMWQwOTE3NDIxODM2NDE2MmNkMGIxYThjYzEuanBlZw==',
    'Moules cuites dans une sauce au vin blanc, servies avec frites'
 ),
 (
    71,
-   'Fried chicken',
-   12.00,
-   'fried_chicken.jpg',
+   'Bagel R. Charles',
+   13.00,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMTk5Mzc2YzRlYTZmOWIwMmQ4ZWNkZDJiNzQ4NDQ2NDcvNDIxOGNhMWQwOTE3NDIxODM2NDE2MmNkMGIxYThjYzEuanBlZw==',
    'Poulet frit croustillant, servi avec une sauce épicée'
 ),
 (
    72,
-   'Pizza Poulet Champignon',
-   14.50,
-   'pizza_poulet_champignon.jpg',
+   'Bagel N. Simone',
+   13.00,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYjBjYmI2ODFiY2Q3NzcyYjE0NWRjZjkzOTJmZTJhN2QvNDIxOGNhMWQwOTE3NDIxODM2NDE2MmNkMGIxYThjYzEuanBlZw==',
    'Pizza avec poulet rôti, champignons et mozzarella'
 ),
 (
    73,
-   'Lassi à la mangue',
-   4.00,
-   'lassi_mangue.jpg',
+   'Röstis x6',
+   6.00,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvNWIyMWNlM2RhYTQ2YWU5ZDg2MDhmMjk3YTNjZWI5YmIvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Boisson à base de yaourt et mangue'
 ),
 (
    74,
-   'Tacos al Pastor',
+   'SUB15 Dinde',
    9.00,
-   'tacos_al_pastor.jpg',
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvODg0NzhiNWJlYTZlNjQ2NDA2ODk1YWVlOTRjMzU5NWQvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Tacos avec viande de porc marinée, ananas et oignons'
 ),
 (
    75,
-   'Tarte aux poires',
-   7.50,
-   'tarte_poires.jpg',
+   'Wrap Crispy Avocado',
+   10.00,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMDQ5MTliYjUyMzM4YjE4NzEwNjRkMDBhYmM4Mzg5YjkvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Tarte avec poires fraîches et crème d’amandes'
 ),
 (
    76,
-   'Chili con carne',
+   'SUB30 Xtreme Raclette Steakhouse',
    15.00,
-   'chili_con_carne.jpg',
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvM2M0MWU1ZDU0ZTRjMTk1NGYxNzVhMjJhNzE0Y2NkNzQvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Plat épicé avec viande hachée, haricots rouges et épices'
 ),
 (
    77,
-   'Salade grecque',
-   11.00,
-   'salade_grecque.jpg',
+   'Menu SUB30 Poulet ',
+   16.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvOTQ2ZWQxMmI0NzViNzRmODIxYmRhZmJjNzlkNmU3MTIvNTE0M2YxZTIxOGM2N2MyMGZlNWE0Y2QzM2Q5MGIwN2IuanBlZw==',
    'Salade avec feta, olives, tomates et concombre'
 ),
 (
    78,
-   'Tartine de tapenade',
-   5.50,
-   'tartine_tapenade.jpg',
+   'Jalapenos',
+   5.70,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZDJmZTE3OWIwYmY2YWYwOGY0OTg3NGUxMzQ1YTlkZTcvNThmNjkxZGE5ZWFlZjg2YjBiNTFmOWIyYzQ4M2ZlNjMuanBlZw==',
    'Tartine de pain grillé avec tapenade d’olive'
 ),
 (
    79,
-   'Pâté de foie gras',
-   14.00,
-   'pate_foie_gras.jpg',
+   'Menu 6 HOT WINGS',
+   14.20,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMTIwOWFjZDQzN2VkMmE4NjcyM2Q5ZWZkYjYyNDBhNGIvNThmNjkxZGE5ZWFlZjg2YjBiNTFmOWIyYzQ4M2ZlNjMuanBlZw==',
    'Foie gras accompagné de pain d’épices et confiture'
 ),
 (
    80,
-   'Pizza Carbonara',
-   14.00,
-   'pizza_carbonara.jpg',
+   'Salade César',
+   10.50,
+   'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvM2Q1NzlhN2QxYTBhZGVjZTZhNWRhYzZiNDI2ZmUwNTQvNThmNjkxZGE5ZWFlZjg2YjBiNTFmOWIyYzQ4M2ZlNjMuanBlZw==',
    'Pizza avec crème, lardons, fromage et œuf poché'
+),
+(
+   81,
+   'Shampooing L’Oréal 250ml',
+   4.99,
+   'https://example.com/shampooing.jpg',
+   'Shampooing nourrissant pour cheveux secs'
+),
+(
+   82,
+   'Gel Douche Dove 500ml',
+   3.50,
+   'https://example.com/gel-douche.jpg',
+   'Gel douche hydratant pour une peau douce'
+),
+(
+   83,
+   'Papier Aluminium 30m',
+   2.99,
+   'https://example.com/papier-aluminium.jpg',
+   'Rouleau de papier aluminium pour usage domestique'
+),
+(
+   84,
+   'Brosse à dents Oral-B',
+   2.75,
+   'https://example.com/brosse-a-dents.jpg',
+   'Brosse à dents avec brins souples pour un nettoyage en profondeur'
+),
+(
+   85,
+   'Savon Liquide Dettol 250ml',
+   3.20,
+   'https://example.com/savon-liquide.jpg',
+   'Savon liquide antibactérien pour les mains'
+),
+(
+   86,
+   'Pack de 6 bouteilles d’eau Evian 1.5L',
+   6.00,
+   'https://example.com/eau-evian.jpg',
+   'Eau minérale naturelle en pack pratique'
+),
+(
+   87,
+   'Lessive Ariel 3kg',
+   12.99,
+   'https://example.com/lessive-ariel.jpg',
+   'Lessive en poudre pour un linge impeccable'
+),
+(
+   88,
+   'Boîte de mouchoirs en papier',
+   1.80,
+   'https://example.com/mouchoirs.jpg',
+   'Mouchoirs en papier doux et résistants'
+),
+(
+   89,
+   'Batteries AA Duracell (pack de 4)',
+   6.50,
+   'https://example.com/batteries.jpg',
+   'Piles longue durée pour appareils électroniques'
+),
+(
+   90,
+   'Ampoule LED 10W Philips',
+   5.99,
+   'https://example.com/ampoule-led.jpg',
+   'Ampoule LED écoénergétique, équivalente à 60W'
+),
+(
+   91,
+   'Crème hydratante Nivea 200ml',
+   7.50,
+   'https://example.com/creme-nivea.jpg',
+   'Crème nourrissante pour une peau douce et hydratée'
+),
+(
+   92,
+   'Ruban adhésif Scotch 50m',
+   1.99,
+   'https://example.com/ruban-adhesif.jpg',
+   'Ruban adhésif transparent pour usage quotidien'
+),
+(
+   93,
+   'Ciseaux Fiskars',
+   8.00,
+   'https://example.com/ciseaux.jpg',
+   'Ciseaux robustes et ergonomiques pour travaux de coupe'
+),
+(
+   94,
+   'Cahier Oxford 200 pages',
+   3.25,
+   'https://example.com/cahier-oxford.jpg',
+   'Cahier grand format avec couverture rigide'
+),
+(
+   95,
+   'Pack de 3 éponges Scotch-Brite',
+   2.49,
+   'https://example.com/eponges.jpg',
+   'Éponges résistantes pour nettoyage en profondeur'
+),
+(
+   96,
+   'Spray nettoyant multisurface Ajax 750ml',
+   3.99,
+   'https://example.com/spray-nettoyant.jpg',
+   'Spray nettoyant pour toutes les surfaces'
+),
+(
+   97,
+   'Sac poubelle 50L (10 unités)',
+   2.75,
+   'https://example.com/sac-poubelle.jpg',
+   'Sacs poubelle résistants avec liens intégrés'
+),
+(
+   98,
+   'Coton-tiges Johnson & Johnson (200 unités)',
+   1.90,
+   'https://example.com/coton-tiges.jpg',
+   'Coton-tiges doux et pratiques pour une hygiène quotidienne'
+),
+(
+   99,
+   'Thermomètre digital Omron',
+   12.90,
+   'https://example.com/thermometre.jpg',
+   'Thermomètre précis pour mesure rapide de la température'
+),
+(
+   100,
+   'Pack de feuilles A4 500 pages',
+   4.99,
+   'https://example.com/feuilles-a4.jpg',
+   'Papier pour imprimante et usage bureautique'
 );
 
 INSERT INTO REGLEMENT_SALAIRE (
@@ -5993,8 +7202,6 @@ INSERT INTO RESERVATION (
    IDRESERVATION,
    IDCLIENT,
    IDPLANNING,
-   IDCOURSE,
-   IDCOURSIER,
    IDVELO,
    DATERESERVATION,
    HEURERESERVATION,
@@ -6003,9 +7210,7 @@ INSERT INTO RESERVATION (
    1,
    50,
    1,
-   NULL,
-   NULL,
-   6,
+   1,
    '2024-11-14',
    '13:00:00',
    'moi'
@@ -6014,9 +7219,7 @@ INSERT INTO RESERVATION (
    2,
    9,
    2,
-   NULL,
-   NULL,
-   4,
+   2,
    '2024-11-24',
    '09:30:00',
    'mon ami'
@@ -6025,8 +7228,6 @@ INSERT INTO RESERVATION (
    3,
    27,
    3,
-   NULL,
-   NULL,
    3,
    '2024-11-27',
    '13:30:00',
@@ -6036,9 +7237,7 @@ INSERT INTO RESERVATION (
    4,
    5,
    4,
-   NULL,
-   NULL,
-   8,
+   4,
    '2024-11-18',
    '15:45:00',
    'mon ami'
@@ -6047,9 +7246,7 @@ INSERT INTO RESERVATION (
    5,
    1,
    5,
-   NULL,
-   NULL,
-   8,
+   5,
    '2024-11-18',
    '17:00:00',
    'mon ami'
@@ -6058,9 +7255,7 @@ INSERT INTO RESERVATION (
    6,
    2,
    6,
-   NULL,
-   NULL,
-   1,
+   6,
    '2024-11-22',
    '15:15:00',
    'moi'
@@ -6069,9 +7264,7 @@ INSERT INTO RESERVATION (
    7,
    3,
    7,
-   NULL,
-   NULL,
-   3,
+   7,
    '2024-11-22',
    '20:30:00',
    'moi'
@@ -6080,9 +7273,7 @@ INSERT INTO RESERVATION (
    8,
    38,
    8,
-   NULL,
-   NULL,
-   5,
+   8,
    '2024-11-26',
    '20:15:00',
    'moi'
@@ -6091,9 +7282,7 @@ INSERT INTO RESERVATION (
    9,
    28,
    9,
-   NULL,
-   NULL,
-   8,
+   9,
    '2024-11-24',
    '13:45:00',
    'moi'
@@ -6102,9 +7291,7 @@ INSERT INTO RESERVATION (
    10,
    34,
    10,
-   NULL,
-   NULL,
-   1,
+   10,
    '2024-11-18',
    '16:30:00',
    'mon ami'
@@ -6113,9 +7300,7 @@ INSERT INTO RESERVATION (
    11,
    12,
    11,
-   NULL,
-   NULL,
-   5,
+   1,
    '2024-11-17',
    '08:00:00',
    'moi'
@@ -6124,9 +7309,7 @@ INSERT INTO RESERVATION (
    12,
    1,
    12,
-   NULL,
-   NULL,
-   6,
+   2,
    '2024-11-21',
    '08:15:00',
    'mon ami'
@@ -6135,9 +7318,7 @@ INSERT INTO RESERVATION (
    13,
    45,
    13,
-   NULL,
-   NULL,
-   9,
+   3,
    '2024-11-26',
    '19:00:00',
    'mon ami'
@@ -6146,9 +7327,7 @@ INSERT INTO RESERVATION (
    14,
    16,
    14,
-   NULL,
-   NULL,
-   10,
+   4,
    '2024-11-19',
    '17:15:00',
    'mon ami'
@@ -6157,9 +7336,7 @@ INSERT INTO RESERVATION (
    15,
    39,
    15,
-   NULL,
-   NULL,
-   9,
+   5,
    '2024-11-27',
    '16:45:00',
    'moi'
@@ -6168,9 +7345,7 @@ INSERT INTO RESERVATION (
    16,
    3,
    16,
-   NULL,
-   NULL,
-   2,
+   6,
    '2024-11-17',
    '17:00:00',
    'mon ami'
@@ -6179,9 +7354,7 @@ INSERT INTO RESERVATION (
    17,
    23,
    17,
-   NULL,
-   NULL,
-   1,
+   7,
    '2024-11-23',
    '10:30:00',
    'mon ami'
@@ -6190,9 +7363,7 @@ INSERT INTO RESERVATION (
    18,
    2,
    18,
-   NULL,
-   NULL,
-   4,
+   8,
    '2024-11-15',
    '10:45:00',
    'mon ami'
@@ -6201,9 +7372,7 @@ INSERT INTO RESERVATION (
    19,
    37,
    19,
-   NULL,
-   NULL,
-   2,
+   9,
    '2024-11-11',
    '17:30:00',
    'moi'
@@ -6212,9 +7381,7 @@ INSERT INTO RESERVATION (
    20,
    47,
    20,
-   NULL,
-   NULL,
-   2,
+   10,
    '2024-11-25',
    '16:30:00',
    'moi'
@@ -6223,9 +7390,7 @@ INSERT INTO RESERVATION (
    21,
    6,
    21,
-   NULL,
-   NULL,
-   5,
+   1,
    '2024-11-28',
    '14:30:00',
    'moi'
@@ -6234,9 +7399,7 @@ INSERT INTO RESERVATION (
    22,
    45,
    22,
-   NULL,
-   NULL,
-   1,
+   2,
    '2024-11-20',
    '16:00:00',
    'moi'
@@ -6245,9 +7408,7 @@ INSERT INTO RESERVATION (
    23,
    19,
    23,
-   NULL,
-   NULL,
-   8,
+   3,
    '2024-11-12',
    '11:45:00',
    'mon ami'
@@ -6256,9 +7417,7 @@ INSERT INTO RESERVATION (
    24,
    11,
    24,
-   NULL,
-   NULL,
-   10,
+   4,
    '2024-11-27',
    '10:45:00',
    'moi'
@@ -6267,9 +7426,7 @@ INSERT INTO RESERVATION (
    25,
    20,
    25,
-   NULL,
-   NULL,
-   1,
+   5,
    '2024-11-28',
    '15:30:00',
    'mon ami'
@@ -6278,9 +7435,7 @@ INSERT INTO RESERVATION (
    26,
    12,
    26,
-   NULL,
-   NULL,
-   10,
+   6,
    '2024-11-28',
    '17:00:00',
    'moi'
@@ -6289,8 +7444,6 @@ INSERT INTO RESERVATION (
    27,
    34,
    27,
-   NULL,
-   NULL,
    7,
    '2024-11-26',
    '13:30:00',
@@ -6300,9 +7453,7 @@ INSERT INTO RESERVATION (
    28,
    21,
    28,
-   NULL,
-   NULL,
-   7,
+   8,
    '2024-11-21',
    '19:00:00',
    'moi'
@@ -6311,8 +7462,6 @@ INSERT INTO RESERVATION (
    29,
    18,
    29,
-   NULL,
-   NULL,
    9,
    '2024-11-25',
    '10:00:00',
@@ -6322,9 +7471,7 @@ INSERT INTO RESERVATION (
    30,
    28,
    30,
-   NULL,
-   NULL,
-   7,
+   10,
    '2024-11-23',
    '16:45:00',
    'mon ami'
@@ -6333,9 +7480,7 @@ INSERT INTO RESERVATION (
    31,
    28,
    31,
-   NULL,
-   NULL,
-   4,
+   1,
    '2024-11-19',
    '17:00:00',
    'moi'
@@ -6344,9 +7489,7 @@ INSERT INTO RESERVATION (
    32,
    7,
    32,
-   NULL,
-   NULL,
-   5,
+   2,
    '2024-11-28',
    '16:45:00',
    'moi'
@@ -6355,9 +7498,7 @@ INSERT INTO RESERVATION (
    33,
    33,
    33,
-   NULL,
-   NULL,
-   7,
+   3,
    '2024-11-11',
    '12:45:00',
    'moi'
@@ -6366,9 +7507,7 @@ INSERT INTO RESERVATION (
    34,
    25,
    34,
-   NULL,
-   NULL,
-   3,
+   4,
    '2024-11-22',
    '10:45:00',
    'mon ami'
@@ -6377,9 +7516,7 @@ INSERT INTO RESERVATION (
    35,
    18,
    35,
-   NULL,
-   NULL,
-   3,
+   5,
    '2024-11-28',
    '09:00:00',
    'moi'
@@ -6388,9 +7525,7 @@ INSERT INTO RESERVATION (
    36,
    10,
    36,
-   NULL,
-   NULL,
-   1,
+   6,
    '2024-11-22',
    '12:15:00',
    'mon ami'
@@ -6399,8 +7534,6 @@ INSERT INTO RESERVATION (
    37,
    37,
    37,
-   NULL,
-   NULL,
    7,
    '2024-11-14',
    '13:00:00',
@@ -6410,9 +7543,7 @@ INSERT INTO RESERVATION (
    38,
    34,
    38,
-   NULL,
-   NULL,
-   2,
+   8,
    '2024-11-14',
    '09:45:00',
    'mon ami'
@@ -6421,9 +7552,7 @@ INSERT INTO RESERVATION (
    39,
    39,
    39,
-   NULL,
-   NULL,
-   5,
+   9,
    '2024-11-11',
    '16:30:00',
    'moi'
@@ -6432,9 +7561,7 @@ INSERT INTO RESERVATION (
    40,
    15,
    40,
-   NULL,
-   NULL,
-   3,
+   1,
    '2024-11-22',
    '12:00:00',
    'moi'
@@ -6443,9 +7570,7 @@ INSERT INTO RESERVATION (
    41,
    26,
    41,
-   NULL,
-   NULL,
-   10,
+   2,
    '2024-11-13',
    '14:30:00',
    'mon ami'
@@ -6454,9 +7579,7 @@ INSERT INTO RESERVATION (
    42,
    41,
    42,
-   NULL,
-   NULL,
-   9,
+   3,
    '2024-11-17',
    '08:45:00',
    'moi'
@@ -6465,9 +7588,7 @@ INSERT INTO RESERVATION (
    43,
    33,
    43,
-   NULL,
-   NULL,
-   3,
+   4,
    '2024-11-28',
    '08:00:00',
    'moi'
@@ -6476,9 +7597,7 @@ INSERT INTO RESERVATION (
    44,
    48,
    44,
-   NULL,
-   NULL,
-   4,
+   5,
    '2024-11-15',
    '17:45:00',
    'mon ami'
@@ -6487,9 +7606,7 @@ INSERT INTO RESERVATION (
    45,
    18,
    45,
-   NULL,
-   NULL,
-   4,
+   6,
    '2024-11-28',
    '13:15:00',
    'mon ami'
@@ -6498,9 +7615,7 @@ INSERT INTO RESERVATION (
    46,
    38,
    46,
-   NULL,
-   NULL,
-   10,
+   7,
    '2024-11-18',
    '13:30:00',
    'moi'
@@ -6509,9 +7624,7 @@ INSERT INTO RESERVATION (
    47,
    4,
    47,
-   NULL,
-   NULL,
-   3,
+   8,
    '2024-11-18',
    '10:00:00',
    'moi'
@@ -6520,9 +7633,7 @@ INSERT INTO RESERVATION (
    48,
    49,
    48,
-   NULL,
-   NULL,
-   4,
+   9,
    '2024-11-27',
    '17:30:00',
    'moi'
@@ -6531,9 +7642,7 @@ INSERT INTO RESERVATION (
    49,
    38,
    49,
-   NULL,
-   NULL,
-   4,
+   10,
    '2024-11-25',
    '19:00:00',
    'mon ami'
@@ -6542,9 +7651,7 @@ INSERT INTO RESERVATION (
    50,
    33,
    50,
-   NULL,
-   NULL,
-   7,
+   1,
    '2024-11-21',
    '15:30:00',
    'moi'
@@ -6553,8 +7660,6 @@ INSERT INTO RESERVATION (
    51,
    25,
    24,
-   1,
-   NULL,
    NULL,
    '2024-11-21',
    '09:45:00',
@@ -6564,8 +7669,6 @@ INSERT INTO RESERVATION (
    52,
    31,
    4,
-   2,
-   NULL,
    NULL,
    '2024-11-18',
    '10:00:00',
@@ -6575,8 +7678,6 @@ INSERT INTO RESERVATION (
    53,
    11,
    5,
-   3,
-   7,
    NULL,
    '2024-11-14',
    '12:45:00',
@@ -6586,8 +7687,6 @@ INSERT INTO RESERVATION (
    54,
    44,
    47,
-   4,
-   1,
    NULL,
    '2024-11-14',
    '09:45:00',
@@ -6597,8 +7696,6 @@ INSERT INTO RESERVATION (
    55,
    35,
    9,
-   5,
-   5,
    NULL,
    '2024-11-28',
    '19:15:00',
@@ -6608,8 +7705,6 @@ INSERT INTO RESERVATION (
    56,
    29,
    10,
-   6,
-   6,
    NULL,
    '2024-11-28',
    '20:45:00',
@@ -6619,8 +7714,6 @@ INSERT INTO RESERVATION (
    57,
    12,
    31,
-   7,
-   NULL,
    NULL,
    '2024-11-11',
    '10:15:00',
@@ -6630,8 +7723,6 @@ INSERT INTO RESERVATION (
    58,
    33,
    1,
-   8,
-   10,
    NULL,
    '2024-11-16',
    '13:30:00',
@@ -6641,8 +7732,6 @@ INSERT INTO RESERVATION (
    59,
    43,
    49,
-   9,
-   4,
    NULL,
    '2024-11-28',
    '20:45:00',
@@ -6652,8 +7741,6 @@ INSERT INTO RESERVATION (
    60,
    17,
    6,
-   10,
-   8,
    NULL,
    '2024-11-16',
    '17:30:00',
@@ -6663,8 +7750,6 @@ INSERT INTO RESERVATION (
    61,
    19,
    40,
-   11,
-   6,
    NULL,
    '2024-11-26',
    '08:45:00',
@@ -6674,8 +7759,6 @@ INSERT INTO RESERVATION (
    62,
    27,
    29,
-   12,
-   NULL,
    NULL,
    '2024-11-21',
    '18:00:00',
@@ -6685,8 +7768,6 @@ INSERT INTO RESERVATION (
    63,
    41,
    7,
-   13,
-   6,
    NULL,
    '2024-11-13',
    '19:00:00',
@@ -6696,8 +7777,6 @@ INSERT INTO RESERVATION (
    64,
    33,
    24,
-   14,
-   3,
    NULL,
    '2024-11-28',
    '16:30:00',
@@ -6707,8 +7786,6 @@ INSERT INTO RESERVATION (
    65,
    33,
    1,
-   15,
-   8,
    NULL,
    '2024-11-16',
    '10:00:00',
@@ -6718,8 +7795,6 @@ INSERT INTO RESERVATION (
    66,
    33,
    2,
-   16,
-   4,
    NULL,
    '2024-11-28',
    '15:30:00',
@@ -6729,8 +7804,6 @@ INSERT INTO RESERVATION (
    67,
    45,
    20,
-   17,
-   4,
    NULL,
    '2024-11-18',
    '13:00:00',
@@ -6740,8 +7813,6 @@ INSERT INTO RESERVATION (
    68,
    6,
    7,
-   18,
-   4,
    NULL,
    '2024-11-15',
    '09:15:00',
@@ -6751,8 +7822,6 @@ INSERT INTO RESERVATION (
    69,
    35,
    10,
-   19,
-   NULL,
    NULL,
    '2024-11-23',
    '09:15:00',
@@ -6762,8 +7831,6 @@ INSERT INTO RESERVATION (
    70,
    48,
    15,
-   20,
-   3,
    NULL,
    '2024-11-11',
    '16:45:00',
@@ -6773,8 +7840,6 @@ INSERT INTO RESERVATION (
    71,
    15,
    2,
-   21,
-   NULL,
    NULL,
    '2024-11-20',
    '10:15:00',
@@ -6784,8 +7849,6 @@ INSERT INTO RESERVATION (
    72,
    10,
    11,
-   22,
-   9,
    NULL,
    '2024-11-28',
    '16:00:00',
@@ -6795,8 +7858,6 @@ INSERT INTO RESERVATION (
    73,
    5,
    5,
-   23,
-   NULL,
    NULL,
    '2024-11-25',
    '13:00:00',
@@ -6806,8 +7867,6 @@ INSERT INTO RESERVATION (
    74,
    18,
    2,
-   24,
-   3,
    NULL,
    '2024-11-28',
    '10:00:00',
@@ -6817,8 +7876,6 @@ INSERT INTO RESERVATION (
    75,
    24,
    15,
-   25,
-   NULL,
    NULL,
    '2024-11-11',
    '18:00:00',
@@ -6828,8 +7885,6 @@ INSERT INTO RESERVATION (
    76,
    23,
    44,
-   26,
-   2,
    NULL,
    '2024-11-25',
    '09:00:00',
@@ -6839,8 +7894,6 @@ INSERT INTO RESERVATION (
    77,
    33,
    9,
-   27,
-   1,
    NULL,
    '2024-11-19',
    '17:15:00',
@@ -6850,8 +7903,6 @@ INSERT INTO RESERVATION (
    78,
    15,
    46,
-   28,
-   5,
    NULL,
    '2024-11-15',
    '18:30:00',
@@ -6861,8 +7912,6 @@ INSERT INTO RESERVATION (
    79,
    4,
    34,
-   29,
-   4,
    NULL,
    '2024-11-28',
    '08:45:00',
@@ -6872,8 +7921,6 @@ INSERT INTO RESERVATION (
    80,
    37,
    50,
-   30,
-   1,
    NULL,
    '2024-11-20',
    '15:30:00',
@@ -6883,8 +7930,6 @@ INSERT INTO RESERVATION (
    81,
    48,
    46,
-   31,
-   NULL,
    NULL,
    '2024-11-26',
    '09:15:00',
@@ -6894,8 +7939,6 @@ INSERT INTO RESERVATION (
    82,
    2,
    24,
-   32,
-   10,
    NULL,
    '2024-11-28',
    '15:00:00',
@@ -6905,8 +7948,6 @@ INSERT INTO RESERVATION (
    83,
    25,
    16,
-   33,
-   4,
    NULL,
    '2024-11-24',
    '17:45:00',
@@ -6916,8 +7957,6 @@ INSERT INTO RESERVATION (
    84,
    8,
    26,
-   34,
-   NULL,
    NULL,
    '2024-11-11',
    '16:30:00',
@@ -6927,8 +7966,6 @@ INSERT INTO RESERVATION (
    85,
    31,
    33,
-   35,
-   8,
    NULL,
    '2024-11-20',
    '18:45:00',
@@ -6938,8 +7975,6 @@ INSERT INTO RESERVATION (
    86,
    42,
    15,
-   36,
-   NULL,
    NULL,
    '2024-11-17',
    '12:00:00',
@@ -6949,8 +7984,6 @@ INSERT INTO RESERVATION (
    87,
    3,
    43,
-   37,
-   NULL,
    NULL,
    '2024-11-28',
    '10:45:00',
@@ -6960,8 +7993,6 @@ INSERT INTO RESERVATION (
    88,
    21,
    48,
-   38,
-   5,
    NULL,
    '2024-11-18',
    '10:00:00',
@@ -6971,8 +8002,6 @@ INSERT INTO RESERVATION (
    89,
    48,
    13,
-   39,
-   7,
    NULL,
    '2024-11-13',
    '11:15:00',
@@ -6981,8 +8010,6 @@ INSERT INTO RESERVATION (
 (
    90,
    9,
-   8,
-   40,
    8,
    NULL,
    '2024-11-22',
@@ -6993,8 +8020,6 @@ INSERT INTO RESERVATION (
    91,
    16,
    9,
-   41,
-   6,
    NULL,
    '2024-11-28',
    '17:45:00',
@@ -7004,8 +8029,6 @@ INSERT INTO RESERVATION (
    92,
    46,
    32,
-   42,
-   NULL,
    NULL,
    '2024-11-24',
    '10:45:00',
@@ -7015,8 +8038,6 @@ INSERT INTO RESERVATION (
    93,
    24,
    33,
-   43,
-   6,
    NULL,
    '2024-11-21',
    '19:45:00',
@@ -7026,8 +8047,6 @@ INSERT INTO RESERVATION (
    94,
    18,
    20,
-   44,
-   2,
    NULL,
    '2024-11-21',
    '08:15:00',
@@ -7037,8 +8056,6 @@ INSERT INTO RESERVATION (
    95,
    16,
    19,
-   45,
-   6,
    NULL,
    '2024-11-13',
    '20:00:00',
@@ -7048,8 +8065,6 @@ INSERT INTO RESERVATION (
    96,
    30,
    22,
-   46,
-   4,
    NULL,
    '2024-11-20',
    '13:45:00',
@@ -7059,8 +8074,6 @@ INSERT INTO RESERVATION (
    97,
    32,
    27,
-   47,
-   8,
    NULL,
    '2024-11-28',
    '08:45:00',
@@ -7070,8 +8083,6 @@ INSERT INTO RESERVATION (
    98,
    49,
    50,
-   48,
-   4,
    NULL,
    '2024-11-26',
    '17:45:00',
@@ -7081,8 +8092,6 @@ INSERT INTO RESERVATION (
    99,
    35,
    34,
-   49,
-   5,
    NULL,
    '2024-11-27',
    '14:30:00',
@@ -7092,12 +8101,292 @@ INSERT INTO RESERVATION (
    100,
    43,
    5,
-   50,
-   NULL,
    NULL,
    '2024-11-28',
    '09:00:00',
    'mon ami'
+);
+
+INSERT INTO CATEGORIE_PRESTATION (
+   IDCATEGORIEPRESTATION,
+   LIBELLECATEGORIEPRESTATION,
+   DESCRIPTIONCATEGORIEPRESTATION,
+   IMAGECATEGORIEPRESTATION
+) VALUES (
+   1,
+   'Courses',
+   'Livraison de courses et produits',
+   'courses.jpg'
+),
+(
+   2,
+   'Halal',
+   'Restaurants et plats halal',
+   'halal.jpg'
+),
+(
+   3,
+   'Pizzas',
+   'Livraison de pizzas',
+   'pizzas.jpg'
+),
+(
+   4,
+   'Sushis',
+   'Restaurants et livraison de sushis',
+   'sushis.jpg'
+),
+(
+   5,
+   'Alcool',
+   'Livraison de boissons alcoolisées',
+   'alcool.jpg'
+),
+(
+   6,
+   'Épicerie',
+   'Produits d épicerie',
+   'epicerie.jpg'
+),
+(
+   7,
+   'Fast food',
+   'Restauration rapide',
+   'fastfood.jpg'
+),
+(
+   8,
+   'Burgers',
+   'Restaurants de burgers',
+   'burgers.jpg'
+),
+(
+   9,
+   'Asiatique',
+   'Cuisine asiatique',
+   'asiatique.jpg'
+),
+(
+   10,
+   'Cuisine saine',
+   'Options de repas santé',
+   'cuisinesaine.jpg'
+),
+(
+   11,
+   'Thaïlandaise',
+   'Cuisine thaïlandaise',
+   'thailandaise.jpg'
+),
+(
+   12,
+   'Coréenne',
+   'Cuisine coréenne',
+   'coreenne.jpg'
+),
+(
+   13,
+   'Indienne',
+   'Cuisine indienne',
+   'indienne.jpg'
+),
+(
+   14,
+   'Thé aux perles',
+   'Bubble tea',
+   'teauxperles.jpg'
+),
+(
+   15,
+   'Ailes de poulet',
+   'Spécialités de poulet',
+   'ailespoule.jpg'
+),
+(
+   16,
+   'Boulangerie',
+   'Produits de boulangerie',
+   'boulangerie.jpg'
+),
+(
+   17,
+   'Casher',
+   'Restaurants et plats casher',
+   'casher.jpg'
+),
+(
+   18,
+   'Chinoise',
+   'Cuisine chinoise',
+   'chinoise.jpg'
+),
+(
+   19,
+   'Poke (poisson cru)',
+   'Bols de poisson cru',
+   'poke.jpg'
+),
+(
+   20,
+   'Mexicaine',
+   'Cuisine mexicaine',
+   'mexicaine.jpg'
+),
+(
+   21,
+   'Sandwich',
+   'Sandwichs et paninis',
+   'sandwich.jpg'
+),
+(
+   22,
+   'Italienne',
+   'Cuisine italienne',
+   'italienne.jpg'
+),
+(
+   23,
+   'Barbecue',
+   'Restaurants de barbecue',
+   'barbecue.jpg'
+),
+(
+   24,
+   'Spécialité',
+   'Plats et cuisines spécialisés',
+   'specialite.jpg'
+),
+(
+   25,
+   'Petit-déjeuner',
+   'Options de petit-déjeuner',
+   'petitdejeuner.jpg'
+),
+(
+   26,
+   'Vegan',
+   'Options végétaliennes',
+   'vegan.jpg'
+),
+(
+   27,
+   'Caribéenne',
+   'Cuisine caribéenne',
+   'caribeenne.jpg'
+),
+(
+   28,
+   'Parapharmacie',
+   'Produits paramédicaux',
+   'parapharmacie.jpg'
+),
+(
+   29,
+   'Fleurs',
+   'Livraison de fleurs',
+   'fleurs.jpg'
+),
+(
+   30,
+   'Japonaise',
+   'Cuisine japonaise',
+   'japonaise.jpg'
+),
+(
+   31,
+   'Vietnamienne',
+   'Cuisine vietnamienne',
+   'vietnamienne.jpg'
+),
+(
+   32,
+   'Fruits de mer',
+   'Restaurants de fruits de mer',
+   'fruitsmer.jpg'
+),
+(
+   33,
+   'Soupes',
+   'Restaurants de soupes',
+   'soupes.jpg'
+),
+(
+   34,
+   'Américaine',
+   'Cuisine américaine',
+   'americaine.jpg'
+),
+(
+   35,
+   'Café',
+   'Cafés et boissons chaudes',
+   'cafe.jpg'
+),
+(
+   36,
+   'Hygiène',
+   'Produits d hygiène',
+   'hygiene.jpg'
+),
+(
+   37,
+   'Afro américaine',
+   'Cuisine afro-américaine',
+   'afroamericaine.jpg'
+),
+(
+   38,
+   'Boutique',
+   'Produits de boutique',
+   'boutique.jpg'
+),
+(
+   39,
+   'Glaces',
+   'Crèmes glacées et desserts glacés',
+   'glaces.jpg'
+),
+(
+   40,
+   'Grecque',
+   'Cuisine grecque',
+   'grecque.jpg'
+),
+(
+   41,
+   'Street food',
+   'Cuisine de rue',
+   'streetfood.jpg'
+),
+(
+   42,
+   'Repas détente',
+   'Restaurants décontractés',
+   'repasdetente.jpg'
+),
+(
+   43,
+   'Smoothies',
+   'Boissons smoothies',
+   'smoothies.jpg'
+),
+(
+   44,
+   'Articles pour animaux',
+   'Produits et accessoires pour animaux',
+   'animaux.jpg'
+),
+(
+   45,
+   'Hawaïenne',
+   'Cuisine hawaïenne',
+   'hawaienne.jpg'
+),
+(
+   46,
+   'Taïwanaise',
+   'Cuisine taïwanaise',
+   'taiwanaise.jpg'
 );
 
 INSERT INTO TYPE_PRESTATION (
@@ -7724,12 +9013,10 @@ INSERT INTO VEHICULE (
 
 INSERT INTO VELO (
    IDVELO,
-   IDRESERVATION,
    IDADRESSE,
    NUMEROVELO,
    ESTDISPONIBLE
 ) VALUES (
-   1,
    1,
    1,
    '12345',
@@ -7737,13 +9024,11 @@ INSERT INTO VELO (
 ),
 (
    2,
-   2,
    4,
    '12346',
    FALSE
 ),
 (
-   3,
    3,
    18,
    '12347',
@@ -7751,13 +9036,11 @@ INSERT INTO VELO (
 ),
 (
    4,
-   4,
    84,
    '12348',
    TRUE
 ),
 (
-   5,
    5,
    46,
    '12349',
@@ -7765,13 +9048,11 @@ INSERT INTO VELO (
 ),
 (
    6,
-   6,
    18,
    '12350',
    TRUE
 ),
 (
-   7,
    7,
    69,
    '12351',
@@ -7779,20 +9060,17 @@ INSERT INTO VELO (
 ),
 (
    8,
-   8,
    33,
    '12352',
    FALSE
 ),
 (
    9,
-   9,
    71,
    '12353',
    TRUE
 ),
 (
-   10,
    10,
    99,
    '12354',
@@ -7863,6 +9141,12 @@ INSERT INTO VILLE (
    1,
    10,
    'Versailles'
+),
+(
+   11,
+   1,
+   11,
+   'Annecy'
 );
 
 ---------------------------------------------------------------
@@ -7875,7 +9159,7 @@ ALTER TABLE ADRESSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE APPARTIENT_2
-   ADD CONSTRAINT FK_APPARTIE_APPARTIEN_CARTE_BA FOREIGN KEY (
+   ADD CONSTRAINT FK_APPARTIENT2_CARTE_BANCAIRE FOREIGN KEY (
       IDCB
    )
       REFERENCES CARTE_BANCAIRE (
@@ -7883,7 +9167,7 @@ ALTER TABLE APPARTIENT_2
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE APPARTIENT_2
-   ADD CONSTRAINT FK_APPARTIE_APPARTIEN_CLIENT FOREIGN KEY (
+   ADD CONSTRAINT FK_APPARTIENT2_CLIENT FOREIGN KEY (
       IDCLIENT
    )
       REFERENCES CLIENT (
@@ -7891,7 +9175,7 @@ ALTER TABLE APPARTIENT_2
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE A_3
-   ADD CONSTRAINT FK_A_3_A_3_PRODUIT FOREIGN KEY (
+   ADD CONSTRAINT FK_A_3_PRODUIT FOREIGN KEY (
       IDPRODUIT
    )
       REFERENCES PRODUIT (
@@ -7899,7 +9183,7 @@ ALTER TABLE A_3
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE A_3
-   ADD CONSTRAINT FK_A_3_A_4_CATEGORI FOREIGN KEY (
+   ADD CONSTRAINT FK_A_3_CATEGORIE_PRODUIT FOREIGN KEY (
       IDCATEGORIE
    )
       REFERENCES CATEGORIE_PRODUIT (
@@ -7907,7 +9191,7 @@ ALTER TABLE A_3
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE A_COMME_TYPE
-   ADD CONSTRAINT FK_A_COMME__A_COMME_T_VEHICULE FOREIGN KEY (
+   ADD CONSTRAINT FK_A_COMME_TYPE_VEHICULE FOREIGN KEY (
       IDVEHICULE
    )
       REFERENCES VEHICULE (
@@ -7915,7 +9199,7 @@ ALTER TABLE A_COMME_TYPE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE A_COMME_TYPE
-   ADD CONSTRAINT FK_A_COMME__A_COMME_T_TYPE_PRE FOREIGN KEY (
+   ADD CONSTRAINT FK_A_COMME_TYPE_PRESTATION FOREIGN KEY (
       IDPRESTATION
    )
       REFERENCES TYPE_PRESTATION (
@@ -7923,7 +9207,7 @@ ALTER TABLE A_COMME_TYPE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CLIENT
-   ADD CONSTRAINT FK_CLIENT_A2_PLANNING FOREIGN KEY (
+   ADD CONSTRAINT FK_CLIENT_PLANNING FOREIGN KEY (
       IDPLANNING
    )
       REFERENCES PLANNING_RESERVATION (
@@ -7931,7 +9215,7 @@ ALTER TABLE CLIENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CLIENT
-   ADD CONSTRAINT FK_CLIENT_APPARTIEN_PANIER FOREIGN KEY (
+   ADD CONSTRAINT FK_CLIENT_PANIER FOREIGN KEY (
       IDPANIER
    )
       REFERENCES PANIER (
@@ -7939,7 +9223,7 @@ ALTER TABLE CLIENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CLIENT
-   ADD CONSTRAINT FK_CLIENT_FAIT_PART_ENTREPRI FOREIGN KEY (
+   ADD CONSTRAINT FK_CLIENT_ENTREPRISE FOREIGN KEY (
       IDENTREPRISE
    )
       REFERENCES ENTREPRISE (
@@ -7947,7 +9231,7 @@ ALTER TABLE CLIENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CLIENT
-   ADD CONSTRAINT FK_CLIENT_HABITE_ADRESSE FOREIGN KEY (
+   ADD CONSTRAINT FK_CLIENT_ADRESSE FOREIGN KEY (
       IDADRESSE
    )
       REFERENCES ADRESSE (
@@ -7955,7 +9239,7 @@ ALTER TABLE CLIENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CODE_POSTAL
-   ADD CONSTRAINT FK_CODE_POS_APPARTIEN_PAYS FOREIGN KEY (
+   ADD CONSTRAINT FK_CODE_POSTAL_PAYS FOREIGN KEY (
       IDPAYS
    )
       REFERENCES PAYS (
@@ -7963,7 +9247,7 @@ ALTER TABLE CODE_POSTAL
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COMMANDE
-   ADD CONSTRAINT FK_COMMANDE_EST_LIVRE_COURSIER FOREIGN KEY (
+   ADD CONSTRAINT FK_COMMANDE_COURSIER FOREIGN KEY (
       IDCOURSIER
    )
       REFERENCES COURSIER (
@@ -7971,7 +9255,7 @@ ALTER TABLE COMMANDE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COMMANDE
-   ADD CONSTRAINT FK_COMMANDE_PASSE_COM_PANIER FOREIGN KEY (
+   ADD CONSTRAINT FK_COMMANDE_PANIER FOREIGN KEY (
       IDPANIER
    )
       REFERENCES PANIER (
@@ -7979,7 +9263,7 @@ ALTER TABLE COMMANDE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CONTIENT_2
-   ADD CONSTRAINT FK_CONTIENT_CONTIENT__PANIER FOREIGN KEY (
+   ADD CONSTRAINT FK_CONTIENT2_PANIER FOREIGN KEY (
       IDPANIER
    )
       REFERENCES PANIER (
@@ -7987,7 +9271,7 @@ ALTER TABLE CONTIENT_2
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE CONTIENT_2
-   ADD CONSTRAINT FK_CONTIENT_CONTIENT__PRODUIT FOREIGN KEY (
+   ADD CONSTRAINT FK_CONTIENT2_PRODUIT FOREIGN KEY (
       IDPRODUIT
    )
       REFERENCES PRODUIT (
@@ -7995,7 +9279,7 @@ ALTER TABLE CONTIENT_2
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSE
-   ADD CONSTRAINT FK_COURSE_A_2_TYPE_PRE FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSE_PRESTATION FOREIGN KEY (
       IDPRESTATION
    )
       REFERENCES TYPE_PRESTATION (
@@ -8003,7 +9287,7 @@ ALTER TABLE COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSE
-   ADD CONSTRAINT FK_COURSE_COMMENCE__ADRESSE FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSE_ADRESSE_START FOREIGN KEY (
       ADR_IDADRESSE
    )
       REFERENCES ADRESSE (
@@ -8011,7 +9295,7 @@ ALTER TABLE COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSE
-   ADD CONSTRAINT FK_COURSE_EST_POUR_RESERVAT FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSE_RESERVATION FOREIGN KEY (
       IDRESERVATION
    )
       REFERENCES RESERVATION (
@@ -8019,7 +9303,7 @@ ALTER TABLE COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSE
-   ADD CONSTRAINT FK_COURSE_SE_FINIT__ADRESSE FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSE_ADRESSE_END FOREIGN KEY (
       IDADRESSE
    )
       REFERENCES ADRESSE (
@@ -8027,23 +9311,23 @@ ALTER TABLE COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSE
-   ADD CONSTRAINT FK_COURSE_UTILISE_CARTE_BA FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSE_CARTE_BANCAIRE FOREIGN KEY (
       IDCB
    )
       REFERENCES CARTE_BANCAIRE (
          IDCB
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
-ALTER TABLE COURSIER
-   ADD CONSTRAINT FK_COURSIER_EST_CONDU_RESERVAT FOREIGN KEY (
-      IDRESERVATION
+ALTER TABLE COURSE
+   ADD CONSTRAINT FK_COURSE_PAR_COURSIER FOREIGN KEY (
+      IDCOURSIER
    )
-      REFERENCES RESERVATION (
-         IDRESERVATION
+      REFERENCES COURSIER (
+         IDCOURSIER
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSIER
-   ADD CONSTRAINT FK_COURSIER_FAIT_PART_ENTREPRI FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSIER_ENTREPRISE FOREIGN KEY (
       IDENTREPRISE
    )
       REFERENCES ENTREPRISE (
@@ -8051,7 +9335,7 @@ ALTER TABLE COURSIER
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE COURSIER
-   ADD CONSTRAINT FK_COURSIER_SE_SITUE__ADRESSE FOREIGN KEY (
+   ADD CONSTRAINT FK_COURSIER_ADRESSE FOREIGN KEY (
       IDADRESSE
    )
       REFERENCES ADRESSE (
@@ -8059,7 +9343,7 @@ ALTER TABLE COURSIER
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE DEPARTEMENT
-   ADD CONSTRAINT FK_DEPARTEM_EST_DANS__PAYS FOREIGN KEY (
+   ADD CONSTRAINT FK_DEPARTEMENT_PAYS FOREIGN KEY (
       IDPAYS
    )
       REFERENCES PAYS (
@@ -8067,7 +9351,7 @@ ALTER TABLE DEPARTEMENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE ENTREPRISE
-   ADD CONSTRAINT FK_ENTREPRI_FAIT_PART_CLIENT FOREIGN KEY (
+   ADD CONSTRAINT FK_ENTREPRISE_CLIENT FOREIGN KEY (
       IDCLIENT
    )
       REFERENCES CLIENT (
@@ -8075,7 +9359,7 @@ ALTER TABLE ENTREPRISE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE ENTREPRISE
-   ADD CONSTRAINT FK_ENTREPRI_SE_SITUE__ADRESSE FOREIGN KEY (
+   ADD CONSTRAINT FK_ENTREPRISE_ADRESSE FOREIGN KEY (
       IDADRESSE
    )
       REFERENCES ADRESSE (
@@ -8083,7 +9367,7 @@ ALTER TABLE ENTREPRISE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE EST_SITUE_A_2
-   ADD CONSTRAINT FK_EST_SITU_EST_SITUE_PRODUIT FOREIGN KEY (
+   ADD CONSTRAINT FK_EST_SITUE2_PRODUIT FOREIGN KEY (
       IDPRODUIT
    )
       REFERENCES PRODUIT (
@@ -8091,7 +9375,23 @@ ALTER TABLE EST_SITUE_A_2
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE EST_SITUE_A_2
-   ADD CONSTRAINT FK_EST_SITU_EST_SITUE_ETABLISS FOREIGN KEY (
+   ADD CONSTRAINT FK_EST_SITUE2_ETABLISSEMENT FOREIGN KEY (
+      IDETABLISSEMENT
+   )
+      REFERENCES ETABLISSEMENT (
+         IDETABLISSEMENT
+      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE A_COMME_CATEGORIE
+   ADD CONSTRAINT FK_A_COMME_CATEGORIE_PRESTATIONC FOREIGN KEY (
+      IDCATEGORIEPRESTATION
+   )
+      REFERENCES CATEGORIE_PRESTATION (
+         IDCATEGORIEPRESTATION
+      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE A_COMME_CATEGORIE
+   ADD CONSTRAINT FK_COMME_CATEGORIE_ETABLISSEMENT FOREIGN KEY (
       IDETABLISSEMENT
    )
       REFERENCES ETABLISSEMENT (
@@ -8099,7 +9399,7 @@ ALTER TABLE EST_SITUE_A_2
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE ETABLISSEMENT
-   ADD CONSTRAINT FK_ETABLISS_EST_SITUE_ADRESSE FOREIGN KEY (
+   ADD CONSTRAINT FK_ETABLISSEMENT_ADRESSE FOREIGN KEY (
       IDADRESSE
    )
       REFERENCES ADRESSE (
@@ -8107,7 +9407,7 @@ ALTER TABLE ETABLISSEMENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE FACTURE_COURSE
-   ADD CONSTRAINT FK_FACTURE__APPARTIEN_COURSE FOREIGN KEY (
+   ADD CONSTRAINT FK_FACTURE_COURSE FOREIGN KEY (
       IDCOURSE
    )
       REFERENCES COURSE (
@@ -8115,7 +9415,7 @@ ALTER TABLE FACTURE_COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE FACTURE_COURSE
-   ADD CONSTRAINT FK_FACTURE__RECOIT_FA_CLIENT FOREIGN KEY (
+   ADD CONSTRAINT FK_FACTURE_CLIENT FOREIGN KEY (
       IDCLIENT
    )
       REFERENCES CLIENT (
@@ -8123,7 +9423,7 @@ ALTER TABLE FACTURE_COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE FACTURE_COURSE
-   ADD CONSTRAINT FK_FACTURE__RECUPERE__PAYS FOREIGN KEY (
+   ADD CONSTRAINT FK_FACTURE_PAYS FOREIGN KEY (
       IDPAYS
    )
       REFERENCES PAYS (
@@ -8131,7 +9431,7 @@ ALTER TABLE FACTURE_COURSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE PANIER
-   ADD CONSTRAINT FK_PANIER_APPARTIEN_CLIENT FOREIGN KEY (
+   ADD CONSTRAINT FK_PANIER_CLIENT FOREIGN KEY (
       IDCLIENT
    )
       REFERENCES CLIENT (
@@ -8139,7 +9439,7 @@ ALTER TABLE PANIER
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE PLANNING_RESERVATION
-   ADD CONSTRAINT FK_PLANNING_A_CLIENT FOREIGN KEY (
+   ADD CONSTRAINT FK_PLANNING_CLIENT FOREIGN KEY (
       IDCLIENT
    )
       REFERENCES CLIENT (
@@ -8147,7 +9447,7 @@ ALTER TABLE PLANNING_RESERVATION
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE REGLEMENT_SALAIRE
-   ADD CONSTRAINT FK_REGLEMEN_RECOIT_RE_COURSIER FOREIGN KEY (
+   ADD CONSTRAINT FK_REGLEMENT_COURSIER FOREIGN KEY (
       IDCOURSIER
    )
       REFERENCES COURSIER (
@@ -8155,15 +9455,7 @@ ALTER TABLE REGLEMENT_SALAIRE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE RESERVATION
-   ADD CONSTRAINT FK_RESERVAT_EST_CONDU_COURSIER FOREIGN KEY (
-      IDCOURSIER
-   )
-      REFERENCES COURSIER (
-         IDCOURSIER
-      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE RESERVATION
-   ADD CONSTRAINT FK_RESERVAT_EST_DANS__PLANNING FOREIGN KEY (
+   ADD CONSTRAINT FK_RESERVATION_PLANNING FOREIGN KEY (
       IDPLANNING
    )
       REFERENCES PLANNING_RESERVATION (
@@ -8171,15 +9463,7 @@ ALTER TABLE RESERVATION
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE RESERVATION
-   ADD CONSTRAINT FK_RESERVAT_EST_POUR2_COURSE FOREIGN KEY (
-      IDCOURSE
-   )
-      REFERENCES COURSE (
-         IDCOURSE
-      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE RESERVATION
-   ADD CONSTRAINT FK_RESERVAT_EST_POUR__VELO FOREIGN KEY (
+   ADD CONSTRAINT FK_RESERVATION_VELO FOREIGN KEY (
       IDVELO
    )
       REFERENCES VELO (
@@ -8187,7 +9471,7 @@ ALTER TABLE RESERVATION
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE RESERVATION
-   ADD CONSTRAINT FK_RESERVAT_PEUT_CLIENT FOREIGN KEY (
+   ADD CONSTRAINT FK_RESERVATION_CLIENT FOREIGN KEY (
       IDCLIENT
    )
       REFERENCES CLIENT (
@@ -8195,7 +9479,7 @@ ALTER TABLE RESERVATION
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE VEHICULE
-   ADD CONSTRAINT FK_VEHICULE_APPARTIEN_COURSIER FOREIGN KEY (
+   ADD CONSTRAINT FK_VEHICULE_COURSIER FOREIGN KEY (
       IDCOURSIER
    )
       REFERENCES COURSIER (
@@ -8203,15 +9487,15 @@ ALTER TABLE VEHICULE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE VELO
-   ADD CONSTRAINT FK_VELO_EST_POUR__RESERVAT FOREIGN KEY (
-      IDRESERVATION
+   ADD CONSTRAINT FK_VELO_ADRESSE FOREIGN KEY (
+      IDADRESSE
    )
-      REFERENCES RESERVATION (
-         IDRESERVATION
+      REFERENCES ADRESSE (
+         IDADRESSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE VILLE
-   ADD CONSTRAINT FK_VILLE_APPARTIEN_CODE_POS FOREIGN KEY (
+   ADD CONSTRAINT FK_VILLE_CODE_POSTAL FOREIGN KEY (
       IDCODEPOSTAL
    )
       REFERENCES CODE_POSTAL (
@@ -8219,17 +9503,9 @@ ALTER TABLE VILLE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE VILLE
-   ADD CONSTRAINT FK_VILLE_EST_DANS__PAYS FOREIGN KEY (
+   ADD CONSTRAINT FK_VILLE_PAYS FOREIGN KEY (
       IDPAYS
    )
       REFERENCES PAYS (
          IDPAYS
-      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE VELO
-   ADD CONSTRAINT FK_VELO__SE_SITUE_ADRESSE FOREIGN KEY (
-      IDADRESSE
-   )
-      REFERENCES ADRESSE (
-         IDADRESSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
