@@ -7061,142 +7061,142 @@ INSERT INTO PRODUIT (
 ),
 (
    81,
-   'Shampooing L’Oréal 250ml',
+   'Shampooing',
    4.99,
-   'https://example.com/shampooing.jpg',
+   'https://cdn.auchan.fr/media/P02000000001INYPRIMARY_2048x2048/B2CD/?format=rw&quality=75&width=1200&height=1200',
    'Shampooing nourrissant pour cheveux secs'
 ),
 (
    82,
-   'Gel Douche Dove 500ml',
+   'Gel Douche',
    3.50,
-   'https://example.com/gel-douche.jpg',
+   'https://assets.unileversolutions.com/v1/126516823.png?im=AspectCrop=(985,985);Resize=(985,985)',
    'Gel douche hydratant pour une peau douce'
 ),
 (
    83,
-   'Papier Aluminium 30m',
+   'Papier Aluminium',
    2.99,
-   'https://example.com/papier-aluminium.jpg',
+   'https://tm.groupetadlaoui.ma/wp-content/uploads/2021/02/papier-aluminium.png',
    'Rouleau de papier aluminium pour usage domestique'
 ),
 (
    84,
-   'Brosse à dents Oral-B',
+   'Brosse à dents',
    2.75,
-   'https://example.com/brosse-a-dents.jpg',
+   'https://cdn.auchan.fr/media/MEDIASTEP73897051_2048x2048/B2CD/?format=rw&quality=75&width=1200&height=1200',
    'Brosse à dents avec brins souples pour un nettoyage en profondeur'
 ),
 (
    85,
-   'Savon Liquide Dettol 250ml',
+   'Savon Liquide',
    3.20,
-   'https://example.com/savon-liquide.jpg',
+   'https://www.laino.fr/wp-content/uploads/2017/02/LAI-602086-3616826020862-EP-768x768.png',
    'Savon liquide antibactérien pour les mains'
 ),
 (
    86,
-   'Pack de 6 bouteilles d’eau Evian 1.5L',
+   'Pack de 6 bouteilles d’eau',
    6.00,
-   'https://example.com/eau-evian.jpg',
+   'https://media.carrefour.fr/medias/3b0923f67fac4c95bef51f0ccd8c59f6/p_540x540/03760021251191_H1N1_s16.jpeg',
    'Eau minérale naturelle en pack pratique'
 ),
 (
    87,
-   'Lessive Ariel 3kg',
+   'Lessive',
    12.99,
-   'https://example.com/lessive-ariel.jpg',
+   'https://prd-cdn-emea1-joltx.pgsitecore.com/-/jssmedia/growing-families-version1/gf-fr/product/ariel/ttupdates0823/ariel-lessive-liquide-original.ashx?rev=1a1f035100f84299805ea1d8ad65b4cb&extension=webp&w=800&h=0&mw=0&mh=0&iar=0&as=0&sc=0',
    'Lessive en poudre pour un linge impeccable'
 ),
 (
    88,
    'Boîte de mouchoirs en papier',
    1.80,
-   'https://example.com/mouchoirs.jpg',
+   'http://www.medical-promo.be/wp-content/uploads/2017/03/Boite-de-mouchoir-150-1024x683.png',
    'Mouchoirs en papier doux et résistants'
 ),
 (
    89,
-   'Batteries AA Duracell (pack de 4)',
+   'Batteries AA',
    6.50,
-   'https://example.com/batteries.jpg',
+   'https://i5.walmartimages.com/seo/Duracell-Coppertop-AA-Alkaline-Batteries-4-Batteries-Pack_7318dcf6-a4c9-4711-8507-ef45acae4059.e319d247f716c6c4262b5ff3d4e282c0.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF',
    'Piles longue durée pour appareils électroniques'
 ),
 (
    90,
-   'Ampoule LED 10W Philips',
+   'Ampoule LED',
    5.99,
-   'https://example.com/ampoule-led.jpg',
+   'https://i5.walmartimages.com/seo/Philips-LED-50-Watt-PAR20-Spotlight-Light-Bulb-Bright-White-40-Degree-Beam-Angle-Spread-Dimmable-E26-Medium-Base-2-Pack_204a8944-e63a-4759-a86f-b0b6809e1ebc.1ae06131f3dcd90d8ff0bbcd1ed38381.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF',
    'Ampoule LED écoénergétique, équivalente à 60W'
 ),
 (
    91,
-   'Crème hydratante Nivea 200ml',
+   'Crème hydratante',
    7.50,
-   'https://example.com/creme-nivea.jpg',
+   'https://adn-cosmetik.fr/wp-content/uploads/2022/09/Creme-hydratante-jeunesse-satin-1.jpg',
    'Crème nourrissante pour une peau douce et hydratée'
 ),
 (
    92,
-   'Ruban adhésif Scotch 50m',
+   'Ruban adhésif',
    1.99,
-   'https://example.com/ruban-adhesif.jpg',
+   'https://dxbyzx5id4chj.cloudfront.net/fit-in/400x400/filters:fill(fff)/pub/media/catalog/product/6/1/61925_1_c364.jpg',
    'Ruban adhésif transparent pour usage quotidien'
 ),
 (
    93,
-   'Ciseaux Fiskars',
+   'Ciseaux',
    8.00,
-   'https://example.com/ciseaux.jpg',
+   'https://m.media-amazon.com/images/I/71BNm6BWTSL._AC_SY879_.jpg',
    'Ciseaux robustes et ergonomiques pour travaux de coupe'
 ),
 (
    94,
-   'Cahier Oxford 200 pages',
+   'Pack de 4 cahiers',
    3.25,
-   'https://example.com/cahier-oxford.jpg',
+   'https://www.maxxidiscount.com/11190-large_default/lot-de-4-cahiers-oxford-color-life-24-x-32-cm-48p-seyes.webp',
    'Cahier grand format avec couverture rigide'
 ),
 (
    95,
-   'Pack de 3 éponges Scotch-Brite',
+   'Pack de 3 éponges',
    2.49,
-   'https://example.com/eponges.jpg',
+   'https://homehardwarerimouski.com/upload/art-84551-1-hh-exclusives-4542298-paquet-de-3-eponges-a-recurer-scrun-image-1-full.jpg',
    'Éponges résistantes pour nettoyage en profondeur'
 ),
 (
    96,
-   'Spray nettoyant multisurface Ajax 750ml',
+   'Spray nettoyant multisurface',
    3.99,
-   'https://example.com/spray-nettoyant.jpg',
+   'https://cdn.aroma-zone.com/d_default_placeholder.png/c_fill,q_auto,f_auto,w_852,ar_626:441/b_none/v1/cf/0xsz2r7o7t3z/78VgcZCBBxLoe5a2Lb9242/e205c93a50dcf47e7d53329f9915aa07/t374690_spray-nettoyant-multi-surfaces_web.jpg',
    'Spray nettoyant pour toutes les surfaces'
 ),
 (
    97,
-   'Sac poubelle 50L (10 unités)',
+   'Sac poubelle 50L',
    2.75,
-   'https://example.com/sac-poubelle.jpg',
+   'https://m.media-amazon.com/images/I/81+LOyWMS2L._AC_SX300_SY300_.jpg',
    'Sacs poubelle résistants avec liens intégrés'
 ),
 (
    98,
-   'Coton-tiges Johnson & Johnson (200 unités)',
+   'Coton-tiges',
    1.90,
-   'https://example.com/coton-tiges.jpg',
+   'https://www.landi.ch/ImageOriginal/Img/product/069/641/69641_wattenstaebchen-200-stueck_69641_1.jpg?width=400&height=400&mode=pad&bgcolor=fff',
    'Coton-tiges doux et pratiques pour une hygiène quotidienne'
 ),
 (
    99,
-   'Thermomètre digital Omron',
+   'Thermomètre digital',
    12.90,
-   'https://example.com/thermometre.jpg',
+   'https://www.pharmacodel.com/8108-large_default/predictor-thermometre-digital-flex.jpg',
    'Thermomètre précis pour mesure rapide de la température'
 ),
 (
    100,
-   'Pack de feuilles A4 500 pages',
+   'Pack de feuilles A4',
    4.99,
-   'https://example.com/feuilles-a4.jpg',
+   'https://www.nlf-livraria.com/wp-content/uploads/2020/07/3329680175516-1.jpg',
    'Papier pour imprimante et usage bureautique'
 );
 
