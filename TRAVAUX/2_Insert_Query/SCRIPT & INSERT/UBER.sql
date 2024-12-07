@@ -3272,13 +3272,13 @@ INSERT INTO COURSE (
    50,
    56,
    7,
-   52.43,
+   15.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   9.9,
-   42
+   3.0,
+   10
 ),
 (
    2,
@@ -3288,13 +3288,13 @@ INSERT INTO COURSE (
    51,
    59,
    6,
-   59.36,
+   25.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   1.5,
-   56
+   5.0,
+   20
 ),
 (
    3,
@@ -3304,13 +3304,13 @@ INSERT INTO COURSE (
    52,
    46,
    7,
-   19.51,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   8.0,
-   119
+   7.0,
+   30
 ),
 (
    4,
@@ -3320,13 +3320,13 @@ INSERT INTO COURSE (
    53,
    55,
    3,
-   50.1,
+   45.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   5.7,
-   101
+   10.0,
+   50
 ),
 (
    5,
@@ -3336,13 +3336,13 @@ INSERT INTO COURSE (
    54,
    8,
    1,
-   90.94,
+   80.00,
    'Terminée',
-   3.7,
-   'Commentaire 5',
-   15.2,
-   5.8,
-   40
+   4.5,
+   'Service rapide',
+   10.00,
+   15.0,
+   60
 ),
 (
    6,
@@ -3352,13 +3352,13 @@ INSERT INTO COURSE (
    55,
    14,
    7,
-   96.49,
+   50.00,
    'Terminée',
-   1.3,
-   'Commentaire 6',
-   10.25,
-   6.6,
-   59
+   3.5,
+   'Bon service',
+   5.00,
+   8.0,
+   30
 ),
 (
    7,
@@ -3368,13 +3368,13 @@ INSERT INTO COURSE (
    56,
    39,
    3,
-   21.68,
+   12.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   2.8,
-   70
+   2.5,
+   10
 ),
 (
    8,
@@ -3384,13 +3384,13 @@ INSERT INTO COURSE (
    57,
    31,
    2,
-   46.52,
+   40.00,
    'Terminée',
-   2.4,
-   'Commentaire 8',
-   8.6,
-   5.5,
-   27
+   4.0,
+   'Efficace',
+   8.00,
+   12.0,
+   45
 ),
 (
    9,
@@ -3400,13 +3400,13 @@ INSERT INTO COURSE (
    58,
    74,
    2,
-   18.64,
+   30.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   8.5,
-   78
+   9.0,
+   40
 ),
 (
    10,
@@ -3416,13 +3416,13 @@ INSERT INTO COURSE (
    60,
    44,
    2,
-   96.53,
+   25.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   1.2,
-   12
+   4.0,
+   15
 ),
 (
    11,
@@ -3432,13 +3432,13 @@ INSERT INTO COURSE (
    61,
    17,
    1,
-   98.49,
+   90.00,
    'Terminée',
-   1.3,
-   'Commentaire 11',
-   4.17,
-   5.1,
-   31
+   5.0,
+   'Parfait',
+   15.00,
+   20.0,
+   70
 ),
 (
    12,
@@ -3448,13 +3448,13 @@ INSERT INTO COURSE (
    62,
    88,
    5,
-   97.43,
+   55.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   7.7,
-   77
+   7.0,
+   25
 ),
 (
    13,
@@ -3464,13 +3464,13 @@ INSERT INTO COURSE (
    63,
    74,
    1,
-   18.83,
+   10.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   1.7,
-   115
+   2.0,
+   15
 ),
 (
    14,
@@ -3480,13 +3480,13 @@ INSERT INTO COURSE (
    64,
    11,
    5,
-   67.23,
+   65.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   4.6,
-   13
+   12.0,
+   50
 ),
 (
    15,
@@ -3496,13 +3496,13 @@ INSERT INTO COURSE (
    65,
    4,
    5,
-   31.06,
+   20.00,
    'Terminée',
-   3.5,
-   'Commentaire 15',
-   0.39,
-   2.6,
-   117
+   3.0,
+   'Bon service',
+   4.00,
+   5.0,
+   25
 ),
 (
    16,
@@ -3512,13 +3512,13 @@ INSERT INTO COURSE (
    66,
    35,
    4,
-   96.34,
+   75.00,
    'Terminée',
-   3.5,
-   'Commentaire 16',
-   5.67,
-   5.4,
-   99
+   4.8,
+   'Rapide et efficace',
+   12.00,
+   15.0,
+   60
 ),
 (
    17,
@@ -3528,13 +3528,13 @@ INSERT INTO COURSE (
    67,
    49,
    7,
-   33.63,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   2.4,
-   64
+   5.0,
+   20
 ),
 (
    18,
@@ -3544,7 +3544,7 @@ INSERT INTO COURSE (
    68,
    6,
    7,
-   84.81,
+   30.00,
    'En cours',
    NULL,
    NULL,
@@ -3560,13 +3560,13 @@ INSERT INTO COURSE (
    69,
    31,
    3,
-   11.63,
+   8.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   8.7,
-   35
+   1.5,
+   5
 ),
 (
    20,
@@ -3576,13 +3576,13 @@ INSERT INTO COURSE (
    70,
    7,
    4,
-   65.47,
+   70.00,
    'Terminée',
-   4.5,
-   'Commentaire 20',
-   6.1,
-   9.1,
-   93
+   4.0,
+   'Très bien',
+   10.00,
+   18.0,
+   50
 ),
 (
    21,
@@ -3592,13 +3592,13 @@ INSERT INTO COURSE (
    71,
    72,
    2,
-   31.93,
+   20.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   5.7,
-   68
+   5.0,
+   25
 ),
 (
    22,
@@ -3608,13 +3608,13 @@ INSERT INTO COURSE (
    72,
    96,
    6,
-   61.06,
+   50.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   8.4,
-   24
+   10.0,
+   40
 ),
 (
    23,
@@ -3624,13 +3624,13 @@ INSERT INTO COURSE (
    73,
    30,
    3,
-   42.47,
+   15.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   7.6,
-   20
+   4.0,
+   15
 ),
 (
    24,
@@ -3640,13 +3640,13 @@ INSERT INTO COURSE (
    74,
    30,
    5,
-   81.93,
+   80.00,
    'Terminée',
-   1.2,
-   'Commentaire 24',
-   7.56,
-   6.6,
-   12
+   4.5,
+   'Très satisfait',
+   12.00,
+   16.0,
+   60
 ),
 (
    25,
@@ -3656,13 +3656,13 @@ INSERT INTO COURSE (
    75,
    58,
    2,
-   47.53,
+   18.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   2.2,
-   50
+   3.0,
+   10
 ),
 (
    26,
@@ -3672,13 +3672,13 @@ INSERT INTO COURSE (
    76,
    14,
    5,
-   23.9,
+   60.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   3.4,
-   97
+   15.0,
+   50
 ),
 (
    27,
@@ -3688,13 +3688,13 @@ INSERT INTO COURSE (
    77,
    38,
    2,
-   87.78,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   1.1,
-   101
+   12.0,
+   45
 ),
 (
    28,
@@ -3704,13 +3704,13 @@ INSERT INTO COURSE (
    78,
    39,
    7,
-   64.99,
+   55.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   6.1,
-   11
+   10.0,
+   35
 ),
 (
    29,
@@ -3720,13 +3720,13 @@ INSERT INTO COURSE (
    79,
    42,
    3,
-   11.06,
+   30.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   5.7,
-   35
+   8.0,
+   30
 ),
 (
    30,
@@ -3736,13 +3736,13 @@ INSERT INTO COURSE (
    80,
    27,
    6,
-   76.18,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   3.9,
-   116
+   4.0,
+   15
 ),
 (
    31,
@@ -3752,13 +3752,13 @@ INSERT INTO COURSE (
    81,
    13,
    5,
-   96.23,
+   25.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   8.9,
-   11
+   6.0,
+   20
 ),
 (
    32,
@@ -3768,13 +3768,13 @@ INSERT INTO COURSE (
    82,
    42,
    3,
-   12.51,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   4.9,
-   93
+   5.0,
+   20
 ),
 (
    33,
@@ -3784,13 +3784,13 @@ INSERT INTO COURSE (
    83,
    6,
    4,
-   93.94,
+   40.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   3.7,
-   13
+   9.0,
+   30
 ),
 (
    34,
@@ -3800,13 +3800,13 @@ INSERT INTO COURSE (
    84,
    89,
    3,
-   54.66,
+   20.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   8.9,
-   90
+   7.0,
+   25
 ),
 (
    35,
@@ -3816,13 +3816,13 @@ INSERT INTO COURSE (
    85,
    76,
    1,
-   16.46,
+   10.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   6.0,
-   38
+   2.0,
+   5
 ),
 (
    36,
@@ -3832,13 +3832,13 @@ INSERT INTO COURSE (
    86,
    32,
    6,
-   25.25,
+   22.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   9.2,
-   55
+   3.5,
+   12
 ),
 (
    37,
@@ -3848,13 +3848,13 @@ INSERT INTO COURSE (
    87,
    56,
    4,
-   41.65,
+   30.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   7.7,
-   48
+   6.0,
+   20
 ),
 (
    38,
@@ -3864,13 +3864,13 @@ INSERT INTO COURSE (
    88,
    44,
    6,
-   96.12,
+   90.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   9.2,
-   38
+   18.0,
+   60
 ),
 (
    39,
@@ -3880,13 +3880,13 @@ INSERT INTO COURSE (
    89,
    55,
    2,
-   25.02,
+   85.00,
    'Terminée',
-   2.3,
-   'Commentaire 39',
-   4.51,
-   2.3,
-   118
+   5.0,
+   'Excellente prestation',
+   10.00,
+   16.0,
+   55
 ),
 (
    40,
@@ -3896,13 +3896,13 @@ INSERT INTO COURSE (
    90,
    84,
    3,
-   84.02,
+   35.00,
    'Terminée',
-   3.3,
-   'Commentaire 40',
-   8.64,
-   9.6,
-   38
+   4.0,
+   'Bon travail',
+   6.00,
+   12.0,
+   40
 ),
 (
    41,
@@ -3912,13 +3912,13 @@ INSERT INTO COURSE (
    91,
    63,
    7,
-   47.46,
+   40.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   8.4,
-   11
+   8.0,
+   25
 ),
 (
    42,
@@ -3928,13 +3928,13 @@ INSERT INTO COURSE (
    92,
    30,
    7,
-   31.21,
+   18.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   3.8,
-   104
+   4.0,
+   15
 ),
 (
    43,
@@ -3944,13 +3944,13 @@ INSERT INTO COURSE (
    93,
    56,
    2,
-   81.99,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   2.6,
-   88
+   5.0,
+   20
 ),
 (
    44,
@@ -3960,13 +3960,13 @@ INSERT INTO COURSE (
    94,
    75,
    5,
-   28.33,
+   55.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   7.8,
-   52
+   10.0,
+   30
 ),
 (
    45,
@@ -3976,13 +3976,13 @@ INSERT INTO COURSE (
    95,
    83,
    5,
-   14.08,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   6.5,
-   74
+   6.0,
+   20
 ),
 (
    46,
@@ -3992,13 +3992,13 @@ INSERT INTO COURSE (
    96,
    9,
    2,
-   13.3,
+   0.00,
    'Annulée',
    NULL,
    NULL,
    NULL,
-   2.3,
-   94
+   3.0,
+   10
 ),
 (
    47,
@@ -4008,13 +4008,13 @@ INSERT INTO COURSE (
    97,
    80,
    5,
-   77.08,
+   85.00,
    'Terminée',
-   4.8,
-   'Commentaire 47',
-   16.98,
-   3.1,
-   31
+   5.0,
+   'Service impeccable',
+   10.00,
+   15.0,
+   45
 ),
 (
    48,
@@ -4024,13 +4024,13 @@ INSERT INTO COURSE (
    98,
    28,
    2,
-   99.36,
+   95.00,
    'Terminée',
-   1.8,
-   'Commentaire 48',
-   12.86,
-   4.4,
-   57
+   4.8,
+   'Très satisfait',
+   12.00,
+   18.0,
+   50
 ),
 (
    49,
@@ -4040,13 +4040,13 @@ INSERT INTO COURSE (
    99,
    39,
    4,
-   13.28,
+   20.00,
    'En cours',
    NULL,
    NULL,
    NULL,
-   2.8,
-   71
+   5.0,
+   15
 ),
 (
    50,
@@ -4056,13 +4056,13 @@ INSERT INTO COURSE (
    100,
    20,
    6,
-   30.07,
+   35.00,
    'En attente',
    NULL,
    NULL,
    NULL,
-   6.8,
-   20
+   7.0,
+   25
 );
 
 INSERT INTO COURSIER (
@@ -5286,8 +5286,7 @@ INSERT INTO ETABLISSEMENT (
    HORAIRESFERMETURE,
    LIVRAISON,
    AEMPORTER
-) VALUES
-(
+) VALUES (
    1,
    'Restaurant',
    101,
