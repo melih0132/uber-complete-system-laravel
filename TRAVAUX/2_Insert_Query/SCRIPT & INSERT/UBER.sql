@@ -5312,8 +5312,8 @@ INSERT INTO ETABLISSEMENT (
    103,
    'PAUL',
    'https://tb-static.uber.com/prod/image-proc/processed_images/923496b75901cda79df0e9f8676a63ef/c73ecc27d2a9eaa735b1ee95304ba588.jpeg',
-   '08:00:00',
-   '22:00:00',
+   '07:00:00',
+   '15:00:00',
    TRUE,
    TRUE
 ),
@@ -5401,7 +5401,7 @@ INSERT INTO ETABLISSEMENT (
    'Island Bowls',
    'https://tb-static.uber.com/prod/image-proc/processed_images/57efbcd5e197184d730502035e58bd84/fb86662148be855d931b37d6c1e5fcbe.jpeg',
    '10:00:00',
-   '00:00:00',
+   '23:00:00',
    FALSE,
    TRUE
 ),
@@ -5433,8 +5433,8 @@ INSERT INTO ETABLISSEMENT (
    114,
    'Brioche Dorée',
    'https://tb-static.uber.com/prod/image-proc/processed_images/23b865a8185355fdedf2ab992ec28c72/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
-   '10:00:00',
-   '20:00:00',
+   '06:30:00',
+   '15:00:00',
    FALSE,
    FALSE
 ),
