@@ -465,7 +465,7 @@ INSERT INTO ADRESSE (
 ) VALUES (
    1,
    1,
-   '1 Rue de l Épée de Bois'
+   '1 Rue de l''Épée de Bois'
 ),
 (
    2,
@@ -490,7 +490,7 @@ INSERT INTO ADRESSE (
 (
    6,
    1,
-   '1 Place Etienne Pernet'
+   '1 Place Étienne Pernet'
 ),
 (
    7,
@@ -1000,12 +1000,12 @@ INSERT INTO ADRESSE (
 (
    108,
    11,
-   '5 Rue De L Industrie'
+   '5 Rue De L''Industrie'
 ),
 (
    109,
    3,
-   '11 Avenue de St antoine'
+   '11 Avenue de St.''Antoine'
 ),
 (
    110,
@@ -1025,7 +1025,7 @@ INSERT INTO ADRESSE (
 (
    113,
    7,
-   '5 Boulevard De L Observatoire'
+   '5 Boulevard De L''Observatoire'
 ),
 (
    114,
@@ -1045,7 +1045,7 @@ INSERT INTO ADRESSE (
 (
    117,
    10,
-   'Rue de Montreuil 7'
+   '7 Rue de Montreuil'
 ),
 (
    118,
@@ -1070,7 +1070,7 @@ INSERT INTO ADRESSE (
 (
    122,
    11,
-   '9 rue de larc en ciel'
+   '9 rue de l''arc en ciel'
 ),
 (
    123,
@@ -1110,7 +1110,7 @@ INSERT INTO ADRESSE (
 (
    130,
    11,
-   'avenue Montaigne'
+   'Avenue Montaigne'
 ),
 (
    131,
@@ -1165,322 +1165,323 @@ INSERT INTO APPARTIENT_2 (
 INSERT INTO A_3 (
    IDPRODUIT,
    IDCATEGORIE
-) VALUES (
+) VALUES
+(
    1,
    7
-), -- 'BIG MAC™' -> Plats préparés et Surgelés
+),
 (
    2,
    7
-), -- 'P TIT WRAP RANCH' -> Plats préparés et Surgelés
+),
 (
    3,
    7
-), -- 'CHEESEBURGER' -> Plats préparés et Surgelés
+),
 (
    4,
    5
-), -- 'McFLURRY™ SAVEUR VANILLE DAIM®' -> Pâtisseries, Desserts et Glaces
+),
 (
    5,
    7
-), -- 'Waffine à composer' -> Plats préparés et Surgelés
+),
 (
    6,
    7
-), -- 'Menu Complet' -> Plats préparés et Surgelés
+),
 (
    7,
    11
-), -- 'Tropico Tropical 33cl' -> Boissons (alcoolisées et non alcoolisées)
+),
 (
    8,
    5
-), -- 'Supplément Chocolat Blanc' -> Pâtisseries, Desserts et Glaces
+),
 (
    9,
    7
-), -- 'Menu sandwich froid' -> Plats préparés et Surgelés
+),
 (
    10,
    2
-), -- 'La salade PAUL' -> Fruits, Légumes et Produits frais
+),
 (
    11,
    7
-), -- 'La part de pizza provençale' -> Plats préparés et Surgelés
+),
 (
    12,
    6
-), -- 'Le pain nordique 300g' -> Épicerie (salée et sucrée)
+),
 (
    13,
    5
-), -- 'Empanada carne' -> Pâtisseries, Desserts et Glaces
+),
 (
    14,
    5
-), -- 'Empanada jamon y queso' -> Pâtisseries, Desserts et Glaces
+),
 (
    15,
    11
-), -- 'Kombucha mate' -> Boissons (alcoolisées et non alcoolisées)
+),
 (
    16,
    11
-), -- 'Fuzetea' -> Boissons (alcoolisées et non alcoolisées)
+),
 (
    17,
    7
-), -- '2 MENUS + 2 EXTRAS' -> Plats préparés et Surgelés
+),
 (
    18,
    7
-), -- '3 MENUS + 3 EXTRAS' -> Plats préparés et Surgelés
+),
 (
    19,
    7
-), -- 'KINGBOX 10 King Nuggets® + 10 Chili Cheese' -> Plats préparés et Surgelés
+),
 (
    20,
    7
-), -- 'Veggie Chicken Louisiane Steakhouse' -> Plats préparés et Surgelés
+),
 (
    21,
    7
-), -- 'Chicken' -> Plats préparés et Surgelés
+),
 (
    22,
    7
-), -- 'Rustic' -> Plats préparés et Surgelés
+),
 (
    23,
    5
-), -- 'Cordon Bleu' -> Pâtisseries, Desserts et Glaces
+),
 (
    24,
    7
-), -- 'Camembert Bites' -> Plats préparés et Surgelés
+),
 (
    25,
    7
-), -- 'Menu West Coast' -> Plats préparés et Surgelés
+),
 (
    26,
    10
-), -- 'Mozzarella Sticks' -> Snacks, Apéritifs et Confiseries
+),
 (
    27,
    7
-), -- 'Menu KO Burger' -> Plats préparés et Surgelés
+),
 (
    28,
    5
-), -- 'Mexico' -> Pâtisseries, Desserts et Glaces
+),
 (
    29,
    7
-), -- 'Frites XL' -> Plats préparés et Surgelés
+),
 (
    30,
    7
-), -- 'Chicken ' -> Plats préparés et Surgelés
+),
 (
    31,
    5
-), -- 'Tiramisu Nutella Spéculos' -> Pâtisseries, Desserts et Glaces
+),
 (
    32,
    7
-), -- 'Farmer' -> Plats préparés et Surgelés
+),
 (
    33,
    13
-), -- 'Nettoyant vitres' -> Hygiène, Beauté et Entretien
+),
 (
    34,
    13
-), -- 'Carrefour Essential - Papier toilette confort doux (12)' -> Hygiène, Beauté et Entretien
+),
 (
    35,
    4
-), -- 'Kiri - Fromage enfant crème à tartiner (8)' -> Produits laitiers et Fromages
+),
 (
    36,
    3
-), -- 'Carrefour Le Marché - Viande hachée pur bœuf (350g)' -> Viandes, Poissons et Charcuterie
+),
 (
    37,
    6
-), -- 'Brioche Pasquier - Pains au lait (10)' -> Épicerie (salée et sucrée)
+),
 (
    38,
    7
-), -- 'Le Cordon Bleu' -> Plats préparés et Surgelés
+),
 (
    39,
    7
-), -- 'Le Western' -> Plats préparés et Surgelés
+),
 (
    40,
    5
-), -- 'Wings' -> Pâtisseries, Desserts et Glaces
+),
 (
    41,
    10
-), -- 'Sauce Harissa' -> Sauces, Condiments et Épices
+),
 (
    42,
    7
-), -- 'Bao Poulet croustillant' -> Plats préparés et Surgelés
+),
 (
    43,
    7
-), -- 'Menu Poké & Boisson' -> Plats préparés et Surgelés
+),
 (
    44,
    7
-), -- 'Bobun boeuf' -> Plats préparés et Surgelés
+),
 (
    45,
    7
-), -- 'Beignets de crevettes tempura' -> Plats préparés et Surgelés
+),
 (
    46,
    7
-), -- 'PLAT + BOISSON CLASSIQUE' -> Plats préparés et Surgelés
+),
 (
    47,
    7
-), -- 'CRUNCHY THAÏ BOX' -> Plats préparés et Surgelés
+),
 (
    48,
    7
-), -- 'CHICKEN ou BEEF THAI' -> Plats préparés et Surgelés
+),
 (
    49,
    7
-), -- 'Le Cook Mie extra' -> Plats préparés et Surgelés
+),
 (
    50,
    7
-), -- 'Le Cook Mie Bistro' -> Plats préparés et Surgelés
+),
 (
    51,
    6
-), -- '3 Cookies Caramel achetés le 4ème offert' -> Épicerie (salée et sucrée)
+),
 (
    52,
    6
-), -- 'Cookiz duo de choc' -> Épicerie (salée et sucrée)
+),
 (
    53,
    7
-), -- 'MENU AUTHENTIQUE THON CRUDITÉS' -> Plats préparés et Surgelés
+),
 (
    54,
    7
-), -- 'TOASTÉ POULET CURRY' -> Plats préparés et Surgelés
+),
 (
    55,
    7
-), -- 'Quiche Lorraine' -> Plats préparés et Surgelés
+),
 (
    56,
    5
-), -- 'FUSETTE CITRON MERINGUÉE' -> Pâtisseries, Desserts et Glaces
+),
 (
    57,
    5
-), -- 'FROMAGE BLANC 0% FRUITS ET COULIS DE FRUITS' -> Pâtisseries, Desserts et Glaces
+),
 (
    58,
    11
-), -- 'ALLONGÉ' -> Boissons (alcoolisées et non alcoolisées)
+),
 (
    59,
    11
-), -- 'Pur jus de pomme Franprix 1l' -> Boissons (alcoolisées et non alcoolisées)
+),
 (
    60,
    10
-), -- 'Barre chocolatée Kit Kat unité 41.5g' -> Snacks, Apéritifs et Confiseries
+),
 (
    61,
    4
-), -- 'Fromage Compté aux lait cru Franprix' -> Produits laitiers et Fromages
+),
 (
    62,
    7
-), -- '2 cuisses de canard du Sud-Ouest confites' -> Plats préparés et Surgelés
+),
 (
    63,
    5
-), -- '2 moelleux au chocolat' -> Pâtisseries, Desserts et Glaces
+),
 (
    64,
    5
-), -- 'Pizza chèvre, miel, noix' -> Pâtisseries, Desserts et Glaces
+),
 (
    65,
    7
-), -- 'Boulettes de viande kefta' -> Plats préparés et Surgelés
+),
 (
    66,
    10
-), -- 'Bret s - Chips de pommes de terre, fromage (125g)' -> Snacks, Apéritifs et Confiseries
+),
 (
    67,
    6
-), -- 'Granola Choco Lait' -> Épicerie (salée et sucrée)
+),
 (
    68,
    5
-), -- 'Ben & Jerry s - Crème glacée, vanille, cookie dough (406g)' -> Pâtisseries, Desserts et Glaces
+),
 (
    69,
    7
-), -- 'Justin Bridou - Saucisson petits bâton de berger nature (100g)' -> Viandes, Poissons et Charcuterie
+),
 (
    70,
    5
-), -- 'Donut nutella billes' -> Pâtisseries, Desserts et Glaces
+),
 (
    71,
    7
-), -- 'Bagel R. Charles' -> Plats préparés et Surgelés
+),
 (
    72,
    7
-), -- 'Bagel N. Simone' -> Plats préparés et Surgelés
+),
 (
    73,
    10
-), -- 'Röstis x6' -> Snacks, Apéritifs et Confiseries
+),
 (
    74,
    7
-), -- 'SUB15 Dinde' -> Plats préparés et Surgelés
+),
 (
    75,
    7
-), -- 'Wrap Crispy Avocado' -> Plats préparés et Surgelés
+),
 (
    76,
    7
-), -- 'SUB30 Xtreme Raclette Steakhouse' -> Plats préparés et Surgelés
+),
 (
    77,
    7
-), -- 'Menu SUB30 Poulet ' -> Plats préparés et Surgelés
+),
 (
    78,
    10
-), -- 'Jalapenos' -> Snacks, Apéritifs et Confiseries
+),
 (
    79,
    7
-), -- 'Menu 6 HOT WINGS' -> Plats préparés et Surgelés
+),
 (
    80,
    7
@@ -5290,7 +5291,7 @@ INSERT INTO ETABLISSEMENT (
    1,
    'Restaurant',
    101,
-   'McDonald s Paris',
+   'McDonald''s Paris',
    'Chaîne de restauration rapide mondialement connue offrant burgers, frites et boissons gazeuses.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
    '09:00:00',
@@ -5374,7 +5375,7 @@ INSERT INTO ETABLISSEMENT (
    8,
    'Restaurant',
    108,
-   'Ben s Food',
+   'Ben''s Food',
    'Cuisine rapide et savoureuse avec un menu varié comprenant des options végétariennes.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2587cc6c5b933f5d9bc5064249bbe575/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
    '09:00:00',
@@ -5530,7 +5531,7 @@ INSERT INTO ETABLISSEMENT (
    21,
    'Restaurant',
    131,
-   'McDonald s Annecy',
+   'McDonald''s Annecy',
    'Restaurant rapide offrant burgers, frites et menus pour petits et grands.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
    '09:00:00',
@@ -6507,7 +6508,7 @@ INSERT INTO PRODUIT (
 ),
 (
    2,
-   'P TIT WRAP RANCH',
+   'P''TIT WRAP RANCH',
    3.80,
    'https://tb-static.uber.com/prod/image-proc/processed_images/211f0fb68762b32b5baf490fef00bba3/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Pâtes avec une sauce crémeuse au lard et parmesan'
@@ -6521,7 +6522,7 @@ INSERT INTO PRODUIT (
 ),
 (
    4,
-   'McFLURRY™ SAVEUR VANILLE DAIM®',
+   'McFLURRY™ SAVEUR VANILLE',
    5.90,
    'https://tb-static.uber.com/prod/image-proc/processed_images/d00bfd22b007f99cc299f5e0acb8284f/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Salade verte avec du poulet grillé, croutons et sauce César'
@@ -6542,7 +6543,7 @@ INSERT INTO PRODUIT (
 ),
 (
    7,
-   'Tropico Tropical 33cl',
+   'Tropico Tropical',
    3.80,
    'https://tb-static.uber.com/prod/image-proc/processed_images/80421cc360d5895fc62ddda20a908c1e/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'Gâteau fondant au chocolat avec un cœur coulant'
@@ -6731,28 +6732,28 @@ INSERT INTO PRODUIT (
 ),
 (
    34,
-   'Carrefour Essential - Papier toilette confort doux (12)',
+   'Papier toilette',
    4.00,
    'https://tb-static.uber.com/prod/image-proc/processed_images/54290cec7e96e73a88ecf97d5a32c4a4/0e5313be7a8831b8ed60f8dab3c2df10.jpeg',
    'Crêpes flambées avec une sauce à l’orange et au Grand Marnier'
 ),
 (
    35,
-   'Kiri - Fromage enfant crème à tartiner (8)',
+   'Kiri',
    2.77,
    'https://tb-static.uber.com/prod/image-proc/processed_images/90b7a5e4812f845a9d8f131052dda3b7/0e5313be7a8831b8ed60f8dab3c2df10.jpeg',
    'Tarte aux pommes caramélisées, servie chaude'
 ),
 (
    36,
-   'Carrefour Le Marché - Viande hachée pur bœuf (350g)',
+   'Viande hachée pur bœuf',
    6.63,
    'https://tb-static.uber.com/prod/image-proc/processed_images/53f823882f73d9ec73513c4930a13ae0/957777de4e8d7439bef56daddbfae227.jpeg',
    'Poulet dans une sauce au curry doux et noix de cajou'
 ),
 (
    37,
-   'Brioche Pasquier - Pains au lait (10)',
+   'Brioche Pasquier',
    2.41,
    'https://tb-static.uber.com/prod/image-proc/processed_images/193aeef2bac1aa55636feb9bad10584d/957777de4e8d7439bef56daddbfae227.jpeg',
    'Pizza avec jambon, champignons, artichauts et olives'
@@ -6906,14 +6907,14 @@ INSERT INTO PRODUIT (
 ),
 (
    59,
-   'Pur jus de pomme',
+   'Jus de pomme',
    2.05,
    'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMjllYjZiNDEzNDAyMjI2NTliZDI3ODk1MmJjMmVlOTkvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Pizza garnie de saumon fumé, crème fraîche et aneth'
 ),
 (
    60,
-   'Barre chocolatée Kit Kat unité 41.5g',
+   'Barre chocolatée',
    1.30,
    'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvZTVlZWQwMGRkZjQxNjEyYmQ4NzQwOWZjNjljYzA0ZmEvYTE5YmIwOTY5MjMxMGRmZDQxZTQ5YTk2YzQyNGIzYTYuanBlZw==',
    'Soupe de poisson avec des légumes et du pain grillé'
@@ -6955,7 +6956,7 @@ INSERT INTO PRODUIT (
 ),
 (
    66,
-   'Bret s - Chips de pommes de terre, fromage (125g)',
+   'Chips au fromage',
    4.10,
    'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvMzUxNTk0MDA2NmU0MTIwMDBlNmU3OGE3ZTQ2NzQwMzQvMGU1MzEzYmU3YTg4MzFiOGVkNjBmOGRhYjNjMmRmMTAuanBlZw==',
    'Pizza garnie de mozzarella, gorgonzola, chèvre et parmesan'
@@ -6969,14 +6970,14 @@ INSERT INTO PRODUIT (
 ),
 (
    68,
-   'Ben & Jerry s - Crème glacée, vanille, cookie dough (406g)',
+   'Ben & Jerry s - Crème glacée, vanille, cookie dough',
    10.77,
    'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvYTg3MzZkMTFkZDIxYTMyNTI0MzM0ZGQ1M2EwMGQ0YjYvMGU1MzEzYmU3YTg4MzFiOGVkNjBmOGRhYjNjMmRmMTAuanBlZw==',
    'Ragoût végétarien avec des légumes mijotés et épicés'
 ),
 (
    69,
-   'Justin Bridou - Saucisson petits bâton de berger nature (100g)',
+   'Justin Bridou - Saucisson',
    6.44,
    'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC9pbWFnZS1wcm9jL3Byb2Nlc3NlZF9pbWFnZXMvOTUxZjRlNDczN2I2NGYzMDYwZGJiMmExN2U4OGI1Y2IvMGU1MzEzYmU3YTg4MzFiOGVkNjBmOGRhYjNjMmRmMTAuanBlZw==',
    'Burger avec sauce barbecue, bacon, et oignons grillés'
