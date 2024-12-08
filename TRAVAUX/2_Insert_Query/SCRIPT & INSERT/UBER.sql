@@ -258,7 +258,6 @@ CREATE TABLE DEPARTEMENT (
 /*==============================================================*/
 CREATE TABLE ENTREPRISE (
    IDENTREPRISE INT4 NOT NULL,
-   IDCLIENT INT4 NULL,
    IDADRESSE INT4 NOT NULL,
    SIRETENTREPRISE VARCHAR(20) NOT NULL,
    CONSTRAINT CK_SIRET_ENTREPRISE CHECK (SIRETENTREPRISE ~ '^[0-9]{14}$'),
@@ -2358,7 +2357,7 @@ INSERT INTO CLIENT (
    20,
    20,
    20,
-   2,
+   20,
    6,
    'Madame',
    'Bernard',
@@ -2374,7 +2373,7 @@ INSERT INTO CLIENT (
    21,
    21,
    21,
-   1,
+   NULL,
    1,
    'Monsieur',
    'Gomez',
@@ -2390,7 +2389,7 @@ INSERT INTO CLIENT (
    22,
    22,
    22,
-   2,
+   NULL,
    2,
    'Madame',
    'Lemoine',
@@ -2406,7 +2405,7 @@ INSERT INTO CLIENT (
    23,
    23,
    23,
-   3,
+   NULL,
    3,
    'Monsieur',
    'Dupont',
@@ -2422,7 +2421,7 @@ INSERT INTO CLIENT (
    24,
    24,
    24,
-   4,
+   NULL,
    4,
    'Madame',
    'Garcia',
@@ -2437,8 +2436,8 @@ INSERT INTO CLIENT (
 (
    25,
    25,
-   5,
-   5,
+   25,
+   NULL,
    5,
    'Monsieur',
    'Benoit',
@@ -2453,8 +2452,8 @@ INSERT INTO CLIENT (
 (
    26,
    26,
-   6,
-   6,
+   26,
+   NULL,
    6,
    'Madame',
    'Lemoine',
@@ -2469,8 +2468,8 @@ INSERT INTO CLIENT (
 (
    27,
    27,
-   7,
-   7,
+   27,
+   NULL,
    7,
    'Monsieur',
    'Dupont',
@@ -2485,8 +2484,8 @@ INSERT INTO CLIENT (
 (
    28,
    28,
-   8,
-   8,
+   28,
+   NULL,
    8,
    'Madame',
    'Bernard',
@@ -2501,8 +2500,8 @@ INSERT INTO CLIENT (
 (
    29,
    29,
-   9,
-   9,
+   29,
+   NULL,
    9,
    'Monsieur',
    'Durand',
@@ -2517,8 +2516,8 @@ INSERT INTO CLIENT (
 (
    30,
    30,
-   12,
-   1,
+   30,
+   NULL,
    2,
    'Madame',
    'Lemoine',
@@ -2533,8 +2532,8 @@ INSERT INTO CLIENT (
 (
    31,
    31,
-   1,
-   1,
+   31,
+   NULL,
    1,
    'Monsieur',
    'Gomez',
@@ -2549,8 +2548,8 @@ INSERT INTO CLIENT (
 (
    32,
    32,
-   2,
-   2,
+   32,
+   NULL,
    2,
    'Madame',
    'Martin',
@@ -2565,8 +2564,8 @@ INSERT INTO CLIENT (
 (
    33,
    33,
-   3,
-   3,
+   33,
+   NULL,
    3,
    'Monsieur',
    'Lemoine',
@@ -2581,8 +2580,8 @@ INSERT INTO CLIENT (
 (
    34,
    34,
-   4,
-   4,
+   34,
+   NULL,
    4,
    'Madame',
    'Petit',
@@ -2597,8 +2596,8 @@ INSERT INTO CLIENT (
 (
    35,
    35,
-   15,
-   5,
+   35,
+   NULL,
    5,
    'Monsieur',
    'Lemoine',
@@ -2613,8 +2612,8 @@ INSERT INTO CLIENT (
 (
    36,
    36,
-   6,
-   6,
+   36,
+   NULL,
    6,
    'Madame',
    'Durand',
@@ -2629,8 +2628,8 @@ INSERT INTO CLIENT (
 (
    37,
    37,
-   7,
-   7,
+   37,
+   NULL,
    7,
    'Monsieur',
    'Gomez',
@@ -2645,8 +2644,8 @@ INSERT INTO CLIENT (
 (
    38,
    38,
-   8,
-   8,
+   38,
+   NULL,
    8,
    'Madame',
    'Benoit',
@@ -2661,8 +2660,8 @@ INSERT INTO CLIENT (
 (
    39,
    39,
-   9,
-   9,
+   39,
+   NULL,
    9,
    'Monsieur',
    'Garcia',
@@ -2677,8 +2676,8 @@ INSERT INTO CLIENT (
 (
    40,
    40,
-   1,
-   2,
+   40,
+   NULL,
    3,
    'Madame',
    'Lemoine',
@@ -2693,8 +2692,8 @@ INSERT INTO CLIENT (
 (
    41,
    41,
-   1,
-   1,
+   41,
+   NULL,
    1,
    'Monsieur',
    'Lemoine',
@@ -2709,8 +2708,8 @@ INSERT INTO CLIENT (
 (
    42,
    42,
-   2,
-   2,
+   42,
+   NULL,
    2,
    'Madame',
    'Garcia',
@@ -2725,8 +2724,8 @@ INSERT INTO CLIENT (
 (
    43,
    43,
-   3,
-   3,
+   43,
+   NULL,
    3,
    'Monsieur',
    'Dupont',
@@ -2741,8 +2740,8 @@ INSERT INTO CLIENT (
 (
    44,
    44,
-   4,
-   4,
+   44,
+   NULL,
    4,
    'Madame',
    'Lemoine',
@@ -2757,8 +2756,8 @@ INSERT INTO CLIENT (
 (
    45,
    45,
-   5,
-   5,
+   45,
+   NULL,
    5,
    'Monsieur',
    'Benoit',
@@ -2773,8 +2772,8 @@ INSERT INTO CLIENT (
 (
    46,
    46,
-   6,
-   6,
+   46,
+   NULL,
    6,
    'Madame',
    'Martin',
@@ -2789,8 +2788,8 @@ INSERT INTO CLIENT (
 (
    47,
    47,
-   7,
-   7,
+   47,
+   NULL,
    7,
    'Monsieur',
    'Lemoine',
@@ -2805,8 +2804,8 @@ INSERT INTO CLIENT (
 (
    48,
    48,
-   8,
-   8,
+   48,
+   NULL,
    8,
    'Madame',
    'Bernard',
@@ -2821,8 +2820,8 @@ INSERT INTO CLIENT (
 (
    49,
    49,
-   9,
-   9,
+   49,
+   NULL,
    9,
    'Monsieur',
    'Garcia',
@@ -2837,8 +2836,8 @@ INSERT INTO CLIENT (
 (
    50,
    50,
-   2,
-   3,
+   50,
+   NULL,
    1,
    'Madame',
    'Lemoine',
@@ -4564,13 +4563,11 @@ INSERT INTO COURSIER (
 
 INSERT INTO ENTREPRISE (
    IDENTREPRISE,
-   IDCLIENT,
    IDADRESSE,
    SIRETENTREPRISE,
    NOMENTREPRISE,
    TAILLE
 ) VALUES (
-   1,
    1,
    1,
    '12345678901234',
@@ -4580,13 +4577,11 @@ INSERT INTO ENTREPRISE (
 (
    2,
    2,
-   2,
    '23456789012345',
    'Entreprise B',
    'ETI'
 ),
 (
-   3,
    3,
    3,
    '34567890123456',
@@ -4596,13 +4591,11 @@ INSERT INTO ENTREPRISE (
 (
    4,
    4,
-   4,
    '45678901234567',
    'Entreprise D',
    'PME'
 ),
 (
-   5,
    5,
    5,
    '56789012345678',
@@ -4612,13 +4605,11 @@ INSERT INTO ENTREPRISE (
 (
    6,
    6,
-   6,
    '67890123456789',
    'Entreprise F',
    'GE'
 ),
 (
-   7,
    7,
    7,
    '78901234567890',
@@ -4628,13 +4619,11 @@ INSERT INTO ENTREPRISE (
 (
    8,
    8,
-   8,
    '89012345678901',
    'Entreprise H',
    'ETI'
 ),
 (
-   9,
    9,
    9,
    '90123456789012',
@@ -4644,13 +4633,11 @@ INSERT INTO ENTREPRISE (
 (
    10,
    10,
-   10,
    '01234567890123',
    'Entreprise J',
    'PME'
 ),
 (
-   11,
    11,
    11,
    '12345678901234',
@@ -4660,13 +4647,11 @@ INSERT INTO ENTREPRISE (
 (
    12,
    12,
-   12,
    '23456789012345',
    'Entreprise L',
    'GE'
 ),
 (
-   13,
    13,
    13,
    '34567890123456',
@@ -4676,13 +4661,11 @@ INSERT INTO ENTREPRISE (
 (
    14,
    14,
-   14,
    '45678901234567',
    'Entreprise N',
    'ETI'
 ),
 (
-   15,
    15,
    15,
    '56789012345678',
@@ -4692,13 +4675,11 @@ INSERT INTO ENTREPRISE (
 (
    16,
    16,
-   16,
    '67890123456789',
    'Entreprise P',
    'PME'
 ),
 (
-   17,
    17,
    17,
    '78901234567890',
@@ -4708,7 +4689,6 @@ INSERT INTO ENTREPRISE (
 (
    18,
    18,
-   18,
    '89012345678901',
    'Entreprise R',
    'GE'
@@ -4716,13 +4696,11 @@ INSERT INTO ENTREPRISE (
 (
    19,
    19,
-   19,
    '90123456789012',
    'Entreprise S',
    'PME'
 ),
 (
-   20,
    20,
    20,
    '01234567890123',
@@ -6290,206 +6268,6 @@ INSERT INTO PLANNING_RESERVATION (
 ),
 (
    50,
-   50
-),
-(
-   51,
-   1
-),
-(
-   52,
-   2
-),
-(
-   53,
-   3
-),
-(
-   54,
-   4
-),
-(
-   55,
-   5
-),
-(
-   56,
-   6
-),
-(
-   57,
-   7
-),
-(
-   58,
-   8
-),
-(
-   59,
-   9
-),
-(
-   60,
-   10
-),
-(
-   61,
-   11
-),
-(
-   62,
-   12
-),
-(
-   63,
-   13
-),
-(
-   64,
-   14
-),
-(
-   65,
-   15
-),
-(
-   66,
-   16
-),
-(
-   67,
-   17
-),
-(
-   68,
-   18
-),
-(
-   69,
-   19
-),
-(
-   70,
-   20
-),
-(
-   71,
-   21
-),
-(
-   72,
-   22
-),
-(
-   73,
-   23
-),
-(
-   74,
-   24
-),
-(
-   75,
-   25
-),
-(
-   76,
-   26
-),
-(
-   77,
-   27
-),
-(
-   78,
-   28
-),
-(
-   79,
-   29
-),
-(
-   80,
-   30
-),
-(
-   81,
-   31
-),
-(
-   82,
-   32
-),
-(
-   83,
-   33
-),
-(
-   84,
-   34
-),
-(
-   85,
-   35
-),
-(
-   86,
-   36
-),
-(
-   87,
-   37
-),
-(
-   88,
-   38
-),
-(
-   89,
-   39
-),
-(
-   90,
-   40
-),
-(
-   91,
-   41
-),
-(
-   92,
-   42
-),
-(
-   93,
-   43
-),
-(
-   94,
-   44
-),
-(
-   95,
-   45
-),
-(
-   96,
-   46
-),
-(
-   97,
-   47
-),
-(
-   98,
-   48
-),
-(
-   99,
-   49
-),
-(
-   100,
    50
 );
 
@@ -9405,14 +9183,6 @@ ALTER TABLE DEPARTEMENT
    )
       REFERENCES PAYS (
          IDPAYS
-      ) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
-ALTER TABLE ENTREPRISE
-   ADD CONSTRAINT FK_ENTREPRISE_CLIENT FOREIGN KEY (
-      IDCLIENT
-   )
-      REFERENCES CLIENT (
-         IDCLIENT
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE ENTREPRISE
