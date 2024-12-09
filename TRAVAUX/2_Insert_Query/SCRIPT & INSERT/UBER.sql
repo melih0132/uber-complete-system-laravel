@@ -41,6 +41,8 @@ DROP TABLE IF EXISTS ETABLISSEMENT CASCADE;
 
 DROP TABLE IF EXISTS FACTURE_COURSE CASCADE;
 
+DROP TABLE IF EXISTS HORAIRES CASCADE;
+
 DROP TABLE IF EXISTS PANIER CASCADE;
 
 DROP TABLE IF EXISTS PAYS CASCADE;
@@ -287,11 +289,22 @@ CREATE TABLE ETABLISSEMENT (
    NOMETABLISSEMENT VARCHAR(50) NULL,
    DESCRIPTION VARCHAR(1500) NULL,
    IMAGEETABLISSEMENT VARCHAR(200) NULL,
-   HORAIRESOUVERTURE TIME NULL,
-   HORAIRESFERMETURE TIME NULL,
    LIVRAISON BOOL NULL,
    AEMPORTER BOOL NULL,
    CONSTRAINT PK_ETABLISSEMENT PRIMARY KEY (IDETABLISSEMENT)
+);
+
+/*==============================================================*/
+/* Table : HORAIRES                                             */
+/*==============================================================*/
+CREATE TABLE HORAIRES (
+   IDHORAIRES INT4 NOT NULL,
+   IDETABLISSEMENT INT4 NOT NULL,
+   JOURSEMAINE VARCHAR(9) NOT NULL,
+   HORAIRESOUVERTURE TIME NULL,
+   HORAIRESFERMETURE TIME NULL,
+   CONSTRAINT PK_HORAIRES PRIMARY KEY (IDHORAIRES),
+   CONSTRAINT CK_JOURSEMAINE CHECK (JOURSEMAINE IN ('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'))
 );
 
 /*==============================================================*/
@@ -5261,8 +5274,6 @@ INSERT INTO ETABLISSEMENT (
    NOMETABLISSEMENT,
    DESCRIPTION,
    IMAGEETABLISSEMENT,
-   HORAIRESOUVERTURE,
-   HORAIRESFERMETURE,
    LIVRAISON,
    AEMPORTER
 ) VALUES (
@@ -5272,8 +5283,6 @@ INSERT INTO ETABLISSEMENT (
    'McDonald''s Paris',
    'Chaîne de restauration rapide mondialement connue offrant burgers, frites et boissons gazeuses.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
-   '09:00:00',
-   '18:00:00',
    TRUE,
    FALSE
 ),
@@ -5284,8 +5293,6 @@ INSERT INTO ETABLISSEMENT (
    'Waffle Factory',
    'Spécialisé dans les gaufres sucrées et salées préparées à la demande.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/66ba7e9963cfdbe3126a79bd39dcf405/fb86662148be855d931b37d6c1e5fcbe.jpeg',
-   '10:00:00',
-   '20:00:00',
    FALSE,
    TRUE
 ),
@@ -5296,8 +5303,6 @@ INSERT INTO ETABLISSEMENT (
    'PAUL',
    'Boulangerie française traditionnelle offrant pains artisanaux, pâtisseries et snacks.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/923496b75901cda79df0e9f8676a63ef/c73ecc27d2a9eaa735b1ee95304ba588.jpeg',
-   '07:00:00',
-   '15:00:00',
    TRUE,
    TRUE
 ),
@@ -5308,10 +5313,8 @@ INSERT INTO ETABLISSEMENT (
    'El Chaltén',
    'Restaurant spécialisé dans la cuisine argentine avec des saveurs authentiques.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/39c402fdde3d6556e82959a6a1875629/783282f6131ef2258e5bcd87c46aa87e.jpeg',
-   '11:00:00',
-   '23:00:00',
    FALSE,
-   FALSE
+   TRUE
 ),
 (
    5,
@@ -5320,8 +5323,6 @@ INSERT INTO ETABLISSEMENT (
    'Burger King',
    'Chaîne de restauration rapide connue pour ses burgers emblématiques comme le Whopper.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/7ddafa6aaf2de203eb347fecc6104779/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
-   '09:30:00',
-   '19:30:00',
    TRUE,
    FALSE
 ),
@@ -5332,8 +5333,6 @@ INSERT INTO ETABLISSEMENT (
    'Street Pasta',
    'Propose des pâtes fraîches et des sauces maison dans un cadre moderne.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/73557525500196231ccc1aa93616ed6f/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
-   '07:00:00',
-   '21:00:00',
    FALSE,
    TRUE
 ),
@@ -5344,8 +5343,6 @@ INSERT INTO ETABLISSEMENT (
    'Black And White Burger',
    'Restaurant spécialisé dans les burgers gourmets avec des ingrédients de qualité.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/73b96ac84870d9f13a58811443662dc0/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
-   '10:00:00',
-   '22:00:00',
    TRUE,
    FALSE
 ),
@@ -5356,8 +5353,6 @@ INSERT INTO ETABLISSEMENT (
    'Ben''s Food',
    'Cuisine rapide et savoureuse avec un menu varié comprenant des options végétariennes.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2587cc6c5b933f5d9bc5064249bbe575/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
-   '09:00:00',
-   '20:00:00',
    TRUE,
    TRUE
 ),
@@ -5368,9 +5363,7 @@ INSERT INTO ETABLISSEMENT (
    'Carrefour',
    'Supermarché proposant une large gamme de produits alimentaires et ménagers.',
    'https://logowik.com/content/uploads/images/210_carrefour.jpg',
-   '08:00:00',
-   '20:00:00',
-   FALSE,
+   TRUE,
    FALSE
 ),
 (
@@ -5380,8 +5373,6 @@ INSERT INTO ETABLISSEMENT (
    'Fat Kebab',
    'Spécialisé dans les kebabs généreux et faits maison avec des sauces uniques.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/c570cbbeec2420d1ccdeb75ac2d58231/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
-   '11:00:00',
-   '23:00:00',
    TRUE,
    FALSE
 ),
@@ -5392,8 +5383,6 @@ INSERT INTO ETABLISSEMENT (
    'Island Bowls',
    'Restaurant proposant des bowls sains et équilibrés inspirés de la cuisine hawaïenne.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/57efbcd5e197184d730502035e58bd84/fb86662148be855d931b37d6c1e5fcbe.jpeg',
-   '10:00:00',
-   '23:00:00',
    FALSE,
    TRUE
 ),
@@ -5404,8 +5393,6 @@ INSERT INTO ETABLISSEMENT (
    'Pitaya',
    'Cuisine thaïlandaise authentique servie dans une ambiance moderne et conviviale.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/40ecc6916fbbd0cd7287694a97bd1d90/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
-   '09:00:00',
-   '18:00:00',
    TRUE,
    FALSE
 ),
@@ -5416,8 +5403,6 @@ INSERT INTO ETABLISSEMENT (
    'La Mie Câline',
    'Boulangerie et pâtisserie offrant des produits frais, viennoiseries et sandwichs.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/6f02c35928e2bd90b78a8091edb5976f/fb86662148be855d931b37d6c1e5fcbe.jpeg',
-   '08:30:00',
-   '22:30:00',
    TRUE,
    TRUE
 ),
@@ -5428,9 +5413,7 @@ INSERT INTO ETABLISSEMENT (
    'Brioche Dorée',
    'Boulangerie café offrant viennoiseries, sandwichs et menus rapides pour emporter.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/23b865a8185355fdedf2ab992ec28c72/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
-   '06:30:00',
-   '15:00:00',
-   FALSE,
+   TRUE,
    FALSE
 ),
 (
@@ -5440,8 +5423,6 @@ INSERT INTO ETABLISSEMENT (
    'Franprix',
    'Magasin de proximité proposant produits alimentaires et ménagers à prix abordables.',
    'https://www.groupe-asten.fr/wp-content/uploads/2022/07/franprix-1000.png',
-   '11:00:00',
-   '23:00:00',
    TRUE,
    FALSE
 ),
@@ -5452,8 +5433,6 @@ INSERT INTO ETABLISSEMENT (
    'Picard',
    'Spécialisé dans les produits surgelés de qualité pour des repas rapides et savoureux.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/a5b4df5effe99c1e6459b51137f07938/029e6f4e0c81c14572126109dfe867f3.png',
-   '08:00:00',
-   '21:00:00',
    TRUE,
    TRUE
 ),
@@ -5464,10 +5443,8 @@ INSERT INTO ETABLISSEMENT (
    'Vival',
    'Épicerie de quartier avec une sélection variée de produits alimentaires de base.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/7148418810e489efe27be264ba3694ec/a70f5c9df440d10213e93244e9eb7cad.jpeg',
-   '08:00:00',
-   '20:00:00',
    FALSE,
-   FALSE
+   TRUE
 ),
 (
    18,
@@ -5476,8 +5453,6 @@ INSERT INTO ETABLISSEMENT (
    'Instant Rétro',
    'Restaurant au style rétro proposant des plats classiques revisités.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/4be8ea88c2b77663ce2d387b2a7924aa/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
-   '10:00:00',
-   '22:00:00',
    TRUE,
    FALSE
 ),
@@ -5488,8 +5463,6 @@ INSERT INTO ETABLISSEMENT (
    'Chicken HOT',
    'Spécialisé dans le poulet épicé et les accompagnements savoureux.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/dcdd6f59af11b38bfaba9961f80fa0ec/cc592037c936600295e9961933037e19.jpeg',
-   '09:00:00',
-   '18:00:00',
    FALSE,
    TRUE
 ),
@@ -5500,8 +5473,6 @@ INSERT INTO ETABLISSEMENT (
    'Subway',
    'Chaîne internationale proposant des sandwichs personnalisés avec des ingrédients frais.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/6fc5ab9e3adaa71256b0ef5d6619159f/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
-   '11:00:00',
-   '23:00:00',
    TRUE,
    TRUE
 ),
@@ -5512,11 +5483,219 @@ INSERT INTO ETABLISSEMENT (
    'McDonald''s Annecy',
    'Restaurant rapide offrant burgers, frites et menus pour petits et grands.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
-   '09:00:00',
-   '18:00:00',
    TRUE,
    FALSE
 );
+
+-- McDonald's Paris
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(1, 1, 'Lundi', '09:00:00', '18:00:00'),
+(2, 1, 'Mardi', '09:00:00', '18:00:00'),
+(3, 1, 'Mercredi', '09:00:00', '18:00:00'),
+(4, 1, 'Jeudi', '09:00:00', '18:00:00'),
+(5, 1, 'Vendredi', '09:00:00', '18:00:00'),
+(6, 1, 'Samedi', '09:00:00', '18:00:00'),
+(7, 1, 'Dimanche', '09:00:00', '18:00:00');
+
+-- Waffle Factory
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(8, 2, 'Lundi', '10:00:00', '20:00:00'),
+(9, 2, 'Mardi', '10:00:00', '20:00:00'),
+(10, 2, 'Mercredi', '10:00:00', '20:00:00'),
+(11, 2, 'Jeudi', '10:00:00', '20:00:00'),
+(12, 2, 'Vendredi', '10:00:00', '20:00:00'),
+(13, 2, 'Samedi', '10:00:00', '20:00:00'),
+(14, 2, 'Dimanche', '10:00:00', '20:00:00');
+
+-- PAUL
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(15, 3, 'Lundi', '07:00:00', '15:00:00'),
+(16, 3, 'Mardi', '07:00:00', '15:00:00'),
+(17, 3, 'Mercredi', '07:00:00', '15:00:00'),
+(18, 3, 'Jeudi', '07:00:00', '15:00:00'),
+(19, 3, 'Vendredi', '07:00:00', '15:00:00'),
+(20, 3, 'Samedi', '07:00:00', '15:00:00'),
+(21, 3, 'Dimanche', '07:00:00', '15:00:00');
+
+-- El Chaltén
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(22, 4, 'Lundi', '11:00:00', '23:00:00'),
+(23, 4, 'Mardi', '11:00:00', '23:00:00'),
+(24, 4, 'Mercredi', '11:00:00', '23:00:00'),
+(25, 4, 'Jeudi', '11:00:00', '23:00:00'),
+(26, 4, 'Vendredi', '11:00:00', '23:00:00'),
+(27, 4, 'Samedi', '11:00:00', '23:00:00'),
+(28, 4, 'Dimanche', '11:00:00', '23:00:00');
+
+-- Burger King
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(29, 5, 'Lundi', '09:30:00', '19:30:00'),
+(30, 5, 'Mardi', '09:30:00', '19:30:00'),
+(31, 5, 'Mercredi', '09:30:00', '19:30:00'),
+(32, 5, 'Jeudi', '09:30:00', '19:30:00'),
+(33, 5, 'Vendredi', '09:30:00', '19:30:00'),
+(34, 5, 'Samedi', '09:30:00', '19:30:00'),
+(35, 5, 'Dimanche', '09:30:00', '19:30:00');
+
+-- Street Pasta
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(36, 6, 'Lundi', '07:00:00', '21:00:00'),
+(37, 6, 'Mardi', '07:00:00', '21:00:00'),
+(38, 6, 'Mercredi', '07:00:00', '21:00:00'),
+(39, 6, 'Jeudi', '07:00:00', '21:00:00'),
+(40, 6, 'Vendredi', '07:00:00', '21:00:00'),
+(41, 6, 'Samedi', '07:00:00', '21:00:00'),
+(42, 6, 'Dimanche', '07:00:00', '21:00:00');
+
+-- Black And White Burger
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(43, 7, 'Lundi', '10:00:00', '22:00:00'),
+(44, 7, 'Mardi', '10:00:00', '22:00:00'),
+(45, 7, 'Mercredi', '10:00:00', '22:00:00'),
+(46, 7, 'Jeudi', '10:00:00', '22:00:00'),
+(47, 7, 'Vendredi', '10:00:00', '22:00:00'),
+(48, 7, 'Samedi', '10:00:00', '22:00:00'),
+(49, 7, 'Dimanche', '10:00:00', '22:00:00');
+
+-- Ben's Food
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(50, 8, 'Lundi', '09:00:00', '20:00:00'),
+(51, 8, 'Mardi', '09:00:00', '20:00:00'),
+(52, 8, 'Mercredi', '09:00:00', '20:00:00'),
+(53, 8, 'Jeudi', '09:00:00', '20:00:00'),
+(54, 8, 'Vendredi', '09:00:00', '20:00:00'),
+(55, 8, 'Samedi', '09:00:00', '20:00:00'),
+(56, 8, 'Dimanche', '09:00:00', '20:00:00');
+
+-- Carrefour
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(57, 9, 'Lundi', '08:00:00', '20:00:00'),
+(58, 9, 'Mardi', '08:00:00', '20:00:00'),
+(59, 9, 'Mercredi', '08:00:00', '20:00:00'),
+(60, 9, 'Jeudi', '08:00:00', '20:00:00'),
+(61, 9, 'Vendredi', '08:00:00', '20:00:00'),
+(62, 9, 'Samedi', '08:00:00', '20:00:00'),
+(63, 9, 'Dimanche', '08:00:00', '20:00:00');
+
+-- Fat Kebab
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(64, 10, 'Lundi', '11:00:00', '23:00:00'),
+(65, 10, 'Mardi', '11:00:00', '23:00:00'),
+(66, 10, 'Mercredi', '11:00:00', '23:00:00'),
+(67, 10, 'Jeudi', '11:00:00', '23:00:00'),
+(68, 10, 'Vendredi', '11:00:00', '23:00:00'),
+(69, 10, 'Samedi', '11:00:00', '23:00:00'),
+(70, 10, 'Dimanche', '11:00:00', '23:00:00');
+
+-- Island Bowls
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(71, 11, 'Lundi', '10:00:00', '23:00:00'),
+(72, 11, 'Mardi', '10:00:00', '23:00:00'),
+(73, 11, 'Mercredi', '10:00:00', '23:00:00'),
+(74, 11, 'Jeudi', '10:00:00', '23:00:00'),
+(75, 11, 'Vendredi', '10:00:00', '23:00:00'),
+(76, 11, 'Samedi', '10:00:00', '23:00:00'),
+(77, 11, 'Dimanche', '10:00:00', '23:00:00');
+
+-- Pitaya
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(78, 12, 'Lundi', '09:00:00', '18:00:00'),
+(79, 12, 'Mardi', '09:00:00', '18:00:00'),
+(80, 12, 'Mercredi', '09:00:00', '18:00:00'),
+(81, 12, 'Jeudi', '09:00:00', '18:00:00'),
+(82, 12, 'Vendredi', '09:00:00', '18:00:00'),
+(83, 12, 'Samedi', '09:00:00', '18:00:00'),
+(84, 12, 'Dimanche', '09:00:00', '18:00:00');
+
+-- La Mie Câline
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(85, 13, 'Lundi', '08:30:00', '22:30:00'),
+(86, 13, 'Mardi', '08:30:00', '22:30:00'),
+(87, 13, 'Mercredi', '08:30:00', '22:30:00'),
+(88, 13, 'Jeudi', '08:30:00', '22:30:00'),
+(89, 13, 'Vendredi', '08:30:00', '22:30:00'),
+(90, 13, 'Samedi', '08:30:00', '22:30:00'),
+(91, 13, 'Dimanche', '08:30:00', '22:30:00');
+
+-- Brioche Dorée
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(92, 14, 'Lundi', '06:30:00', '15:00:00'),
+(93, 14, 'Mardi', '06:30:00', '15:00:00'),
+(94, 14, 'Mercredi', '06:30:00', '15:00:00'),
+(95, 14, 'Jeudi', '06:30:00', '15:00:00'),
+(96, 14, 'Vendredi', '06:30:00', '15:00:00'),
+(97, 14, 'Samedi', '06:30:00', '15:00:00'),
+(98, 14, 'Dimanche', '06:30:00', '15:00:00');
+
+-- Franprix
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(99, 15, 'Lundi', '11:00:00', '23:00:00'),
+(100, 15, 'Mardi', '11:00:00', '23:00:00'),
+(101, 15, 'Mercredi', '11:00:00', '23:00:00'),
+(102, 15, 'Jeudi', '11:00:00', '23:00:00'),
+(103, 15, 'Vendredi', '11:00:00', '23:00:00'),
+(104, 15, 'Samedi', '11:00:00', '23:00:00'),
+(105, 15, 'Dimanche', '11:00:00', '23:00:00');
+
+-- Picard
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(106, 16, 'Lundi', '08:00:00', '21:00:00'),
+(107, 16, 'Mardi', '08:00:00', '21:00:00'),
+(108, 16, 'Mercredi', '08:00:00', '21:00:00'),
+(109, 16, 'Jeudi', '08:00:00', '21:00:00'),
+(110, 16, 'Vendredi', '08:00:00', '21:00:00'),
+(111, 16, 'Samedi', '08:00:00', '21:00:00'),
+(112, 16, 'Dimanche', '08:00:00', '21:00:00');
+
+-- Vival
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(113, 17, 'Lundi', '08:00:00', '20:00:00'),
+(114, 17, 'Mardi', '08:00:00', '20:00:00'),
+(115, 17, 'Mercredi', '08:00:00', '20:00:00'),
+(116, 17, 'Jeudi', '08:00:00', '20:00:00'),
+(117, 17, 'Vendredi', '08:00:00', '20:00:00'),
+(118, 17, 'Samedi', '08:00:00', '20:00:00'),
+(119, 17, 'Dimanche', '08:00:00', '20:00:00');
+
+-- Instant Rétro
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(120, 18, 'Lundi', '10:00:00', '22:00:00'),
+(121, 18, 'Mardi', '10:00:00', '22:00:00'),
+(122, 18, 'Mercredi', '10:00:00', '22:00:00'),
+(123, 18, 'Jeudi', '10:00:00', '22:00:00'),
+(124, 18, 'Vendredi', '10:00:00', '22:00:00'),
+(125, 18, 'Samedi', '10:00:00', '22:00:00'),
+(126, 18, 'Dimanche', '10:00:00', '22:00:00');
+
+-- Chicken HOT
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(127, 19, 'Lundi', '09:00:00', '18:00:00'),
+(128, 19, 'Mardi', '09:00:00', '18:00:00'),
+(129, 19, 'Mercredi', '09:00:00', '18:00:00'),
+(130, 19, 'Jeudi', '09:00:00', '18:00:00'),
+(131, 19, 'Vendredi', '09:00:00', '18:00:00'),
+(132, 19, 'Samedi', '09:00:00', '18:00:00'),
+(133, 19, 'Dimanche', '09:00:00', '18:00:00');
+
+-- Subway
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(134, 20, 'Lundi', '11:00:00', '23:00:00'),
+(135, 20, 'Mardi', '11:00:00', '23:00:00'),
+(136, 20, 'Mercredi', '11:00:00', '23:00:00'),
+(137, 20, 'Jeudi', '11:00:00', '23:00:00'),
+(138, 20, 'Vendredi', '11:00:00', '23:00:00'),
+(139, 20, 'Samedi', '11:00:00', '23:00:00'),
+(140, 20, 'Dimanche', '11:00:00', '23:00:00');
+
+-- McDonald's Annecy
+INSERT INTO HORAIRES (IDHORAIRES, IDETABLISSEMENT, JOURSEMAINE, HORAIRESOUVERTURE, HORAIRESFERMETURE) VALUES
+(141, 21, 'Lundi', '09:00:00', '18:00:00'),
+(142, 21, 'Mardi', '09:00:00', '18:00:00'),
+(143, 21, 'Mercredi', '09:00:00', '18:00:00'),
+(144, 21, 'Jeudi', '09:00:00', '18:00:00'),
+(145, 21, 'Vendredi', '09:00:00', '18:00:00'),
+(146, 21, 'Samedi', '09:00:00', '18:00:00'),
+(147, 21, 'Dimanche', '09:00:00', '18:00:00');
 
 INSERT INTO FACTURE_COURSE (
    IDFACTURE,
@@ -9232,6 +9411,14 @@ ALTER TABLE ETABLISSEMENT
       REFERENCES ADRESSE (
          IDADRESSE
       ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE HORAIRES
+   ADD CONSTRAINT FK_ETABLISSEMENT_HORAIRES FOREIGN KEY (
+      IDETABLISSEMENT
+   )
+      REFERENCES ETABLISSEMENT (
+         IDETABLISSEMENT
+      ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE FACTURE_COURSE
    ADD CONSTRAINT FK_FACTURE_COURSE FOREIGN KEY (
