@@ -2,7 +2,6 @@
 /* Nom de SGBD :  PostgreSQL 8                                  */
 /* Date de création :  01/01/2001                      */
 /*==============================================================*/
-
 DROP TABLE IF EXISTS ADRESSE CASCADE;
 
 DROP TABLE IF EXISTS APPARTIENT_2 CASCADE;
@@ -42,6 +41,8 @@ DROP TABLE IF EXISTS ETABLISSEMENT CASCADE;
 DROP TABLE IF EXISTS FACTURE_COURSE CASCADE;
 
 DROP TABLE IF EXISTS HORAIRES CASCADE;
+
+DROP TABLE IF EXISTS HORAIRES_COURSIER CASCADE;
 
 DROP TABLE IF EXISTS PANIER CASCADE;
 
@@ -134,13 +135,13 @@ CREATE TABLE CLIENT (
    IDENTREPRISE INT4 NULL,
    IDADRESSE INT4 NOT NULL,
    GENREUSER VARCHAR(20) NOT NULL,
-   CONSTRAINT CK_CLIENT_GENRE CHECK(GENREUSER IN ('Monsieur', 'Madame')),
+   CONSTRAINT CK_CLIENT_GENRE CHECK (GENREUSER IN ('Monsieur', 'Madame')),
    NOMUSER VARCHAR(50) NOT NULL,
    PRENOMUSER VARCHAR(50) NOT NULL,
    DATENAISSANCE DATE NOT NULL,
    CONSTRAINT CK_DATE_NAISS CHECK ( DATENAISSANCE <= CURRENT_DATE AND DATENAISSANCE <= CURRENT_DATE - INTERVAL '18 years' ),
    TELEPHONE VARCHAR(15) NOT NULL,
-   CONSTRAINT CK_CLIENT_TEL CHECK ((TELEPHONE LIKE '06%' OR TELEPHONE LIKE '07%') AND LENGTH(TELEPHONE) = 10),
+   CONSTRAINT CK_CLIENT_TEL CHECK ( ( TELEPHONE LIKE '06%' OR TELEPHONE LIKE '07%' ) AND LENGTH(TELEPHONE) = 10 ),
    EMAILUSER VARCHAR(200) NOT NULL,
    CONSTRAINT UQ_CLIENT UNIQUE (EMAILUSER),
    MOTDEPASSEUSER VARCHAR(200) NOT NULL,
@@ -199,16 +200,18 @@ CREATE TABLE COURSE (
    IDRESERVATION INT4 NOT NULL,
    ADR_IDADRESSE INT4 NOT NULL,
    IDPRESTATION INT4 NOT NULL,
+   DATECOURSE DATE NOT NULL,
+   HEURECOURSE TIME NOT NULL,
    PRIXCOURSE NUMERIC(5, 2) NOT NULL,
    CONSTRAINT CK_COURSE_PRIX CHECK (PRIXCOURSE >= 0),
    STATUTCOURSE VARCHAR(20) NOT NULL,
-   CONSTRAINT CK_COURSE_STATUT CHECK (STATUTCOURSE IN ('En attente', 'En cours', 'Terminée', 'Annulée')),
+   CONSTRAINT CK_COURSE_STATUT CHECK ( STATUTCOURSE IN ('En attente', 'En cours', 'Terminée', 'Annulée') ),
    NOTECOURSE NUMERIC(2, 1) NULL,
-   CONSTRAINT CK_COURSE_NOTE CHECK (NOTECOURSE >= 0 AND NOTECOURSE <= 5),
-   CONSTRAINT CK_COURSE_NOTE_IS_NULL CHECK ( (STATUTCOURSE NOT IN ('En cours', 'En attente', 'Annulée')) OR (STATUTCOURSE IN ('En cours', 'En attente', 'Annulée') AND NOTECOURSE IS NULL) ),
+   CONSTRAINT CK_COURSE_NOTE CHECK ( NOTECOURSE >= 0 AND NOTECOURSE <= 5 ),
+   CONSTRAINT CK_COURSE_NOTE_IS_NULL CHECK ( ( STATUTCOURSE NOT IN ('En cours', 'En attente', 'Annulée') ) OR ( STATUTCOURSE IN ('En cours', 'En attente', 'Annulée') AND NOTECOURSE IS NULL ) ),
    COMMENTAIRECOURSE VARCHAR(1500) NULL,
    POURBOIRE NUMERIC(5, 2) NULL,
-   CONSTRAINT CK_POURBOIRE CHECK (POURBOIRE >= 0 OR POURBOIRE = NULL),
+   CONSTRAINT CK_POURBOIRE CHECK ( POURBOIRE >= 0 OR POURBOIRE = NULL ),
    DISTANCE NUMERIC(5, 2) NULL,
    CONSTRAINT CK_COURSE_DISTANCE CHECK (DISTANCE >= 0),
    TEMPS INT4 NULL,
@@ -224,13 +227,13 @@ CREATE TABLE COURSIER (
    IDENTREPRISE INT4 NOT NULL,
    IDADRESSE INT4 NOT NULL,
    GENREUSER VARCHAR(20) NOT NULL,
-   CONSTRAINT CK_COURSIER_GENRE CHECK(GENREUSER IN ('Monsieur', 'Madame')),
+   CONSTRAINT CK_COURSIER_GENRE CHECK (GENREUSER IN ('Monsieur', 'Madame')),
    NOMUSER VARCHAR(50) NOT NULL,
    PRENOMUSER VARCHAR(50) NOT NULL,
    DATENAISSANCE DATE NOT NULL,
    CONSTRAINT CK_COURSIER_DATE CHECK ( DATENAISSANCE <= CURRENT_DATE AND DATENAISSANCE <= CURRENT_DATE - INTERVAL '18 years' ),
    TELEPHONE VARCHAR(15) NOT NULL,
-   CONSTRAINT CK_COURSIER_TEL CHECK ((TELEPHONE LIKE '06%' OR TELEPHONE LIKE '07%') AND LENGTH(TELEPHONE) = 10),
+   CONSTRAINT CK_COURSIER_TEL CHECK ( ( TELEPHONE LIKE '06%' OR TELEPHONE LIKE '07%' ) AND LENGTH(TELEPHONE) = 10 ),
    EMAILUSER VARCHAR(200) NOT NULL,
    MOTDEPASSEUSER VARCHAR(200) NOT NULL,
    NUMEROCARTEVTC NUMERIC(13, 1) NOT NULL,
@@ -240,7 +243,7 @@ CREATE TABLE COURSIER (
    DATEDEBUTACTIVITE DATE NOT NULL,
    CONSTRAINT CK_COURSIER_DATE_DEBUT CHECK (DATEDEBUTACTIVITE <= CURRENT_DATE),
    NOTEMOYENNE NUMERIC(2, 1) NOT NULL,
-   CONSTRAINT CK_COURSIER_NOTE CHECK( NOTEMOYENNE >= 1 AND NOTEMOYENNE <= 5 ),
+   CONSTRAINT CK_COURSIER_NOTE CHECK ( NOTEMOYENNE >= 1 AND NOTEMOYENNE <= 5 ),
    CONSTRAINT PK_COURSIER PRIMARY KEY (IDCOURSIER)
 );
 
@@ -301,10 +304,23 @@ CREATE TABLE HORAIRES (
    IDHORAIRES INT4 NOT NULL,
    IDETABLISSEMENT INT4 NOT NULL,
    JOURSEMAINE VARCHAR(9) NOT NULL,
-   HORAIRESOUVERTURE TIME NULL,
-   HORAIRESFERMETURE TIME NULL,
+   HORAIRESOUVERTURE TIME WITH TIME ZONE NULL,
+   HORAIRESFERMETURE TIME WITH TIME ZONE NULL,
    CONSTRAINT PK_HORAIRES PRIMARY KEY (IDHORAIRES),
-   CONSTRAINT CK_JOURSEMAINE CHECK (JOURSEMAINE IN ('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'))
+   CONSTRAINT CK_JOURSEMAINE CHECK ( JOURSEMAINE IN ( 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche' ) )
+);
+
+/*==============================================================*/
+/* Table : HORAIRES_COURSIER                                    */
+/*==============================================================*/
+CREATE TABLE HORAIRES_COURSIER (
+   IDHORAIRES_COURSIER INT4 NOT NULL,
+   IDCOURSIER INT4 NOT NULL,
+   JOURSEMAINE VARCHAR(9) NOT NULL,
+   HEUREDEBUT TIME WITH TIME ZONE NULL,
+   HEUREFIN TIME WITH TIME ZONE NULL,
+   CONSTRAINT PK_HORAIRES_COURSIER PRIMARY KEY (IDHORAIRES_COURSIER),
+   CONSTRAINT CK_JOURSEMAINE CHECK ( JOURSEMAINE IN ( 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche' ) )
 );
 
 /*==============================================================*/
@@ -431,12 +447,12 @@ CREATE TABLE VEHICULE (
    IDVEHICULE INT4 NOT NULL,
    IDCOURSIER INT4 NOT NULL,
    IMMATRICULATION CHAR(9) NOT NULL,
-   CONSTRAINT UQ_VEHICULE_IMMA UNIQUE (IMMATRICULATION),
-   CONSTRAINT CK_VEHICULE_IMMA CHECK (IMMATRICULATION ~ '^[A-Z]{2}-[0-9]{3}-[A-Z]{2}$'),
+   CONSTRAINT CK_VEHICULE_IMMATRICULATION CHECK (IMMATRICULATION ~ '^[A-Z]{2}-[0-9]{3}-[A-Z]{2}$'),
+   CONSTRAINT UQ_VEHICULE_IMMATRICULATION UNIQUE (IMMATRICULATION),
    MARQUE VARCHAR(50) NULL,
    MODELE VARCHAR(50) NULL,
    CAPACITE INT4 NULL,
-   CONSTRAINT CK_VEHICULE_CAPACITE CHECK ( CAPACITE BETWEEN 2 AND 7 ),
+   CONSTRAINT CK_VEHICULE_CAPACITE CHECK (CAPACITE BETWEEN 2 AND 7),
    ACCEPTEANIMAUX BOOL NOT NULL,
    ESTELECTRIQUE BOOL NOT NULL,
    ESTCONFORTABLE BOOL NOT NULL,
@@ -3269,6 +3285,8 @@ INSERT INTO COURSE (
    IDRESERVATION,
    ADR_IDADRESSE,
    IDPRESTATION,
+   DATECOURSE,
+   HEURECOURSE,
    PRIXCOURSE,
    STATUTCOURSE,
    NOTECOURSE,
@@ -3284,6 +3302,8 @@ INSERT INTO COURSE (
    50,
    56,
    7,
+   '2024-12-10',
+   '08:30:00',
    15.00,
    'En attente',
    NULL,
@@ -3300,6 +3320,8 @@ INSERT INTO COURSE (
    51,
    59,
    6,
+   '2024-12-11',
+   '09:00:00',
    25.00,
    'En attente',
    NULL,
@@ -3316,6 +3338,8 @@ INSERT INTO COURSE (
    52,
    46,
    7,
+   '2024-12-09',
+   '14:15:00',
    0.00,
    'Annulée',
    NULL,
@@ -3332,6 +3356,8 @@ INSERT INTO COURSE (
    53,
    55,
    3,
+   '2024-12-10',
+   '15:45:00',
    45.00,
    'En cours',
    NULL,
@@ -3348,6 +3374,8 @@ INSERT INTO COURSE (
    54,
    8,
    1,
+   '2024-12-08',
+   '11:30:00',
    80.00,
    'Terminée',
    4.5,
@@ -3364,6 +3392,8 @@ INSERT INTO COURSE (
    55,
    14,
    7,
+   '2024-12-09',
+   '13:00:00',
    50.00,
    'Terminée',
    3.5,
@@ -3380,6 +3410,8 @@ INSERT INTO COURSE (
    56,
    39,
    3,
+   '2024-12-11',
+   '10:00:00',
    12.00,
    'En attente',
    NULL,
@@ -3396,6 +3428,8 @@ INSERT INTO COURSE (
    57,
    31,
    2,
+   '2024-12-07',
+   '16:20:00',
    40.00,
    'Terminée',
    4.0,
@@ -3412,6 +3446,8 @@ INSERT INTO COURSE (
    58,
    74,
    2,
+   '2024-12-08',
+   '17:10:00',
    30.00,
    'En cours',
    NULL,
@@ -3428,6 +3464,8 @@ INSERT INTO COURSE (
    60,
    44,
    2,
+   '2024-12-10',
+   '14:00:00',
    25.00,
    'En cours',
    NULL,
@@ -3444,6 +3482,8 @@ INSERT INTO COURSE (
    61,
    17,
    1,
+   '2024-12-09',
+   '08:00:00',
    90.00,
    'Terminée',
    5.0,
@@ -3460,6 +3500,8 @@ INSERT INTO COURSE (
    62,
    88,
    5,
+   '2024-12-10',
+   '11:45:00',
    55.00,
    'En cours',
    NULL,
@@ -3476,6 +3518,8 @@ INSERT INTO COURSE (
    63,
    74,
    1,
+   '2024-12-11',
+   '09:30:00',
    10.00,
    'En cours',
    NULL,
@@ -3492,6 +3536,8 @@ INSERT INTO COURSE (
    64,
    11,
    5,
+   '2024-12-09',
+   '10:45:00',
    65.00,
    'En cours',
    NULL,
@@ -3508,6 +3554,8 @@ INSERT INTO COURSE (
    65,
    4,
    5,
+   '2024-12-08',
+   '12:15:00',
    20.00,
    'Terminée',
    3.0,
@@ -3524,6 +3572,8 @@ INSERT INTO COURSE (
    66,
    35,
    4,
+   '2024-12-10',
+   '13:30:00',
    75.00,
    'Terminée',
    4.8,
@@ -3540,6 +3590,8 @@ INSERT INTO COURSE (
    67,
    49,
    7,
+   '2024-12-09',
+   '08:00:00',
    0.00,
    'Annulée',
    NULL,
@@ -3556,6 +3608,8 @@ INSERT INTO COURSE (
    68,
    6,
    7,
+   '2024-12-11',
+   '10:15:00',
    30.00,
    'En cours',
    NULL,
@@ -3572,6 +3626,8 @@ INSERT INTO COURSE (
    69,
    31,
    3,
+   '2024-12-07',
+   '16:45:00',
    8.00,
    'En attente',
    NULL,
@@ -3588,6 +3644,8 @@ INSERT INTO COURSE (
    70,
    7,
    4,
+   '2024-12-08',
+   '17:20:00',
    70.00,
    'Terminée',
    4.0,
@@ -3604,6 +3662,8 @@ INSERT INTO COURSE (
    71,
    72,
    2,
+   '2024-12-09',
+   '14:00:00',
    20.00,
    'En attente',
    NULL,
@@ -3620,6 +3680,8 @@ INSERT INTO COURSE (
    72,
    96,
    6,
+   '2024-12-10',
+   '11:00:00',
    50.00,
    'En cours',
    NULL,
@@ -3636,6 +3698,8 @@ INSERT INTO COURSE (
    73,
    30,
    3,
+   '2024-12-11',
+   '09:45:00',
    15.00,
    'En attente',
    NULL,
@@ -3652,6 +3716,8 @@ INSERT INTO COURSE (
    74,
    30,
    5,
+   '2024-12-08',
+   '13:30:00',
    80.00,
    'Terminée',
    4.5,
@@ -3668,6 +3734,8 @@ INSERT INTO COURSE (
    75,
    58,
    2,
+   '2024-12-09',
+   '15:45:00',
    18.00,
    'En attente',
    NULL,
@@ -3684,6 +3752,8 @@ INSERT INTO COURSE (
    76,
    14,
    5,
+   '2024-12-10',
+   '16:30:00',
    60.00,
    'En cours',
    NULL,
@@ -3700,6 +3770,8 @@ INSERT INTO COURSE (
    77,
    38,
    2,
+   '2024-12-11',
+   '14:15:00',
    0.00,
    'Annulée',
    NULL,
@@ -3716,6 +3788,8 @@ INSERT INTO COURSE (
    78,
    39,
    7,
+   '2024-12-07',
+   '08:30:00',
    55.00,
    'Annulée',
    NULL,
@@ -3732,6 +3806,8 @@ INSERT INTO COURSE (
    79,
    42,
    3,
+   '2024-12-08',
+   '17:00:00',
    30.00,
    'En cours',
    NULL,
@@ -3748,6 +3824,8 @@ INSERT INTO COURSE (
    80,
    27,
    6,
+   '2024-12-09',
+   '11:30:00',
    0.00,
    'Annulée',
    NULL,
@@ -3764,6 +3842,8 @@ INSERT INTO COURSE (
    81,
    13,
    5,
+   '2024-12-11',
+   '15:45:00',
    25.00,
    'En attente',
    NULL,
@@ -3780,6 +3860,8 @@ INSERT INTO COURSE (
    82,
    42,
    3,
+   '2024-12-10',
+   '16:00:00',
    0.00,
    'Annulée',
    NULL,
@@ -3796,6 +3878,8 @@ INSERT INTO COURSE (
    83,
    6,
    4,
+   '2024-12-09',
+   '17:20:00',
    40.00,
    'En cours',
    NULL,
@@ -3812,6 +3896,8 @@ INSERT INTO COURSE (
    84,
    89,
    3,
+   '2024-12-08',
+   '10:30:00',
    20.00,
    'En attente',
    NULL,
@@ -3828,6 +3914,8 @@ INSERT INTO COURSE (
    85,
    76,
    1,
+   '2024-12-09',
+   '08:45:00',
    10.00,
    'En cours',
    NULL,
@@ -3844,6 +3932,8 @@ INSERT INTO COURSE (
    86,
    32,
    6,
+   '2024-12-11',
+   '12:30:00',
    22.00,
    'En attente',
    NULL,
@@ -3860,6 +3950,8 @@ INSERT INTO COURSE (
    87,
    56,
    4,
+   '2024-12-07',
+   '11:15:00',
    30.00,
    'En attente',
    NULL,
@@ -3876,6 +3968,8 @@ INSERT INTO COURSE (
    88,
    44,
    6,
+   '2024-12-08',
+   '16:50:00',
    90.00,
    'En cours',
    NULL,
@@ -3892,6 +3986,8 @@ INSERT INTO COURSE (
    89,
    55,
    2,
+   '2024-12-09',
+   '13:00:00',
    85.00,
    'Terminée',
    5.0,
@@ -3908,6 +4004,8 @@ INSERT INTO COURSE (
    90,
    84,
    3,
+   '2024-12-10',
+   '14:45:00',
    35.00,
    'Terminée',
    4.0,
@@ -3924,6 +4022,8 @@ INSERT INTO COURSE (
    91,
    63,
    7,
+   '2024-12-07',
+   '12:30:00',
    40.00,
    'En cours',
    NULL,
@@ -3940,6 +4040,8 @@ INSERT INTO COURSE (
    92,
    30,
    7,
+   '2024-12-09',
+   '11:15:00',
    18.00,
    'En attente',
    NULL,
@@ -3956,6 +4058,8 @@ INSERT INTO COURSE (
    93,
    56,
    2,
+   '2024-12-08',
+   '15:30:00',
    0.00,
    'Annulée',
    NULL,
@@ -3972,6 +4076,8 @@ INSERT INTO COURSE (
    94,
    75,
    5,
+   '2024-12-11',
+   '13:20:00',
    55.00,
    'En cours',
    NULL,
@@ -3988,6 +4094,8 @@ INSERT INTO COURSE (
    95,
    83,
    5,
+   '2024-12-10',
+   '16:10:00',
    0.00,
    'Annulée',
    NULL,
@@ -4004,6 +4112,8 @@ INSERT INTO COURSE (
    96,
    9,
    2,
+   '2024-12-09',
+   '09:45:00',
    0.00,
    'Annulée',
    NULL,
@@ -4020,6 +4130,8 @@ INSERT INTO COURSE (
    97,
    80,
    5,
+   '2024-12-08',
+   '11:00:00',
    85.00,
    'Terminée',
    5.0,
@@ -4036,6 +4148,8 @@ INSERT INTO COURSE (
    98,
    28,
    2,
+   '2024-12-07',
+   '14:15:00',
    95.00,
    'Terminée',
    4.8,
@@ -4052,6 +4166,8 @@ INSERT INTO COURSE (
    99,
    39,
    4,
+   '2024-12-11',
+   '15:30:00',
    20.00,
    'En cours',
    NULL,
@@ -4068,6 +4184,8 @@ INSERT INTO COURSE (
    100,
    20,
    6,
+   '2024-12-08',
+   '10:15:00',
    35.00,
    'En attente',
    NULL,
@@ -4095,7 +4213,7 @@ INSERT INTO COURSIER (
 ) VALUES (
    1,
    1,
-   1,
+   108,
    'Monsieur',
    'Martin',
    'Pierre',
@@ -4111,7 +4229,7 @@ INSERT INTO COURSIER (
 (
    2,
    2,
-   2,
+   124,
    'Monsieur',
    'Dupont',
    'Paul',
@@ -4127,7 +4245,7 @@ INSERT INTO COURSIER (
 (
    3,
    3,
-   3,
+   121,
    'Monsieur',
    'Lemoine',
    'Luc',
@@ -4143,7 +4261,7 @@ INSERT INTO COURSIER (
 (
    4,
    4,
-   4,
+   130,
    'Monsieur',
    'Lopez',
    'Marc',
@@ -4159,7 +4277,7 @@ INSERT INTO COURSIER (
 (
    5,
    5,
-   5,
+   127,
    'Monsieur',
    'Thomson',
    'David',
@@ -4175,10 +4293,10 @@ INSERT INTO COURSIER (
 (
    6,
    6,
-   6,
-   'Monsieur',
-   'Richard',
-   'Julien',
+   128,
+   'Madame',
+   'Tinastepe',
+   'Feyza',
    '1983-12-14',
    '0667890123',
    'julien.richard@example.com',
@@ -4191,10 +4309,10 @@ INSERT INTO COURSIER (
 (
    7,
    7,
-   7,
+   1,
    'Monsieur',
-   'Bernard',
-   'Claude',
+   'Amaral',
+   'Nathan',
    '1991-05-20',
    '0678901234',
    'claude.bernard@example.com',
@@ -4207,7 +4325,7 @@ INSERT INTO COURSIER (
 (
    8,
    8,
-   8,
+   10,
    'Monsieur',
    'Petit',
    'François',
@@ -4223,7 +4341,7 @@ INSERT INTO COURSIER (
 (
    9,
    9,
-   9,
+   20,
    'Monsieur',
    'Girard',
    'Eric',
@@ -4239,7 +4357,7 @@ INSERT INTO COURSIER (
 (
    10,
    10,
-   10,
+   30,
    'Monsieur',
    'Faure',
    'Pierre',
@@ -4255,10 +4373,10 @@ INSERT INTO COURSIER (
 (
    11,
    11,
-   11,
+   40,
    'Monsieur',
-   'Benoit',
-   'Antoine',
+   'Cetinkaya',
+   'Melih',
    '1995-01-12',
    '0712345678',
    'antoine.benoit@example.com',
@@ -4271,10 +4389,10 @@ INSERT INTO COURSIER (
 (
    12,
    12,
-   12,
+   50,
    'Monsieur',
-   'Mercier',
-   'Xavier',
+   'Bekhouche',
+   'Amir',
    '1989-03-18',
    '0723456789',
    'xavier.mercier@example.com',
@@ -4287,7 +4405,7 @@ INSERT INTO COURSIER (
 (
    13,
    13,
-   13,
+   60,
    'Monsieur',
    'Lemoine',
    'Henri',
@@ -4303,7 +4421,7 @@ INSERT INTO COURSIER (
 (
    14,
    14,
-   14,
+   70,
    'Monsieur',
    'Robert',
    'Maxime',
@@ -4319,7 +4437,7 @@ INSERT INTO COURSIER (
 (
    15,
    15,
-   15,
+   80,
    'Monsieur',
    'Giraud',
    'Samuel',
@@ -4335,7 +4453,7 @@ INSERT INTO COURSIER (
 (
    16,
    16,
-   16,
+   90,
    'Monsieur',
    'Marchand',
    'Thierry',
@@ -4351,7 +4469,7 @@ INSERT INTO COURSIER (
 (
    17,
    17,
-   17,
+   100,
    'Monsieur',
    'Duval',
    'Olivier',
@@ -4367,7 +4485,7 @@ INSERT INTO COURSIER (
 (
    18,
    18,
-   18,
+   110,
    'Monsieur',
    'Perrot',
    'Michel',
@@ -4383,7 +4501,7 @@ INSERT INTO COURSIER (
 (
    19,
    19,
-   19,
+   120,
    'Monsieur',
    'Martin',
    'Jacques',
@@ -4399,7 +4517,7 @@ INSERT INTO COURSIER (
 (
    20,
    20,
-   20,
+   130,
    'Monsieur',
    'Leroy',
    'Pierre',
@@ -4415,7 +4533,7 @@ INSERT INTO COURSIER (
 (
    21,
    1,
-   1,
+   2,
    'Monsieur',
    'Fournier',
    'Julien',
@@ -4431,7 +4549,7 @@ INSERT INTO COURSIER (
 (
    22,
    2,
-   2,
+   11,
    'Monsieur',
    'Hebert',
    'Alain',
@@ -4447,7 +4565,7 @@ INSERT INTO COURSIER (
 (
    23,
    3,
-   3,
+   21,
    'Monsieur',
    'Lemoine',
    'Vincent',
@@ -4463,7 +4581,7 @@ INSERT INTO COURSIER (
 (
    24,
    4,
-   4,
+   41,
    'Monsieur',
    'Robert',
    'Louis',
@@ -4479,7 +4597,7 @@ INSERT INTO COURSIER (
 (
    25,
    5,
-   5,
+   51,
    'Monsieur',
    'Perrin',
    'Claude',
@@ -4495,7 +4613,7 @@ INSERT INTO COURSIER (
 (
    26,
    6,
-   6,
+   61,
    'Monsieur',
    'Leclerc',
    'Gérard',
@@ -4511,7 +4629,7 @@ INSERT INTO COURSIER (
 (
    27,
    7,
-   7,
+   71,
    'Monsieur',
    'Hamon',
    'Antoine',
@@ -4527,7 +4645,7 @@ INSERT INTO COURSIER (
 (
    28,
    8,
-   8,
+   81,
    'Monsieur',
    'Faure',
    'François',
@@ -4543,7 +4661,7 @@ INSERT INTO COURSIER (
 (
    29,
    9,
-   9,
+   91,
    'Monsieur',
    'Vidal',
    'Bruno',
@@ -4559,7 +4677,7 @@ INSERT INTO COURSIER (
 (
    30,
    10,
-   10,
+   101,
    'Monsieur',
    'Gauthier',
    'Denis',
@@ -5486,7 +5604,6 @@ INSERT INTO ETABLISSEMENT (
    FALSE
 );
 
--- McDonald's Paris
 INSERT INTO HORAIRES (
    IDHORAIRES,
    IDETABLISSEMENT,
@@ -5497,1030 +5614,1457 @@ INSERT INTO HORAIRES (
    1,
    1,
    'Lundi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    2,
    1,
    'Mardi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    3,
    1,
    'Mercredi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    4,
    1,
    'Jeudi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    5,
    1,
    'Vendredi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    6,
    1,
    'Samedi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    7,
    1,
    'Dimanche',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '22:00:00+01'
 ),
 (
    8,
    2,
    'Lundi',
-   '10:00:00',
-   '20:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    9,
    2,
    'Mardi',
-   '10:00:00',
-   '20:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    10,
    2,
    'Mercredi',
-   '10:00:00',
-   '20:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    11,
    2,
    'Jeudi',
-   '10:00:00',
-   '20:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    12,
    2,
    'Vendredi',
-   '10:00:00',
-   '20:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    13,
    2,
    'Samedi',
-   '10:00:00',
-   '20:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    14,
    2,
    'Dimanche',
-   '10:00:00',
-   '20:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    15,
    3,
    'Lundi',
-   '07:00:00',
-   '15:00:00'
+   '06:30:00+01',
+   '20:00:00+01'
 ),
 (
    16,
    3,
    'Mardi',
-   '07:00:00',
-   '15:00:00'
+   '06:30:00+01',
+   '20:00:00+01'
 ),
 (
    17,
    3,
    'Mercredi',
-   '07:00:00',
-   '15:00:00'
+   '06:30:00+01',
+   '20:00:00+01'
 ),
 (
    18,
    3,
    'Jeudi',
-   '07:00:00',
-   '15:00:00'
+   '06:30:00+01',
+   '20:00:00+01'
 ),
 (
    19,
    3,
    'Vendredi',
-   '07:00:00',
-   '15:00:00'
+   '06:30:00+01',
+   '20:00:00+01'
 ),
 (
    20,
    3,
    'Samedi',
-   '07:00:00',
-   '15:00:00'
+   '06:00:00+01',
+   '20:00:00+01'
 ),
 (
    21,
    3,
    'Dimanche',
-   '07:00:00',
-   '15:00:00'
+   '06:00:00+01',
+   '19:00:00+01'
 ),
 (
    22,
    4,
    'Lundi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    23,
    4,
    'Mardi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    24,
    4,
    'Mercredi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    25,
    4,
    'Jeudi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    26,
    4,
    'Vendredi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    27,
    4,
    'Samedi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    28,
    4,
    'Dimanche',
-   '11:00:00',
-   '23:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    29,
    5,
    'Lundi',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    30,
    5,
    'Mardi',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    31,
    5,
    'Mercredi',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    32,
    5,
    'Jeudi',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    33,
    5,
    'Vendredi',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    34,
    5,
    'Samedi',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    35,
    5,
    'Dimanche',
-   '09:30:00',
-   '19:30:00'
+   '07:30:00+01',
+   '22:00:00+01'
 ),
 (
    36,
    6,
    'Lundi',
-   '07:00:00',
-   '21:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    37,
    6,
    'Mardi',
-   '07:00:00',
-   '21:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    38,
    6,
    'Mercredi',
-   '07:00:00',
-   '21:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    39,
    6,
    'Jeudi',
-   '07:00:00',
-   '21:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    40,
    6,
    'Vendredi',
-   '07:00:00',
-   '21:00:00'
+   '11:00:00+01',
+   '23:00:00+01'
 ),
 (
    41,
    6,
    'Samedi',
-   '07:00:00',
-   '21:00:00'
+   '11:00:00+01',
+   '23:00:00+01'
 ),
 (
    42,
    6,
    'Dimanche',
-   '07:00:00',
-   '21:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    43,
    7,
    'Lundi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    44,
    7,
    'Mardi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    45,
    7,
    'Mercredi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    46,
    7,
    'Jeudi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    47,
    7,
    'Vendredi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    48,
    7,
    'Samedi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    49,
    7,
    'Dimanche',
-   '10:00:00',
-   '22:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    50,
    8,
    'Lundi',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '22:00:00+01'
 ),
 (
    51,
    8,
    'Mardi',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '22:00:00+01'
 ),
 (
    52,
    8,
    'Mercredi',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '22:00:00+01'
 ),
 (
    53,
    8,
    'Jeudi',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '22:00:00+01'
 ),
 (
    54,
    8,
    'Vendredi',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '23:00:00+01'
 ),
 (
    55,
    8,
    'Samedi',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '23:00:00+01'
 ),
 (
    56,
    8,
    'Dimanche',
-   '09:00:00',
-   '20:00:00'
+   '10:00:00+01',
+   '21:00:00+01'
 ),
 (
    57,
    9,
    'Lundi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '22:00:00+01'
 ),
 (
    58,
    9,
    'Mardi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '22:00:00+01'
 ),
 (
    59,
    9,
    'Mercredi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '22:00:00+01'
 ),
 (
    60,
    9,
    'Jeudi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '22:00:00+01'
 ),
 (
    61,
    9,
    'Vendredi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '22:00:00+01'
 ),
 (
    62,
    9,
    'Samedi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '22:00:00+01'
 ),
 (
    63,
    9,
    'Dimanche',
-   '08:00:00',
-   '20:00:00'
+   '09:00:00+01',
+   '12:00:00+01'
 ),
 (
    64,
    10,
    'Lundi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    65,
    10,
    'Mardi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    66,
    10,
    'Mercredi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    67,
    10,
    'Jeudi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    68,
    10,
    'Vendredi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    69,
    10,
    'Samedi',
-   '11:00:00',
-   '23:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    70,
    10,
    'Dimanche',
-   '11:00:00',
-   '23:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    71,
    11,
    'Lundi',
-   '10:00:00',
-   '23:00:00'
+   '11:30:00+01',
+   '21:30:00+01'
 ),
 (
    72,
    11,
    'Mardi',
-   '10:00:00',
-   '23:00:00'
+   '11:30:00+01',
+   '21:30:00+01'
 ),
 (
    73,
    11,
    'Mercredi',
-   '10:00:00',
-   '23:00:00'
+   '11:30:00+01',
+   '21:30:00+01'
 ),
 (
    74,
    11,
    'Jeudi',
-   '10:00:00',
-   '23:00:00'
+   '11:30:00+01',
+   '21:30:00+01'
 ),
 (
    75,
    11,
    'Vendredi',
-   '10:00:00',
-   '23:00:00'
+   '11:30:00+01',
+   '22:00:00+01'
 ),
 (
    76,
    11,
    'Samedi',
-   '10:00:00',
-   '23:00:00'
+   '11:30:00+01',
+   '22:00:00+01'
 ),
 (
    77,
    11,
    'Dimanche',
-   '10:00:00',
-   '23:00:00'
+   '18:00:00+01',
+   '21:30:00+01'
 ),
 (
    78,
    12,
    'Lundi',
-   '09:00:00',
-   '18:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    79,
    12,
    'Mardi',
-   '09:00:00',
-   '18:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    80,
    12,
    'Mercredi',
-   '09:00:00',
-   '18:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    81,
    12,
    'Jeudi',
-   '09:00:00',
-   '18:00:00'
+   '11:00:00+01',
+   '22:00:00+01'
 ),
 (
    82,
    12,
    'Vendredi',
-   '09:00:00',
-   '18:00:00'
+   '11:00:00+01',
+   '22:30:00+01'
 ),
 (
    83,
    12,
    'Samedi',
-   '09:00:00',
-   '18:00:00'
+   '11:00:00+01',
+   '22:30:00+01'
 ),
 (
    84,
    12,
    'Dimanche',
-   '09:00:00',
-   '18:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    85,
    13,
    'Lundi',
-   '08:30:00',
-   '22:30:00'
+   '07:30:00+01',
+   '20:00:00+01'
 ),
 (
    86,
    13,
    'Mardi',
-   '08:30:00',
-   '22:30:00'
+   '07:30:00+01',
+   '20:00:00+01'
 ),
 (
    87,
    13,
    'Mercredi',
-   '08:30:00',
-   '22:30:00'
+   '07:30:00+01',
+   '20:00:00+01'
 ),
 (
    88,
    13,
    'Jeudi',
-   '08:30:00',
-   '22:30:00'
+   '07:30:00+01',
+   '20:00:00+01'
 ),
 (
    89,
    13,
    'Vendredi',
-   '08:30:00',
-   '22:30:00'
+   '07:30:00+01',
+   '20:00:00+01'
 ),
 (
    90,
    13,
    'Samedi',
-   '08:30:00',
-   '22:30:00'
+   '08:00:00+01',
+   '20:00:00+01'
 ),
 (
    91,
    13,
    'Dimanche',
-   '08:30:00',
-   '22:30:00'
+   '08:00:00+01',
+   '14:00:00+01'
 ),
 (
    92,
    14,
    'Lundi',
-   '06:30:00',
-   '15:00:00'
+   '07:00:00+01',
+   '20:00:00+01'
 ),
 (
    93,
    14,
    'Mardi',
-   '06:30:00',
-   '15:00:00'
+   '07:00:00+01',
+   '20:00:00+01'
 ),
 (
    94,
    14,
    'Mercredi',
-   '06:30:00',
-   '15:00:00'
+   '07:00:00+01',
+   '20:00:00+01'
 ),
 (
    95,
    14,
    'Jeudi',
-   '06:30:00',
-   '15:00:00'
+   '07:00:00+01',
+   '20:00:00+01'
 ),
 (
    96,
    14,
    'Vendredi',
-   '06:30:00',
-   '15:00:00'
+   '07:00:00+01',
+   '20:00:00+01'
 ),
 (
    97,
    14,
    'Samedi',
-   '06:30:00',
-   '15:00:00'
+   '08:00:00+01',
+   '20:00:00+01'
 ),
 (
    98,
    14,
    'Dimanche',
-   '06:30:00',
-   '15:00:00'
+   '08:00:00+01',
+   '19:00:00+01'
 ),
 (
    99,
    15,
    'Lundi',
-   '11:00:00',
-   '23:00:00'
+   '08:00:00+01',
+   '21:00:00+01'
 ),
 (
    100,
    15,
    'Mardi',
-   '11:00:00',
-   '23:00:00'
+   '08:00:00+01',
+   '21:00:00+01'
 ),
 (
    101,
    15,
    'Mercredi',
-   '11:00:00',
-   '23:00:00'
+   '08:00:00+01',
+   '21:00:00+01'
 ),
 (
    102,
    15,
    'Jeudi',
-   '11:00:00',
-   '23:00:00'
+   '08:00:00+01',
+   '21:00:00+01'
 ),
 (
    103,
    15,
    'Vendredi',
-   '11:00:00',
-   '23:00:00'
+   '08:00:00+01',
+   '21:00:00+01'
 ),
 (
    104,
    15,
    'Samedi',
-   '11:00:00',
-   '23:00:00'
+   '08:00:00+01',
+   '21:00:00+01'
 ),
 (
    105,
    15,
    'Dimanche',
-   '11:00:00',
-   '23:00:00'
+   '09:00:00+01',
+   '12:00:00+01'
 ),
 (
    106,
    16,
    'Lundi',
-   '08:00:00',
-   '21:00:00'
+   '09:00:00+01',
+   '20:00:00+01'
 ),
 (
    107,
    16,
    'Mardi',
-   '08:00:00',
-   '21:00:00'
+   '09:00:00+01',
+   '20:00:00+01'
 ),
 (
    108,
    16,
    'Mercredi',
-   '08:00:00',
-   '21:00:00'
+   '09:00:00+01',
+   '20:00:00+01'
 ),
 (
    109,
    16,
    'Jeudi',
-   '08:00:00',
-   '21:00:00'
+   '09:00:00+01',
+   '20:00:00+01'
 ),
 (
    110,
    16,
    'Vendredi',
-   '08:00:00',
-   '21:00:00'
+   '09:00:00+01',
+   '20:00:00+01'
 ),
 (
    111,
    16,
    'Samedi',
-   '08:00:00',
-   '21:00:00'
+   '09:00:00+01',
+   '20:00:00+01'
 ),
 (
    112,
    16,
    'Dimanche',
-   '08:00:00',
-   '21:00:00'
+   '09:30:00+01',
+   '12:00:00+01'
 ),
 (
    113,
    17,
    'Lundi',
-   '08:00:00',
-   '20:00:00'
+   '07:30:00+01',
+   '19:30:00+01'
 ),
 (
    114,
    17,
    'Mardi',
-   '08:00:00',
-   '20:00:00'
+   '07:30:00+01',
+   '19:30:00+01'
 ),
 (
    115,
    17,
    'Mercredi',
-   '08:00:00',
-   '20:00:00'
+   '07:30:00+01',
+   '19:30:00+01'
 ),
 (
    116,
    17,
    'Jeudi',
-   '08:00:00',
-   '20:00:00'
+   '07:30:00+01',
+   '19:30:00+01'
 ),
 (
    117,
    17,
    'Vendredi',
-   '08:00:00',
-   '20:00:00'
+   '07:30:00+01',
+   '19:30:00+01'
 ),
 (
    118,
    17,
    'Samedi',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '19:30:00+01'
 ),
 (
    119,
    17,
    'Dimanche',
-   '08:00:00',
-   '20:00:00'
+   '08:00:00+01',
+   '12:30:00+01'
 ),
 (
    120,
    18,
    'Lundi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    121,
    18,
    'Mardi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    122,
    18,
    'Mercredi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    123,
    18,
    'Jeudi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '22:00:00+01'
 ),
 (
    124,
    18,
    'Vendredi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    125,
    18,
    'Samedi',
-   '10:00:00',
-   '22:00:00'
+   '12:00:00+01',
+   '23:00:00+01'
 ),
 (
    126,
    18,
    'Dimanche',
-   '10:00:00',
-   '22:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    127,
    19,
    'Lundi',
-   '09:00:00',
-   '18:00:00'
+   '11:30:00+01',
+   '22:00:00+01'
 ),
 (
    128,
    19,
    'Mardi',
-   '09:00:00',
-   '18:00:00'
+   '11:30:00+01',
+   '22:00:00+01'
 ),
 (
    129,
    19,
    'Mercredi',
-   '09:00:00',
-   '18:00:00'
+   '11:30:00+01',
+   '22:00:00+01'
 ),
 (
    130,
    19,
    'Jeudi',
-   '09:00:00',
-   '18:00:00'
+   '11:30:00+01',
+   '22:00:00+01'
 ),
 (
    131,
    19,
    'Vendredi',
-   '09:00:00',
-   '18:00:00'
+   '11:30:00+01',
+   '22:30:00+01'
 ),
 (
    132,
    19,
    'Samedi',
-   '09:00:00',
-   '18:00:00'
+   '11:30:00+01',
+   '22:30:00+01'
 ),
 (
    133,
    19,
    'Dimanche',
-   '09:00:00',
-   '18:00:00'
+   '18:00:00+01',
+   '22:00:00+01'
 ),
 (
    134,
    20,
    'Lundi',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    135,
    20,
    'Mardi',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    136,
    20,
    'Mercredi',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    137,
    20,
    'Jeudi',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    138,
    20,
    'Vendredi',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    139,
    20,
    'Samedi',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    140,
    20,
    'Dimanche',
-   '11:00:00',
-   '23:00:00'
+   '07:30:00+01',
+   '22:00:00+01'
 ),
 (
    141,
    21,
    'Lundi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    142,
    21,
    'Mardi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    143,
    21,
    'Mercredi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    144,
    21,
    'Jeudi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    145,
    21,
    'Vendredi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    146,
    21,
    'Samedi',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '23:00:00+01'
 ),
 (
    147,
    21,
    'Dimanche',
-   '09:00:00',
-   '18:00:00'
+   '07:30:00+01',
+   '22:00:00+01'
+);
+
+INSERT INTO HORAIRES_COURSIER (
+   IDHORAIRES_COURSIER,
+   IDCOURSIER,
+   JOURSEMAINE,
+   HEUREDEBUT,
+   HEUREFIN
+) VALUES (
+   1,
+   1,
+   'Lundi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   2,
+   1,
+   'Lundi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   3,
+   2,
+   'Mardi',
+   '09:00:00+01',
+   '12:30:00+01'
+),
+(
+   4,
+   2,
+   'Mardi',
+   '14:00:00+01',
+   '18:00:00+01'
+),
+(
+   5,
+   3,
+   'Mercredi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   6,
+   3,
+   'Mercredi',
+   '13:00:00+01',
+   '16:30:00+01'
+),
+(
+   7,
+   4,
+   'Jeudi',
+   '07:30:00+01',
+   '11:30:00+01'
+),
+(
+   8,
+   4,
+   'Jeudi',
+   '12:30:00+01',
+   '16:30:00+01'
+),
+(
+   9,
+   5,
+   'Vendredi',
+   '09:00:00+01',
+   '12:00:00+01'
+),
+(
+   10,
+   5,
+   'Vendredi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   11,
+   6,
+   'Samedi',
+   '10:00:00+01',
+   '14:00:00+01'
+),
+(
+   12,
+   6,
+   'Samedi',
+   '15:00:00+01',
+   '19:00:00+01'
+),
+(
+   13,
+   7,
+   'Dimanche',
+   '09:00:00+01',
+   '13:00:00+01'
+),
+(
+   14,
+   7,
+   'Dimanche',
+   '14:00:00+01',
+   '18:00:00+01'
+),
+(
+   15,
+   8,
+   'Lundi',
+   '08:30:00+01',
+   '12:30:00+01'
+),
+(
+   16,
+   8,
+   'Lundi',
+   '13:30:00+01',
+   '17:30:00+01'
+),
+(
+   17,
+   9,
+   'Mardi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   18,
+   9,
+   'Mardi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   19,
+   10,
+   'Mercredi',
+   '09:00:00+01',
+   '12:00:00+01'
+),
+(
+   20,
+   10,
+   'Mercredi',
+   '13:00:00+01',
+   '16:00:00+01'
+),
+(
+   21,
+   11,
+   'Jeudi',
+   '07:30:00+01',
+   '11:30:00+01'
+),
+(
+   22,
+   11,
+   'Jeudi',
+   '12:30:00+01',
+   '16:30:00+01'
+),
+(
+   23,
+   12,
+   'Vendredi',
+   '09:30:00+01',
+   '13:30:00+01'
+),
+(
+   24,
+   12,
+   'Vendredi',
+   '14:30:00+01',
+   '18:30:00+01'
+),
+(
+   25,
+   13,
+   'Samedi',
+   '10:00:00+01',
+   '14:00:00+01'
+),
+(
+   26,
+   13,
+   'Samedi',
+   '15:00:00+01',
+   '19:00:00+01'
+),
+(
+   27,
+   14,
+   'Dimanche',
+   '09:00:00+01',
+   '13:00:00+01'
+),
+(
+   28,
+   14,
+   'Dimanche',
+   '14:00:00+01',
+   '18:00:00+01'
+),
+(
+   29,
+   15,
+   'Lundi',
+   '08:30:00+01',
+   '12:30:00+01'
+),
+(
+   30,
+   15,
+   'Lundi',
+   '13:30:00+01',
+   '17:30:00+01'
+),
+(
+   31,
+   16,
+   'Mardi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   32,
+   16,
+   'Mardi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   33,
+   17,
+   'Mercredi',
+   '09:00:00+01',
+   '12:00:00+01'
+),
+(
+   34,
+   17,
+   'Mercredi',
+   '13:00:00+01',
+   '16:00:00+01'
+),
+(
+   35,
+   18,
+   'Jeudi',
+   '07:30:00+01',
+   '11:30:00+01'
+),
+(
+   36,
+   18,
+   'Jeudi',
+   '12:30:00+01',
+   '16:30:00+01'
+),
+(
+   37,
+   19,
+   'Vendredi',
+   '09:30:00+01',
+   '13:30:00+01'
+),
+(
+   38,
+   19,
+   'Vendredi',
+   '14:30:00+01',
+   '18:30:00+01'
+),
+(
+   39,
+   20,
+   'Samedi',
+   '10:00:00+01',
+   '14:00:00+01'
+),
+(
+   40,
+   20,
+   'Samedi',
+   '15:00:00+01',
+   '19:00:00+01'
+),
+(
+   41,
+   21,
+   'Lundi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   42,
+   21,
+   'Lundi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   43,
+   22,
+   'Mardi',
+   '09:00:00+01',
+   '12:30:00+01'
+),
+(
+   44,
+   22,
+   'Mardi',
+   '14:00:00+01',
+   '18:00:00+01'
+),
+(
+   45,
+   23,
+   'Mercredi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   46,
+   23,
+   'Mercredi',
+   '13:00:00+01',
+   '16:30:00+01'
+),
+(
+   47,
+   24,
+   'Jeudi',
+   '07:30:00+01',
+   '11:30:00+01'
+),
+(
+   48,
+   24,
+   'Jeudi',
+   '12:30:00+01',
+   '16:30:00+01'
+),
+(
+   49,
+   25,
+   'Vendredi',
+   '09:00:00+01',
+   '12:00:00+01'
+),
+(
+   50,
+   25,
+   'Vendredi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   51,
+   26,
+   'Samedi',
+   '10:00:00+01',
+   '14:00:00+01'
+),
+(
+   52,
+   26,
+   'Samedi',
+   '15:00:00+01',
+   '19:00:00+01'
+),
+(
+   53,
+   27,
+   'Dimanche',
+   '09:00:00+01',
+   '13:00:00+01'
+),
+(
+   54,
+   27,
+   'Dimanche',
+   '14:00:00+01',
+   '18:00:00+01'
+),
+(
+   55,
+   28,
+   'Lundi',
+   '08:30:00+01',
+   '12:30:00+01'
+),
+(
+   56,
+   28,
+   'Lundi',
+   '13:30:00+01',
+   '17:30:00+01'
+),
+(
+   57,
+   29,
+   'Mardi',
+   '08:00:00+01',
+   '12:00:00+01'
+),
+(
+   58,
+   29,
+   'Mardi',
+   '13:00:00+01',
+   '17:00:00+01'
+),
+(
+   59,
+   30,
+   'Mercredi',
+   '09:00:00+01',
+   '12:00:00+01'
+),
+(
+   60,
+   30,
+   'Mercredi',
+   '13:00:00+01',
+   '16:00:00+01'
 );
 
 INSERT INTO FACTURE_COURSE (
@@ -9254,7 +9798,7 @@ INSERT INTO TYPE_PRESTATION (
 ),
 (
    4,
-   'Comfort',
+   'Confort',
    'Pour un voyage dans des véhicules plus récents',
    'Comfort.jpg'
 ),
@@ -10244,6 +10788,14 @@ ALTER TABLE HORAIRES
    )
       REFERENCES ETABLISSEMENT (
          IDETABLISSEMENT
+      ) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE HORAIRES_COURSIER
+   ADD CONSTRAINT FK_COURSIER_HORAIRES FOREIGN KEY (
+      IDCOURSIER
+   )
+      REFERENCES COURSIER (
+         IDCOURSIER
       ) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE FACTURE_COURSE
