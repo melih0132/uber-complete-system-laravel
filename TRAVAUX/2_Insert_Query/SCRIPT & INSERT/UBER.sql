@@ -2124,10 +2124,6 @@ INSERT INTO A_COMME_CATEGORIE (
 ),
 (
    20,
-   7
-),
-(
-   20,
    6
 ),
 (
