@@ -5401,11 +5401,11 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    33,
-   9
+   22
 ),
 (
    34,
-   9
+   25
 ),
 (
    35,
@@ -5413,7 +5413,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    36,
-   9
+   25
 ),
 (
    37,
@@ -5505,11 +5505,11 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    59,
-   9
+   26
 ),
 (
    60,
-   9
+   22
 ),
 (
    61,
@@ -5593,7 +5593,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    81,
-   9
+   28
 ),
 (
    82,
@@ -5601,15 +5601,15 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    83,
-   9
+   34
 ),
 (
    84,
-   9
+   34
 ),
 (
    85,
-   9
+   34
 ),
 (
    86,
@@ -5617,7 +5617,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    87,
-   9
+   34
 ),
 (
    88,
@@ -5625,11 +5625,11 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    89,
-   9
+   30
 ),
 (
    90,
-   9
+   30
 ),
 (
    91,
@@ -5637,7 +5637,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    92,
-   9
+   30
 ),
 (
    93,
@@ -5645,7 +5645,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    94,
-   9
+   30
 ),
 (
    95,
@@ -5661,7 +5661,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    98,
-   9
+   26
 ),
 (
    99,
@@ -5669,7 +5669,7 @@ INSERT INTO EST_SITUE_A_2 (
 ),
 (
    100,
-   9
+   22
 ),
 (
    1,
@@ -5686,6 +5686,94 @@ INSERT INTO EST_SITUE_A_2 (
 (
    4,
    21
+),
+(
+   62,
+   32
+),
+(
+   63,
+   32
+),
+(
+   68,
+   32
+),
+(
+   1,
+   29
+),
+(
+   2,
+   29
+),
+(
+   3,
+   29
+),
+(
+   4,
+   29
+),
+(
+   101,
+   24
+),
+(
+   102,
+   24
+),
+(
+   103,
+   24
+),
+(
+   104,
+   24
+),
+(
+   105,
+   23
+),
+(
+   106,
+   23
+),
+(
+   107,
+   27
+),
+(
+   108,
+   27
+),
+(
+   109,
+   27
+),
+(
+   110,
+   28
+),
+(
+   111,
+   31
+),
+(
+   112,
+   31
+),
+(
+   113,
+   31
+),
+(
+   114,
+   33
+),
+(
+   115,
+   33
 );
 
 INSERT INTO DEPARTEMENT (
@@ -12147,6 +12235,111 @@ INSERT INTO PRODUIT (
    4.99,
    'https://www.nlf-livraria.com/wp-content/uploads/2020/07/3329680175516-1.jpg',
    'Papier pour imprimante et usage bureautique'
+),
+(
+   101,
+   'Box Tenders',
+   9.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/243757bc258a9659902fbfca19473936/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'une Boîte de tendeurs'
+),
+(
+   102,
+   'Pepe Burger',
+   11.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/51d010a796dc2314b2182c29f37a2fad/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Le classique Pepe Burger'
+),
+(
+   103,
+   'The Smoky One',
+   12.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/106ca280cf158327a26a8ad3ef796432/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Le burger épicé de la région du Smoky Mountains'
+),
+(
+   104,
+   'Pop''s Ice Tea Pêche',
+   2.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/8808adb8358f576848065e9b06f2a87b/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Ice Tea Pêche de Fast Good Cuisine'
+),
+(
+   105,
+   'Menu UBER EAT MAX',
+   20.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/00ff38aa9102697f2b5a18aff1a87305/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+   'Menu Max spécialisé pour Uber Eats'
+),
+(
+   106,
+   'Soupe Miso',
+   3.70,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/6418861a3042f4fc1af069f743e05b28/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+   'Soupe de miso'
+),
+(
+   107,
+   'COLETTE',
+   12.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/c5d1b2e0dd92bc4bd1321b54dce32e71/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Le classique de chez Colette'
+),
+(
+   108,
+   'GASTON',
+   18.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/cd22200d2e34e2c05dd9273c570d752d/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+   'Le bourrin de Gaston'
+),
+(
+   109,
+   'Cookies aux lait et noisettes',
+   4.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/897feeb5c81114843b41fd2cd8187d1c/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+   'Cookies de Tatie Chocolat lait Noisettes'
+),
+(
+   110,
+   'Lot de 6 Oeufs',
+   5.30,
+   'https://www.bonneterre.fr/wp-content/uploads/2020/02/3022936-GROS-OEUFS-X6-1024x845.jpg',
+   '6 gros oeufs tout droit sortie du cul de la poule'
+),
+(
+   111,
+   'Sandwich kebab',
+   8.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/639da4362ccb93f0c3ce689806d5e683/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Palalala Melissa, yak kendini'
+),
+(
+   112,
+   'Sandwich Cordon Bleu',
+   6.72,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/3906e31e8d2a9534841dbafa53ccdcd2/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Kordon ble, fromaj, salat, tomat, onyon.'
+),
+(
+   113,
+   'Berliner Kebap',
+   7.52,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/0c18380c4b280583ba0880b5cb0a7e81/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Melih bunu yutar aq'
+),
+(
+   114,
+   'Otacos Taille L',
+   8.32,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/068fbd6de495f8ddb5fc3f109bef900b/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+   'unique mais pas trop'
+),
+(
+   115,
+   'O''Bowl M',
+   10.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/3ed06c3b13bff8c175f273c93f6e3095/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+   'pareil, unique mais pas trop'
 );
 
 INSERT INTO REGLEMENT_SALAIRE (
