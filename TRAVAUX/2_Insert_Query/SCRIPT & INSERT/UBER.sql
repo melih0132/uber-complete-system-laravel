@@ -1877,6 +1877,78 @@ INSERT INTO A_3 (
 (
    100,
    18
+),
+(
+   101,
+   1
+),
+(
+   102,
+   1
+),
+(
+   103,
+   1
+),
+(
+   108,
+   1
+),
+(
+   107,
+   1
+),
+(
+   117,
+   1
+),
+(
+   116,
+   1
+),
+(
+   118,
+   1
+),
+(
+   110,
+   2
+),
+(
+   111,
+   3
+),
+(
+   113,
+   3
+),
+(
+   112,
+   4
+),
+(
+   109,
+   5
+),
+(
+   106,
+   6
+),
+(
+   114,
+   7
+),
+(
+   115,
+   7
+),
+(
+   105,
+   7
+),
+(
+   104,
+   11
 );
 
 INSERT INTO A_COMME_CATEGORIE (
@@ -5774,6 +5846,18 @@ INSERT INTO EST_SITUE_A_2 (
 (
    115,
    33
+),
+(
+   116,
+   35
+),
+(
+   117,
+   35
+),
+(
+   118,
+   35
 );
 
 INSERT INTO DEPARTEMENT (
@@ -12340,6 +12424,27 @@ INSERT INTO PRODUIT (
    10.50,
    'https://tb-static.uber.com/prod/image-proc/processed_images/3ed06c3b13bff8c175f273c93f6e3095/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
    'pareil, unique mais pas trop'
+),
+(
+   116,
+   'Menu chicken family',
+   23.90,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/929407058f11ade8363de4782ebef433/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Chicken fait maison'
+),
+(
+   117,
+   'Menu wings',
+   13.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/9b906e9358717168b7950edfbf33dfba/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'Poulet frais et marinade faite maison.'
+),
+(
+   118,
+   'Menu enfant',
+   9.50,
+   'https://tb-static.uber.com/prod/image-proc/processed_images/e9cf326a13b7f6dacdc29b0e71b0cf49/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+   'nous aussi on peut ouu c''est que pour les enfants'
 );
 
 INSERT INTO REGLEMENT_SALAIRE (
