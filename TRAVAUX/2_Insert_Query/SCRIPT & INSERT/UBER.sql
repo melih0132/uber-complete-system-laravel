@@ -1142,8 +1142,293 @@ INSERT INTO ADRESSE (
 ),
 (
    131,
-   11,
-   '134 Avenue de Genève'
+   12,
+   '10 Boulevard Lascrosses'
+),
+(
+   132,
+   12,
+   '74 Avenue Jules Julien'
+),
+(
+   133,
+   13,
+   '216 Avenue De Dunkerque'
+),
+(
+   134,
+   13,
+   '8 Place Louise De Bettignies'
+),
+(
+   135,
+   14,
+   'Place Georges Bernanos'
+),
+(
+   136,
+   14,
+   '18 Rue De Bertrand'
+),
+(
+   137,
+   15,
+   '22 Rue Casimir Perrier'
+),
+(
+   138,
+   15,
+   '65 Avenue René Coty'
+),
+(
+   139,
+   16,
+   '7 Rue Du Dr Jacquin'
+),
+(
+   140,
+   16,
+   '49 Boulevard Du Général Leclerc'
+),
+(
+   141,
+   17,
+   '5 Rue Du Grand Moulin'
+),
+(
+   142,
+   17,
+   '40 Rue Etienne Mimard'
+),
+(
+   143,
+   18,
+   '48 Rue Du Port'
+),
+(
+   144,
+   18,
+   '2 Place de la République'
+),
+(
+   145,
+   19,
+   '4 Rue de la Cathédrale'
+),
+(
+   146,
+   19,
+   '5 Rue des Trois Cailloux'
+),
+(
+   147,
+   20,
+   '22 Rue de Siam'
+),
+(
+   148,
+   20,
+   '3 Rue Jean Jaurès'
+),
+(
+   149,
+   21,
+   '30 Avenue de l’Opéra'
+),
+(
+   150,
+   21,
+   '19 Rue de l’Horloge'
+),
+(
+   151,
+   22,
+   '24 Rue de la République'
+),
+(
+   152,
+   22,
+   '7 Place Puget'
+),
+(
+   153,
+   23,
+   '9 Rue d’Alsace'
+),
+(
+   154,
+   23,
+   '17 Boulevard Foch'
+),
+(
+   155,
+   24,
+   '3 Rue de la Madeleine'
+),
+(
+   156,
+   24,
+   '10 Avenue Jean Jaurès'
+),
+(
+   157,
+   25,
+   '5 Rue des Halles'
+),
+(
+   158,
+   25,
+   '28 Rue de la Préfecture'
+),
+(
+   159,
+   26,
+   '20 Place Saint-Sauveur'
+),
+(
+   160,
+   26,
+   '12 Rue des Fossés Saint-Julien'
+),
+(
+   161,
+   27,
+   '25 Rue Jean Jaurès'
+),
+(
+   162,
+   27,
+   '7 Rue de la République'
+),
+(
+   163,
+   28,
+   '13 Boulevard Saint-Assiscle'
+),
+(
+   164,
+   28,
+   '20 Rue des Albères'
+),
+(
+   165,
+   29,
+   '4 Rue de la République'
+),
+(
+   166,
+   29,
+   '12 Place du Palais de Justice'
+),
+(
+   167,
+   30,
+   '5 Rue des Marchands'
+),
+(
+   168,
+   30,
+   '9 Rue de la Poissonnerie'
+),
+(
+   169,
+   31,
+   '1 Rue des Halles'
+),
+(
+   170,
+   31,
+   '20 Avenue des Sables d’Or'
+),
+(
+   171,
+   32,
+   '10 Rue des Cordeliers'
+),
+(
+   172,
+   32,
+   '22 Boulevard du Roi René'
+),
+(
+   173,
+   33,
+   '5 Rue de la Poste'
+),
+(
+   174,
+   33,
+   '12 Place Georges Clémenceau'
+),
+(
+   175,
+   34,
+   '2 Avenue Rhin Et Danube'
+),
+(
+   176,
+   34,
+   '25 Avenue de Verdun'
+),
+(
+   177,
+   35,
+   '17 Rue Jeanne d’Arc'
+),
+(
+   178,
+   35,
+   '3 Rue de la République'
+),
+(
+   179,
+   36,
+   '8 Rue des Teinturiers'
+),
+(
+   180,
+   36,
+   '10 Place de l’Horloge'
+),
+(
+   181,
+   37,
+   '5 Rue Saint-Jean'
+),
+(
+   182,
+   37,
+   '23 Rue de la Commanderie'
+),
+(
+   183,
+   38,
+   '11 Rue de la Fraternité'
+),
+(
+   184,
+   38,
+   '2 Place de la Mairie'
+),
+(
+   185,
+   39,
+   '3 Rue des Dames'
+),
+(
+   186,
+   39,
+   '9 Quai Valin'
+),
+(
+   187,
+   40,
+   '1 Place des Poissonniers'
+),
+(
+   188,
+   40,
+   '14 Quai de la Résistance'
 );
 
 INSERT INTO APPARTIENT_2 (
@@ -2938,104 +3223,149 @@ INSERT INTO CODE_POSTAL (
    '74000'
 ),
 (
-    12,
-    1,
-    '31000'
+   12,
+   1,
+   '31000'
 ),
 (
-    13,
-    1,
-    '59000'
+   13,
+   1,
+   '59000'
 ),
 (
-    14,
-    1,
-    '35000'
+   14,
+   1,
+   '35000'
 ),
 (
-    15,
-    1,
-    '76600'
+   15,
+   1,
+   '76600'
 ),
 (
-    16,
-    1,
-    '51100'
+   16,
+   1,
+   '51100'
 ),
 (
-    17,
-    1,
-    '42000'
+   17,
+   1,
+   '42000'
 ),
 (
-    18,
-    1,
-    '72000'
+   18,
+   1,
+   '72000'
 ),
 (
-    19,
-    1,
-    '80000'
+   19,
+   1,
+   '80000'
 ),
 (
-    20,
-    1,
-    '29200'
+   20,
+   1,
+   '29200'
 ),
 (
-    21,
-    1,
-    '63000'
+   21,
+   1,
+   '63000'
 ),
 (
-    22,
-    1,
-    '83000'
+   22,
+   1,
+   '83000'
 ),
 (
-    23,
-    1,
-    '49100'
+   23,
+   1,
+   '49100'
 ),
 (
-    24,
-    1,
-    '30000'
+   24,
+   1,
+   '30000'
 ),
 (
-    25,
-    1,
-    '37000'
+   25,
+   1,
+   '37000'
 ),
 (
-    26,
-    1,
-    '14000'
+   26,
+   1,
+   '14000'
 ),
 (
-    27,
-    1,
-    '45200'
+   27,
+   1,
+   '45200'
 ),
 (
-    28,
-    1,
-    '66000'
+   28,
+   1,
+   '66000'
 ),
 (
-    29,
-    1,
-    '73000'
+   29,
+   1,
+   '73000'
 ),
 (
-    30,
-    1,
-    '68000'
+   30,
+   1,
+   '68000'
 ),
 (
-    31,
-    1,
-    '56000'
+   31,
+   1,
+   '56000'
+),
+(
+   32,
+   1,
+   '13100'
+),
+(
+   33,
+   1,
+   '64200'
+),
+(
+   34,
+   1,
+   '38000'
+),
+(
+   35,
+   1,
+   '45000'
+),
+(
+   36,
+   1,
+   '84000'
+),
+(
+   37,
+   1,
+   '54000'
+),
+(
+   38,
+   1,
+   '56100'
+),
+(
+   39,
+   1,
+   '17000'
+),
+(
+   40,
+   1,
+   '34200'
 );
 
 INSERT INTO COMMANDE (
@@ -5696,10 +6026,150 @@ INSERT INTO ETABLISSEMENT (
 (
    21,
    'Restaurant',
-   131,
+   130,
    'McDonald''s Annecy',
    'Restaurant rapide offrant burgers, frites et menus pour petits et grands.',
    'https://tb-static.uber.com/prod/image-proc/processed_images/2fbf5a0b7a62e385368c58d3cda5420b/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   TRUE,
+   FALSE
+),
+(
+   22,
+   'Épicerie',
+   132,
+   'Le Petit Casino',
+   'Magasin de proximité proposant produits alimentaires et ménagers à prix abordables.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/3a2a6d2c3a233e71731d166c5c907afd/9b3aae4cf90f897799a5ed357d60e09d.jpeg',
+   TRUE,
+   FALSE
+),
+(
+   23,
+   'Restaurant',
+   132,
+   'Eat Sushi - Compans',
+   'Restaurant réputé pour ses plats japonais authentiques et ses créations originales.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/991cb9e636550e8431809e82bca2cf3d/9e31c708e4cf73b6e3ea1bd4a9b6e16b.jpeg',
+   FALSE,
+   TRUE
+),
+(
+   24,
+   'Restaurant',
+   133,
+   'Pepe Chicken',
+   'Une expérience culinaire Halal dans la vibrante ville de Lille.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/3f0c1db6cb87d1b00e94d29c79ff6efb/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
+   TRUE,
+   FALSE
+),
+(
+   25,
+   'Épicerie',
+   134,
+   'Intermarché',
+   'Magasin proposant produits alimentaires et ménagers à prix abordables. Tah la lutte contre la vie cher.',
+   'https://tse1.mm.bing.net/th?id=OIP.gj4ezEs_JEw1Xum51IbiaAHaEJ&pid=Api&P=0&h=360',
+   TRUE,
+   TRUE
+),
+(
+   26,
+   'Épicerie',
+   135,
+   'Super U',
+   'Magasin proposant produits alimentaires et ménagers à prix abordables.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/9e86653f2d760320b7bfe7d16fa82439/e00617ce8176680d1c4c1a6fb65963e2.png',
+   FALSE,
+   TRUE
+),
+(
+   27,
+   'Restaurant',
+   136,
+   'Les Burgers de Colette',
+   'Restaurant apprécié pour ses burgers de qualité.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/75d3515e5ff7edfcf05258ada26b3922/9e31c708e4cf73b6e3ea1bd4a9b6e16b.jpeg',
+   TRUE,
+   FALSE
+),
+(
+   28,
+   'Épicerie',
+   137,
+   'Monoprix',
+   'Magasin proposant produits alimentaires et ménagers à prix abordables.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/224b86f25c53a5ebb074c1a3f8040df1/e00617ce8176680d1c4c1a6fb65963e2.png',
+   FALSE,
+   TRUE
+),
+(
+   29,
+   'Restaurant',
+   138,
+   'McDonald''s Le Havre',
+   'Restaurant rapide offrant burgers, frites et menus pour petits et grands.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/8849186db50c90063596a8af39664c94/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   TRUE,
+   TRUE
+),
+(
+   30,
+   'Épicerie',
+   139,
+   'Monop’',
+   'Magasin proposant produits alimentaires et ménagers à prix abordables.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/b9ebfa5480bf99aa56f7afec5c302fb1/e00617ce8176680d1c4c1a6fb65963e2.png',
+   TRUE,
+   FALSE
+),
+(
+   31,
+   'Restaurant',
+   140,
+   'L’Istanbul',
+   'Gel abi, gel abla, yemeye geeeeel',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/993eb2938e9af3bdd57c87c31f89fdad/16bb0a3ab8ea98cfe8906135767f7bf4.jpeg',
+   TRUE,
+   TRUE
+),
+(
+   32,
+   'Épicerie',
+   141,
+   'Picard',
+   'Spécialisé dans les produits surgelés de qualité pour des repas rapides et savoureux.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/a5b4df5effe99c1e6459b51137f07938/029e6f4e0c81c14572126109dfe867f3.png',
+   FALSE,
+   TRUE
+),
+(
+   33,
+   'Restaurant',
+   142,
+   'O’Tacos',
+   'Une expérience culinaire unique avec une touche française.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/6479fc4485d81ab15424048d665e8c79/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+   TRUE,
+   TRUE
+),
+(
+   34,
+   'Épicerie',
+   143,
+   'Carrefour',
+   'Supermarché proposant une large gamme de produits alimentaires et ménagers.',
+   'https://logowik.com/content/uploads/images/210_carrefour.jpg',
+   FALSE,
+   TRUE
+),
+(
+   35,
+   'Restaurant',
+   175,
+   'Chicken Alpes',
+   'Un établissement spécialisé dans la cuisine de type "Pollo" de los Pollos Chickanos.',
+   'https://tb-static.uber.com/prod/image-proc/processed_images/4fcd2c0217a719acc80ee4b9c2e6d2fd/fb86662148be855d931b37d6c1e5fcbe.jpeg',
    TRUE,
    FALSE
 );
@@ -12999,124 +13469,178 @@ INSERT INTO VILLE (
    'Annecy'
 ),
 (
-    12,
-    1,
-    12,
-    'Toulouse'
+   12,
+   1,
+   12,
+   'Toulouse'
 ),
 (
-    13,
-    1,
-    13,
-    'Lille'
+   13,
+   1,
+   13,
+   'Lille'
 ),
 (
-    14,
-    1,
-    14,
-    'Rennes'
+   14,
+   1,
+   14,
+   'Rennes'
 ),
 (
-    15,
-    1,
-    15,
-    'Le Havre'
+   15,
+   1,
+   15,
+   'Le Havre'
 ),
 (
-    16,
-    1,
-    16,
-    'Reims'
+   16,
+   1,
+   16,
+   'Reims'
 ),
 (
-    17,
-    1,
-    17,
-    'Saint-Étienne'
+   17,
+   1,
+   17,
+   'Saint-Étienne'
 ),
 (
-    18,
-    1,
-    18,
-    'Le Mans'
+   18,
+   1,
+   18,
+   'Le Mans'
 ),
 (
-    19,
-    1,
-    19,
-    'Amiens'
+   19,
+   1,
+   19,
+   'Amiens'
 ),
 (
-    20,
-    1,
-    20,
-    'Brest'
+   20,
+   1,
+   20,
+   'Brest'
 ),
 (
-    21,
-    1,
-    21,
-    'Clermont-Ferrand'
+   21,
+   1,
+   21,
+   'Clermont-Ferrand'
 ),
 (
-    22,
-    1,
-    22,
-    'Toulon'
+   22,
+   1,
+   22,
+   'Toulon'
 ),
 (
-    23,
-    1,
-    23,
-    'Angers'
+   23,
+   1,
+   23,
+   'Angers'
 ),
 (
-    24,
-    1,
-    24,
-    'Nîmes'
+   24,
+   1,
+   24,
+   'Nîmes'
 ),
 (
-    25,
-    1,
-    25,
-    'Tours'
+   25,
+   1,
+   25,
+   'Tours'
 ),
 (
-    26,
-    1,
-    26,
-    'Caen'
+   26,
+   1,
+   26,
+   'Caen'
 ),
 (
-    27,
-    1,
-    27,
-    'Montargis'
+   27,
+   1,
+   27,
+   'Montargis'
 ),
 (
-    28,
-    1,
-    28,
-    'Perpignan'
+   28,
+   1,
+   28,
+   'Perpignan'
 ),
 (
-    29,
-    1,
-    29,
-    'Chambery'
+   29,
+   1,
+   29,
+   'Chambery'
 ),
 (
-    30,
-    1,
-    30,
-    'Colmar'
+   30,
+   1,
+   30,
+   'Colmar'
 ),
 (
-    31,
-    1,
-    31,
-    'Vannes'
+   31,
+   1,
+   31,
+   'Vannes'
+),
+(
+   32,
+   1,
+   32,
+   'Aix-en-Provence'
+),
+(
+   33,
+   1,
+   33,
+   'Biarritz'
+),
+(
+   34,
+   1,
+   34,
+   'Grenoble'
+),
+(
+   35,
+   1,
+   35,
+   'Orléans'
+),
+(
+   36,
+   1,
+   36,
+   'Avignon'
+),
+(
+   37,
+   1,
+   37,
+   'Nancy'
+),
+(
+   38,
+   1,
+   38,
+   'Lorient'
+),
+(
+   39,
+   1,
+   39,
+   'La Rochelle'
+),
+(
+   40,
+   1,
+   40,
+   'Sète'
 );
 
 ---------------------------------------------------------------
