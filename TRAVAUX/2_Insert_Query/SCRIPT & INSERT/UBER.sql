@@ -13781,43 +13781,43 @@ INSERT INTO TYPE_PRESTATION (
 ) VALUES (
    1,
    'UberX',
-   'Un voyage standard',
+   'Un voyage standard et économique, parfait pour les trajets quotidiens et les déplacements en ville.',
    'UberX.jpg'
 ),
 (
    2,
    'UberXL',
-   'Un voyage standard mais plus grand',
+   'Un service similaire à UberX, mais avec plus d’espace pour accueillir confortablement jusqu’à six passagers et leurs bagages.',
    'UberXL.jpg'
 ),
 (
    3,
    'UberVan',
-   'Chauffeurs professionnels proposant des vans',
+   'Des chauffeurs professionnels vous transportent dans des vans spacieux, idéaux pour les groupes ou les grandes familles.',
    'UberVan.jpg'
 ),
 (
    4,
    'Confort',
-   'Pour un voyage dans des véhicules plus récents',
+   'Voyagez dans des véhicules modernes et bien équipés pour une expérience de transport plus agréable et relaxante.',
    'Comfort.jpg'
 ),
 (
    5,
    'Green',
-   'Pour un voyage respectueux de l’environnement',
+   'Optez pour un trajet respectueux de l’environnement avec des véhicules hybrides ou électriques, tout en réduisant votre empreinte carbone.',
    'Green.jpg'
 ),
 (
    6,
    'UberPet',
-   'Pour un voyage qui accepte les animaux',
+   'Un service conçu pour les amoureux des animaux, permettant de voyager avec vos compagnons à quatre pattes dans le confort.',
    'UberPet.jpg'
 ),
 (
    7,
    'Berline',
-   'Pour flex',
+   'Pour des déplacements professionnels ou des occasions spéciales, choisissez une berline élégante et confortable, offrant une expérience de luxe.',
    'Berline.jpg'
 );
 
