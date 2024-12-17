@@ -1,0 +1,117 @@
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Les boutons sont répartis de part et d'autre */
+    margin-top: 20px; /* Ajout d'un espacement au-dessus des boutons */
+}
+
+
+.btn-annuler {
+    background-color: rgb(0, 0, 0);
+    border: 2px solid transparent;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 200ms ease;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+}
+.btn-annuler:hover {
+    color: rgb(0, 0, 0);
+    background-color: #f3f3f3;
+}
+
+
+.btn-reserver {
+    background-color: #2ecc71; /* Vert */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 200ms ease;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    width: 100%; /* Pour garder une taille proportionnée */
+}
+
+.btn-reserver:hover {
+    background-color: #27ae60; /* Vert foncé au survol */
+}
+
+/* Conteneur de base pour la page */
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+section {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour l'image */
+img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Liste des détails */
+ul.liste {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul.liste li {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #444;
+}
+
+ul.liste li strong {
+    color: #000;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Détails cachés */
+.details {
+    display: block;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* #toggle-details:checked + .details {
+    display: block;
+}
+
+
+.btn-toggle {
+    cursor: pointer;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    text-decoration: underline;
+}
+
+.btn-toggle:hover {
+    color: rgb(0, 0, 0);
+} */
