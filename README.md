@@ -1,6 +1,6 @@
 # **Uber - Data Management and Application Design**
 
-Welcome to the **Uber** project repository. This project involves the complete design and development of a data management system for an Uber-like application. It covers all aspects of database design, modeling, query creation, and security, from conceptualization to final deployment.
+Welcome to the **[Uber](https://github.com/melih0132/UBER/tree/main)** project repository. This project involves the complete design and development of a data management system for an Uber-like application. It covers all aspects of database design, modeling, query creation, and security, from conceptualization to final deployment.
 
 ## **Project Overview**
 The goal of this project is to build a data management system that supports the functionality of an Uber-like application. This includes the ability to manage users (passengers and drivers), trips, payments, reservations, and vehicle types, as well as the implementation of security features such as data encryption and privacy measures. The project also includes detailed design and specification documentation, as well as interactive reports for business intelligence analysis.
@@ -137,8 +137,7 @@ The goal of this project is to build a data management system that supports the 
 
 ## **Technologies Used**
 - **Database:** PostgreSQL, pgAdmin4
-- **Backend:** Node.js, Express
-- **Frontend:** React.js
+- **Backend:** Laravel
 - **Data Visualization:** Power BI
 - **API Integration:** RESTful API
 - **Security:** Data Encryption, XSS Prevention, Cookie Management
