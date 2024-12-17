@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.uber.com" target="_blank">
-    <img src="https://blog.uber-cdn.com/cdn-cgi/image/width=2160,quality=80,onerror=redirect,format=auto/wp-content/uploads/2023/11/Rider_App_Icon_iOS-1.png" width="400" alt="Uber Logo">
+    <img src="https://logohistory.net/wp-content/uploads/2023/06/Uber-Emblem-1536x864.png" width="400" alt="Uber Logo">
   </a>
 </p>
 
