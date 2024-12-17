@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://www.uber.com" target="_blank">
-    <img src="https://d1a3f4spazzrp4.cloudfront.net/uber-com/global/assets/images/logos/uber-logo.svg" width="400" alt="Uber Logo">
+    <img src="https://blog.uber-cdn.com/cdn-cgi/image/width=2160,quality=80,onerror=redirect,format=auto/wp-content/uploads/2023/11/Rider_App_Icon_iOS-1.png" width="400" alt="Uber Logo">
   </a>
 </p>
 
@@ -25,16 +25,19 @@ Uber is a technology company revolutionizing the way people move by seamlessly c
 ## Features
 
 ### Uber Rides
+
 - Request rides on-demand with various options like UberX, Uber Comfort, and Uber Black.
 - Track your ride in real-time and communicate seamlessly with drivers.
 - Affordable and safe rides backed by a transparent pricing structure.
 
 ### Uber Eats
+
 - Explore a wide variety of restaurants and cuisines near you.
 - Flexible delivery or pickup options.
 - Advanced filters for dietary preferences and real-time delivery tracking.
 
 ### Uber Velo
+
 - Convenient bike rentals at the tap of a button.
 - Eco-friendly transportation for short commutes.
 - Available in select cities with expanding coverage.
@@ -44,6 +47,7 @@ Uber is a technology company revolutionizing the way people move by seamlessly c
 ## Why Choose Uber?
 
 Uber prioritizes:
+
 - **Convenience**: Simplified user experience for all services.
 - **Safety**: Stringent safety protocols for riders, drivers, and deliveries.
 - **Sustainability**: Investment in greener transport options like Uber Velo and EV integrations.
@@ -56,6 +60,7 @@ Uber prioritizes:
 1. **Download the Uber App**: Available on [iOS](https://apps.apple.com/us/app/uber/id368677368) and [Android](https://play.google.com/store/apps/details?id=com.ubercab).
 2. **Create an Account**: Sign up for a new account or log in with an existing one.
 3. **Select a Service**:
+
    - Choose `Ride` for personal transport.
    - Select `Eat` for food delivery.
    - Opt for `Bike` to explore Uber Velo.
