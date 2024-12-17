@@ -16,9 +16,9 @@ Uber is a technology company revolutionizing the way people move by seamlessly c
 
 ### Key Services:
 
-- **[Uber Rides](https://www.uber.com/)**: Effortlessly get from point A to B with rides available 24/7.
-- **[Uber Eats](https://www.ubereats.com/)**: Order from your favorite restaurants and have your food delivered fast and fresh.
-- **[Uber Velo](https://www.uber.com/bike/)**: Enjoy convenient bike rentals to move around your city sustainably.
+- **[Uber Rides](http://51.83.36.122:1212/)**: Effortlessly get from point A to B with rides available 24/7.
+- **[Uber Eats](http://51.83.36.122:1212/UberEats)**: Order from your favorite restaurants and have your food delivered fast and fresh.
+- **[Uber Velo](http://51.83.36.122:1212/UberVelo)**: Enjoy convenient bike rentals to move around your city sustainably.
 
 ---
 
