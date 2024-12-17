@@ -1,10 +1,4 @@
 <p align="center">
-  <a href="[https://www.uber.com](http://51.83.36.122:1212/)" target="_blank">
-    <img src="https://logohistory.net/wp-content/uploads/2023/06/Uber-Emblem-1536x864.png" width="763" height="432" alt="Uber Logo">
-  </a>
-</p>
-
-<p align="center">
   <a href="https://www.uber.com/"><img src="https://img.shields.io/badge/Uber-Platform-blue" alt="Uber Platform"></a>
   <a href="https://ubereats.com/"><img src="https://img.shields.io/badge/Uber%20Eats-Delivery-brightgreen" alt="Uber Eats Delivery"></a>
   <a href="https://www.uber.com/bike/"><img src="https://img.shields.io/badge/Uber%20Velo-Bike%20Sharing-orange" alt="Uber Velo Sharing"></a>
