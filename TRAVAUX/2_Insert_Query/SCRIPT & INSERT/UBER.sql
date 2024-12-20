@@ -221,7 +221,7 @@ CREATE TABLE COURSE (
 /* Table : COURSIER                                             */
 /*==============================================================*/
 CREATE TABLE COURSIER (
-   IDCOURSIER INT4 NOT NULL,  
+   IDCOURSIER INT4 NOT NULL,
    IDENTREPRISE INT4 NOT NULL,
    IDADRESSE INT4 NOT NULL,
    GENREUSER VARCHAR(20) NOT NULL,
@@ -2625,7 +2625,7 @@ INSERT INTO CLIENT (
    '0612345678',
    'jean.dupont@example.com',
    'password123',
-   'profile1.jpg',
+   '',
    TRUE
 ),
 (
@@ -2639,7 +2639,7 @@ INSERT INTO CLIENT (
    '0612345679',
    'claire.martin@example.com',
    'password456',
-   'profile2.jpg',
+   '',
    FALSE
 ),
 (
@@ -2653,7 +2653,7 @@ INSERT INTO CLIENT (
    '0612345680',
    'paul.durand@example.com',
    'password789',
-   'profile3.jpg',
+   '',
    TRUE
 ),
 (
@@ -2667,7 +2667,7 @@ INSERT INTO CLIENT (
    '0612345681',
    'sophie.bernard1@example.com',
    'password101',
-   'profile4.jpg',
+   '',
    FALSE
 ),
 (
@@ -2681,7 +2681,7 @@ INSERT INTO CLIENT (
    '0612345682',
    'alexandre.lemoine@example.com',
    'password202',
-   'profile5.jpg',
+   '',
    TRUE
 ),
 (
@@ -2695,7 +2695,7 @@ INSERT INTO CLIENT (
    '0612345683',
    'lucie.petit@example.com',
    'password303',
-   'profile6.jpg',
+   '',
    TRUE
 ),
 (
@@ -2709,7 +2709,7 @@ INSERT INTO CLIENT (
    '0612345684',
    'thomas.lemoine@example.com',
    'password404',
-   'profile7.jpg',
+   '',
    FALSE
 ),
 (
@@ -2723,7 +2723,7 @@ INSERT INTO CLIENT (
    '0612345685',
    'marie.lemoine@example.com',
    'password505',
-   'profile8.jpg',
+   '',
    TRUE
 ),
 (
@@ -2737,7 +2737,7 @@ INSERT INTO CLIENT (
    '0612345686',
    'philippe.benoit@example.com',
    'password606',
-   'profile9.jpg',
+   '',
    FALSE
 ),
 (
@@ -2751,7 +2751,7 @@ INSERT INTO CLIENT (
    '0612345687',
    'sophie.lemoine@example.com',
    'password707',
-   'profile10.jpg',
+   '',
    TRUE
 ),
 (
@@ -2765,7 +2765,7 @@ INSERT INTO CLIENT (
    '0612345688',
    'carlos.garcia@example.com',
    'password808',
-   'profile11.jpg',
+   '',
    TRUE
 ),
 (
@@ -2779,7 +2779,7 @@ INSERT INTO CLIENT (
    '0612345689',
    'anna.lemoine@example.com',
    'password909',
-   'profile12.jpg',
+   '',
    FALSE
 ),
 (
@@ -2793,7 +2793,7 @@ INSERT INTO CLIENT (
    '0612345690',
    'diego.garcia@example.com',
    'password010',
-   'profile13.jpg',
+   '',
    TRUE
 ),
 (
@@ -2807,7 +2807,7 @@ INSERT INTO CLIENT (
    '0612345691',
    'helene.bernard@example.com',
    'password121',
-   'profile14.jpg',
+   '',
    TRUE
 ),
 (
@@ -2821,7 +2821,7 @@ INSERT INTO CLIENT (
    '0612345692',
    'pierre.dupont@example.com',
    'password232',
-   'profile15.jpg',
+   '',
    FALSE
 ),
 (
@@ -2835,7 +2835,7 @@ INSERT INTO CLIENT (
    '0612345693',
    'julie.durand@example.com',
    'password343',
-   'profile16.jpg',
+   '',
    TRUE
 ),
 (
@@ -2849,7 +2849,7 @@ INSERT INTO CLIENT (
    '0612345694',
    'benjamin.lemoine@example.com',
    'password454',
-   'profile17.jpg',
+   '',
    FALSE
 ),
 (
@@ -2863,7 +2863,7 @@ INSERT INTO CLIENT (
    '0612345695',
    'claire.lemoine@example.com',
    'password565',
-   'profile18.jpg',
+   '',
    TRUE
 ),
 (
@@ -2877,7 +2877,7 @@ INSERT INTO CLIENT (
    '0612345696',
    'julien.leoine@example.com',
    'password676',
-   'profile19.jpg',
+   '',
    FALSE
 ),
 (
@@ -2891,7 +2891,7 @@ INSERT INTO CLIENT (
    '0612345697',
    'sophie.bernard@example.com',
    'password787',
-   'profile20.jpg',
+   '',
    TRUE
 ),
 (
@@ -2905,7 +2905,7 @@ INSERT INTO CLIENT (
    '0612345698',
    'antoine.gomez@example.com',
    'password898',
-   'profile21.jpg',
+   '',
    TRUE
 ),
 (
@@ -2919,7 +2919,7 @@ INSERT INTO CLIENT (
    '0612345699',
    'isabelle.lemoine@example.com',
    'password009',
-   'profile22.jpg',
+   '',
    FALSE
 ),
 (
@@ -2933,7 +2933,7 @@ INSERT INTO CLIENT (
    '0612345700',
    'frederic.dupont@example.com',
    'password110',
-   'profile23.jpg',
+   '',
    TRUE
 ),
 (
@@ -2947,7 +2947,7 @@ INSERT INTO CLIENT (
    '0612345701',
    'laura.garcia@example.com',
    'password221',
-   'profile24.jpg',
+   '',
    FALSE
 ),
 (
@@ -2961,7 +2961,7 @@ INSERT INTO CLIENT (
    '0612345702',
    'eric.benoit@example.com',
    'password332',
-   'profile25.jpg',
+   '',
    TRUE
 ),
 (
@@ -2975,7 +2975,7 @@ INSERT INTO CLIENT (
    '0612345703',
    'margaux.lemoine@example.com',
    'password443',
-   'profile26.jpg',
+   '',
    TRUE
 ),
 (
@@ -2989,7 +2989,7 @@ INSERT INTO CLIENT (
    '0612345704',
    'jacques.dupont@example.com',
    'password554',
-   'profile27.jpg',
+   '',
    FALSE
 ),
 (
@@ -3003,7 +3003,7 @@ INSERT INTO CLIENT (
    '0612345705',
    'marion.bernard@example.com',
    'password665',
-   'profile28.jpg',
+   '',
    TRUE
 ),
 (
@@ -3017,7 +3017,7 @@ INSERT INTO CLIENT (
    '0612345706',
    'victor.durand@example.com',
    'password776',
-   'profile29.jpg',
+   '',
    TRUE
 ),
 (
@@ -3031,7 +3031,7 @@ INSERT INTO CLIENT (
    '0612345707',
    'audrey.lemoine@example.com',
    'password887',
-   'profile30.jpg',
+   '',
    FALSE
 ),
 (
@@ -3045,7 +3045,7 @@ INSERT INTO CLIENT (
    '0612345708',
    'maxime.gomez@example.com',
    'password998',
-   'profile31.jpg',
+   '',
    TRUE
 ),
 (
@@ -3059,7 +3059,7 @@ INSERT INTO CLIENT (
    '0612345709',
    'sophie.m0artin@example.com',
    'password009',
-   'profile32.jpg',
+   '',
    TRUE
 ),
 (
@@ -3073,7 +3073,7 @@ INSERT INTO CLIENT (
    '0612345710',
    'julien.lemoine@example.com',
    'password110',
-   'profile33.jpg',
+   '',
    FALSE
 ),
 (
@@ -3087,7 +3087,7 @@ INSERT INTO CLIENT (
    '0612345711',
    'amelie.petit@example.com',
    'password221',
-   'profile34.jpg',
+   '',
    TRUE
 ),
 (
@@ -3101,7 +3101,7 @@ INSERT INTO CLIENT (
    '0612345712',
    'laurent.lemoine@example.com',
    'password332',
-   'profile35.jpg',
+   '',
    FALSE
 ),
 (
@@ -3115,7 +3115,7 @@ INSERT INTO CLIENT (
    '0612345713',
    'catherine.durand@example.com',
    'password443',
-   'profile36.jpg',
+   '',
    TRUE
 ),
 (
@@ -3129,7 +3129,7 @@ INSERT INTO CLIENT (
    '0612345714',
    'lucas.gomez@example.com',
    'password554',
-   'profile37.jpg',
+   '',
    TRUE
 ),
 (
@@ -3143,7 +3143,7 @@ INSERT INTO CLIENT (
    '0612345715',
    'amandine.benoit@example.com',
    'password665',
-   'profile38.jpg',
+   '',
    FALSE
 ),
 (
@@ -3157,7 +3157,7 @@ INSERT INTO CLIENT (
    '0612345716',
    'julien.garcia@example.com',
    'password776',
-   'profile39.jpg',
+   '',
    TRUE
 ),
 (
@@ -3171,7 +3171,7 @@ INSERT INTO CLIENT (
    '0612345717',
    'estelle.lemoine@example.com',
    'password887',
-   'profile40.jpg',
+   '',
    FALSE
 ),
 (
@@ -3185,7 +3185,7 @@ INSERT INTO CLIENT (
    '0612345718',
    'frederic.lemoine@example.com',
    'password998',
-   'profile41.jpg',
+   '',
    TRUE
 ),
 (
@@ -3199,7 +3199,7 @@ INSERT INTO CLIENT (
    '0612345719',
    'celine.garcia@example.com',
    'password009',
-   'profile42.jpg',
+   '',
    FALSE
 ),
 (
@@ -3213,7 +3213,7 @@ INSERT INTO CLIENT (
    '0612345720',
    'victor.dupont@example.com',
    'password110',
-   'profile43.jpg',
+   '',
    TRUE
 ),
 (
@@ -3227,7 +3227,7 @@ INSERT INTO CLIENT (
    '0612345721',
    'valerie.lemoine@example.com',
    'password221',
-   'profile44.jpg',
+   '',
    TRUE
 ),
 (
@@ -3241,7 +3241,7 @@ INSERT INTO CLIENT (
    '0612345722',
    'louis.benoit@example.com',
    'password332',
-   'profile45.jpg',
+   '',
    FALSE
 ),
 (
@@ -3255,7 +3255,7 @@ INSERT INTO CLIENT (
    '0612345723',
    'sophie.martin@example.com',
    'password443',
-   'profile46.jpg',
+   '',
    TRUE
 ),
 (
@@ -3269,7 +3269,7 @@ INSERT INTO CLIENT (
    '0612345724',
    'pierre.lemoine@example.com',
    'password554',
-   'profile47.jpg',
+   '',
    TRUE
 ),
 (
@@ -3283,7 +3283,7 @@ INSERT INTO CLIENT (
    '0612345725',
    'laure.bernard@example.com',
    'password665',
-   'profile48.jpg',
+   '',
    FALSE
 ),
 (
@@ -3297,7 +3297,7 @@ INSERT INTO CLIENT (
    '0612345726',
    'rafael.garcia@example.com',
    'password776',
-   'profile49.jpg',
+   '',
    TRUE
 ),
 (
@@ -3311,7 +3311,7 @@ INSERT INTO CLIENT (
    '0612345727',
    'solene.lemoine@example.com',
    'password887',
-   'profile50.jpg',
+   '',
    TRUE
 );
 
