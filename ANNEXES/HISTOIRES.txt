@@ -1,0 +1,153 @@
+1. Service : Course et Transport
+Utilisateur : Client
+1. Recherche de courses immédiates ou programmées :
+   - Histoire 1 : Rechercher des courses immédiates entre Annecy et Pringy.
+   - Histoire 2 : Rechercher des courses pour demain à 8h entre Annecy et Pringy.
+   - Histoire 3 : Modifier les éléments d'une course déjà demandée.
+
+2. Visualisation et réservation de propositions :
+   - Histoire 4 : Voir les détails des propositions après une recherche.
+   - Histoire 5 : Réserver une proposition pour effectuer un voyage.
+
+3. Annulation de réservation :
+   - Histoire 6 : Annuler une course déjà réservée.
+
+4. Validation de la fin d'une course :
+   - Histoire 10 : Confirmer que la course est terminée après avoir été transporté.
+
+5. Interaction post course :
+   - Histoire 12 : Donner un pourboire pour remercier le chauffeur.
+   - Histoire 13 : Évaluer le chauffeur avec une note.
+   - Histoire 14 : Recevoir une facture dans sa langue pour mieux comprendre la prestation.
+
+6. Gestion du compte client :
+   - Histoire 58 : Consulter les courses passées et à venir.
+   - Histoire 59 : Modifier les lieux de départ favoris pour simplifier les recherches.
+   - Histoire 60 : Changer la photo de profil pour compléter son compte.
+
+---
+
+Utilisateur : Chauffeur
+1. Gestion des propositions de courses :
+   - Histoire 7 : Voir toutes les courses proposées par Uber.
+   - Histoire 8 : Refuser une proposition de course.
+   - Histoire 9 : Accepter une proposition pour effectuer la course.
+
+2. Validation de la fin d'une course :
+   - Histoire 11 : Confirmer que la course est terminée après avoir transporté un client.
+
+3. Rejoindre Uber en tant que chauffeur :
+   - Histoire 57 : Demander la création d'un compte chauffeur.
+
+---
+
+Utilisateur : Responsable du service Course
+1. Suivi des demandes clients :
+   - Histoire 28 : Visualiser les courses demandées dans un secteur donné.
+   - Histoire 29 : Solliciter les chauffeurs disponibles pour des courses à venir.
+
+2. Rapports mensuels :
+   - Histoire 37 : Connaître le nombre de courses réalisées par mois.
+   - Histoire 38 : Suivre l’état financier des courses chaque mois.
+   - Histoire 39 : Comparer les performances par catégorie de véhicule.
+   - Histoire 40 : Analyser les montants par zone géographique.
+
+---
+
+2. Service : Livraison de repas et produits
+Utilisateur : Visiteur
+1. Recherche et filtrage :
+   - Histoire 15 : Trouver un restaurant en précisant la ville, le mode de livraison et la période.
+   - Histoire 16 : Filtrer les restaurants par catégorie de prestation.
+   - Histoire 17 : Sélectionner une catégorie de produits pour affiner les résultats.
+
+2. Préparation de commande :
+   - Histoire 18 : Voir les détails d’un restaurant après sélection.
+   - Histoire 19 : Ajouter des produits au panier.
+
+---
+
+Utilisateur : Client
+1. Commande et paiement :
+   - Histoire 24 : Commander des plats pour livraison avec paiement par carte.
+   - Histoire 25 : Commander des plats pour retrait avec paiement par carte.
+   - Histoire 55 : Commander des produits et les régler sur le compte.
+   - Histoire 56 : Demander la livraison après paiement.
+
+---
+
+Utilisateur : Responsable d'enseigne
+1. Gestion des commandes et chauffeurs :
+   - Histoire 26 : Voir les commandes à livrer dans la prochaine heure.
+   - Histoire 27 : Affecter un chauffeur pour effectuer une livraison.
+
+---
+
+Utilisateur : Restaurateur
+1. Création et gestion de restaurant :
+   - Histoire 50 : Créer un restaurant sur Uber pour recevoir des commandes.
+   - Histoire 51 : Enregistrer des plats et menus pour les rendre disponibles.
+
+---
+
+3. Service : Gestion interne
+Utilisateur : Service RH
+1. Gestion des chauffeurs :
+   - Histoire 30 : Planifier des rendez-vous avec des candidats chauffeurs.
+   - Histoire 31 : Enregistrer l'acceptation ou le refus d'un chauffeur après un entretien.
+
+---
+
+Utilisateur : Service Logistique
+1. Gestion des véhicules :
+   - Histoire 32 : Valider la création d’un véhicule pour augmenter la flotte.
+   - Histoire 33 : Refuser un véhicule non conforme.
+   - Histoire 34 : Demander des modifications sur un véhicule avant validation.
+
+---
+
+Utilisateur : Service Facturation
+1. Suivi financier :
+   - Histoire 35 : Voir toutes les courses d’un chauffeur pour une période donnée.
+   - Histoire 36 : Générer une facture après vérification des courses.
+
+---
+
+Utilisateur : Service Juridique
+1. Conformité légale :
+   - Histoire 43 : Vérifier la conformité des cookies avec la législation.
+
+---
+
+Utilisateur : Délégué à la Protection des Données
+1. RGPD :
+   - Histoire 42 : Anonymiser les données en fonction d’une date.
+
+---
+
+4. Service : Sécurité et Assistance
+Utilisateur : Client
+1. Sécurisation du compte :
+   - Histoire 45 : Réinitialiser le mot de passe après une fuite sur le dark web.
+   - Histoire 46 : Activer l’authentification multi facteur (MFA).
+   - Histoire 47 : Utiliser l’authentification multi facteur pour se connecter.
+
+2. Gestion des données personnelles :
+   - Histoire 48 : Demander la suppression ou l’anonymisation des informations personnelles.
+   - Histoire 49 : Consulter les données personnelles stockées.
+
+---
+
+Utilisateur : Visiteur
+1. Support et interaction :
+   - Histoire 41 : Accepter ou refuser les cookies du site.
+   - Histoire 44 : Poser une question sur le chat et recevoir une réponse.
+
+---
+
+5. Service : Mobilité douce
+Utilisateur : Client
+1. Réservation de vélo :
+   - Histoire 52 : Réserver un vélo dans un lieu et à une date précise.
+   - Histoire 53 : Réserver un vélo pour une date et un lieu spécifiques.
+   - Histoire 54 : Valider une réservation et procéder au paiement.
