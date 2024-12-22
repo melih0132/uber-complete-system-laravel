@@ -1,6 +1,6 @@
 @extends('layouts.ubereats')
 
-@section('title', 'Ajouter un Restaurant')
+@section('title', 'Ajouter votre établissement')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/ajout-restaurant.blade.css') }}">
@@ -8,77 +8,134 @@
 
 @section('content')
 
-<div class="main-container">
+    <div class="container">
 
-    <div class="add-form my-5">
-        <h1>Créer votre Restaurant</h1>
+        <div class="add-form my-5">
+            <h1>Créer votre établissement</h1>
 
-        <form action="{{ route('etablissement.store') }}" method="POST">
-            @csrf
+            <form action="{{ route('etablissement.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
-            <label for="nom">Nom du Restaurant :</label>
-            <input type="text" id="nometablissement" name="nometablissement" required placeholder="Entrez le nom du restaurant" value="{{ old('nom') }}">
+                <!-- Nom de l'établissement -->
+                <label for="nometablissement">Nom de l'établissement :</label>
+                <input type="text" id="nometablissement" name="nometablissement" required
+                    placeholder="Entrez le nom de l'établissement" value="{{ old('nometablissement') }}">
+                @error('nometablissement')
+                    <div class="error">{{ $message }}</div>
+                @enderror
 
-            <label for="libelleadresse">Adresse :</label>
-            <input type="text" id="libelleadresse" name="libelleadresse" required placeholder="Entrez l'adresse du restaurant" value="{{ old('adresse') }}">
+                <!-- Adresse de l'établissement -->
+                <label for="libelleadresse">Adresse de l'établissement :</label>
+                <input type="text" id="libelleadresse" name="libelleadresse" required
+                    placeholder="Entrez l'adresse de l'établissement" value="{{ old('libelleadresse') }}">
+                @error('libelleadresse')
+                    <div class="error">{{ $message }}</div>
+                @enderror
 
-            <label for="ville">Ville :</label>
-            <select name="nomville" id="nomville" required>
-                <option value="">Sélectionnez la ville</option>
-                @foreach ($villes as $ville)
-                    <option value="{{ $ville->idville }}" {{ old('ville') == $ville->idville ? 'selected' : '' }}>
-                        {{ $ville->nomville }}
+                <!-- Ville -->
+                <label for="nomville">Ville :</label>
+                <input type="text" id="nomville" name="nomville" required placeholder="Entrez le nom de la ville"
+                    value="{{ old('nomville') }}">
+                @error('nomville')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+
+                <!-- Code Postal -->
+                <label for="codepostal">Code Postal :</label>
+                <input type="text" id="codepostal" name="codepostal" required placeholder="Entrez le code postal"
+                    value="{{ old('codepostal') }}">
+                @error('codepostal')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+
+                <!-- Type d'établissement -->
+                <label for="typeetablissement">Type d'établissement :</label>
+                <select name="typeetablissement" id="typeetablissement" required>
+                    <option value="" disabled selected>Sélectionnez le type d'établissement</option>
+                    <option value="Restaurant" {{ old('typeetablissement') == 'Restaurant' ? 'selected' : '' }}>Restaurant
                     </option>
-                @endforeach
-            </select>
-
-            <label for="code_postal">Code Postal :</label>
-            <input type="text" id="code_postal" name="code_postal" required placeholder="Entrez le code postal" value="{{ old('code_postal') }}">
-            <select name="typeetablissement" required>
-                <option value="" disabled selected>Type d'etablissement</option>
-                <option value="Restaurant">Restaurant</option>
-                <option value="Épicerie">Epicerie</option>
-            </select>
-            <label for="categorie_restaurant">Catégorie(s) de Restaurant :</label>
-            <select name="categorie_restaurant[]" id="categorie_restaurant" class="combobox" multiple required>
-                @foreach ($categoriesPrestation as $categoriePrestation)
-                    <option value="{{ $categoriePrestation->idcategorieprestation }}"
-                        {{ in_array($categoriePrestation->idcategorieprestation, old('categorie_restaurant', [])) ? 'selected' : '' }}>
-                        {{ $categoriePrestation->libellecategorieprestation }}
+                    <option value="Épicerie" {{ old('typeetablissement') == 'Épicerie' ? 'selected' : '' }}>Épicerie
                     </option>
-                @endforeach
-            </select>
-            @if ($errors->has('categorie_restaurant'))
-                <div class="error">{{ $errors->first('categorie_restaurant') }}</div>
-            @endif
-            <label for="livraison">Livraison :</label>
-            <input type="checkbox" id="livraison" name="livraison" value="1">
+                </select>
+                @error('typeetablissement')
+                    <div class="error">{{ $message }}</div>
+                @enderror
 
-            <label for="aemporter">À emporter :</label>
-            <input type="checkbox" id="aemporter" name="aemporter" value="1">
+                <!-- Catégories -->
+                <label for="categorie_restaurant">Catégorie(s) de Restaurant :</label>
+                <input type="text" id="categorie_restaurant" name="categorie_restaurant"
+                    placeholder="Saisissez des catégories existantes...">
 
-            <label for="libelleadresse">Description :</label>
-            <input type="text" id="description" name="description" required placeholder="Entrez une description si souhaite">
+                <!-- Livraison -->
+                <label for="livraison">Livraison :</label>
+                <div class="d-inline-flex pl-3">
+                    <input type="radio" class="mx-2" id="livraison_oui" name="livraison" value="1"
+                        {{ old('livraison') == '1' ? 'checked' : '' }}>
+                    <label for="livraison_oui">Oui</label>
 
-            <label for="libelleadresse">Inserer une image :</label>
-            <input type="text" id="imageetablissement" name="imageetablissement" required placeholder="Mettre une image si souhaite">
+                    <input type="radio" class="mx-2" id="livraison_non" name="livraison" value="0"
+                        {{ old('livraison') == '0' ? 'checked' : '' }}>
+                    <label for="livraison_non">Non</label>
+                </div>
+                @error('livraison')
+                    <div class="error">{{ $message }}</div>
+                @enderror
 
-            <label for="horaire_ouverture">Horaire d'ouverture :</label>
-            <input type="time" id="horaire_ouverture" name="horaire_ouverture" required value="{{ old('horaire_ouverture') }}">
+                <!-- À emporter -->
+                <label for="aemporter">À emporter :</label>
+                <div class="d-inline-flex pl-3">
+                    <input type="radio" class="mx-2" id="aemporter_oui" name="aemporter" value="1"
+                        {{ old('aemporter') == '1' ? 'checked' : '' }}>
+                    <label for="aemporter_oui">Oui</label>
 
-            <label for="horaire_fermeture">Horaire de fermeture :</label>
-            <input type="time" id="horaire_fermeture" name="horaire_fermeture" required value="{{ old('horaire_fermeture') }}">
+                    <input type="radio" class="mx-2" id="aemporter_non" name="aemporter" value="0"
+                        {{ old('aemporter') == '0' ? 'checked' : '' }}>
+                    <label for="aemporter_non">Non</label>
+                </div>
+                @error('aemporter')
+                    <div class="error">{{ $message }}</div>
+                @enderror
 
-            <div class="d-flex justify-content-center">
-                <input class="btn-add" type="submit" value="Créer" action="{{ url('etablissement') }}">
-            </div>
-        </form>
+                <!-- Description -->
+                <label for="description">Description :</label>
+                <textarea id="description" name="description" placeholder="Entrez une description (optionnel)">{{ old('description') }}</textarea>
+                @error('description')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+
+                <!-- Image -->
+                <label for="imageetablissement">Insérer une bannière :</label>
+                <input type="file" id="imageetablissement" name="imageetablissement" accept="image/*">
+                @error('imageetablissement')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+
+                <!-- Horaires -->
+                <label for="horaire_ouverture">Horaires d'ouverture :</label>
+                <input type="time" id="horaire_ouverture" name="horaire_ouverture" required
+                    value="{{ old('horaire_ouverture') }}">
+                @error('horaire_ouverture')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+
+                <label for="horaire_fermeture">Horaires de fermeture :</label>
+                <input type="time" id="horaire_fermeture" name="horaire_fermeture" required
+                    value="{{ old('horaire_fermeture') }}">
+                @error('horaire_fermeture')
+                    <div class="error">{{ $message }}</div>
+                @enderror
+
+                <!-- Bouton de soumission -->
+                <div class="d-flex justify-content-center">
+                    <button class="btn-add" type="submit">Créer</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 
-</div>
-
-<div class="d-flex justify-content-end">
-    <img role="presentation" src="{{ asset('img/burger.png') }}" alt="Burger">
-</div>
+    <div class="d-flex justify-content-end">
+        <img role="presentation" src="{{ asset('img/burger.png') }}" alt="Burger">
+    </div>
 
 @endsection

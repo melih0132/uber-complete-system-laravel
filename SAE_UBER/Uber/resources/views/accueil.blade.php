@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-{{-- @extends('layouts.connexion')
- --}}
 @section('title', 'Uber')
 
 @section('css')
@@ -37,12 +35,10 @@
                             oninput="fetchSuggestions(this, 'endSuggestions')" required>
                         <ul id="endSuggestions" class="suggestions-list"></ul>
 
-
-
                         <div class="date-container">
                             <div class="date-time-container mt-3 mr-3"
                                 onclick="document.getElementById('tripDate').showPicker()">
-                                <label id="tripDateLabel" data-icon="📅">
+                                <label id="tripDateLabel" data-icon="📅" class="mr-1">
                                     {{ old('tripDate', isset($tripDate) ? \Carbon\Carbon::parse($tripDate)->translatedFormat('d F Y') : 'Aujourd\'hui') }}
                                 </label>
                                 <input type="date" id="tripDate" name="tripDate"
@@ -53,18 +49,26 @@
                                 <label id="tripTimeLabel" data-icon="⏰">
                                     {{ old('tripTime', isset($tripTime) ? $tripTime : 'Maintenant') }}
                                 </label>
-                                <input type="hidden" id="tripTime" name="tripTime" value="{{ old('tripTime', $tripTime ?? '') }}">
+                                <input type="hidden" id="tripTime" name="tripTime"
+                                    value="{{ old('tripTime', $tripTime ?? '') }}">
                                 <ul id="customTimeDropdown" class="dropdown-list"></ul>
                             </div>
+
                         </div>
 
                         <!-- Distance -->
                         <div id="distanceResult" class="mt-3"></div>
 
                         <!-- Calculer l'itinéraire -->
-                        <button type="submit" class="mt-4" onclick="voirPrix();">Voir les prestations</button>
                         {{--                         ne supprimer pas c'est pour que si il veut voir les course proposer il doit se connecter mais j'active quand c'est tout fait
                          <a href="{{ url('/login') }}" class="mt-4">Voir les prestations</a> --}}
+
+                        @if (session('user') && session('user.role') === 'client')
+                            <button type="submit" class="mt-4" onclick="voirPrix();">Voir les prestations</button>
+                        @else
+                            <a href="{{ url('/login') }}" class="mt-4">Voir les prestations
+                            </a>
+                        @endif
                     </form>
                 </div>
 

@@ -154,15 +154,15 @@ CREATE TABLE CONTIENT_2 (
 /*==============================================================*/
 CREATE TABLE COURSE (
     IDCOURSE INT4 NOT NULL,
-    IDCOURSIER INT4 NULL,
-    IDCB INT4 NULL,
+    IDCOURSIER INT4 NOT NULL,
+    IDCB INT4 NOT NULL,
     IDADRESSE INT4 NOT NULL,
     IDRESERVATION INT4 NOT NULL,
     ADR_IDADRESSE INT4 NOT NULL,
     IDPRESTATION INT4 NOT NULL,
     DATECOURSE DATE NOT NULL,
     HEURECOURSE TIME NOT NULL,
-    PRIXCOURSE NUMERIC(6, 2) NOT NULL,
+    PRIXCOURSE NUMERIC(8, 2) NOT NULL,
     CONSTRAINT CK_COURSE_PRIX CHECK (PRIXCOURSE >= 0),
     STATUTCOURSE VARCHAR(20) NOT NULL,
     CONSTRAINT CK_COURSE_STATUT CHECK (
@@ -171,26 +171,29 @@ CREATE TABLE COURSE (
     NOTECOURSE NUMERIC(2, 1) NULL,
     CONSTRAINT CK_COURSE_NOTE CHECK (
         NOTECOURSE BETWEEN 0 AND 5
-    ),
-    CONSTRAINT CK_COURSE_NOTE_IS_NULL CHECK (
-        (
-            STATUTCOURSE NOT IN ('En cours', 'En attente', 'Annulée')
-        )
-        OR (
-            STATUTCOURSE IN ('En cours', 'En attente', 'Annulée')
-            AND NOTECOURSE IS NULL
-        )
+        OR NOTECOURSE IS NULL
     ),
     COMMENTAIRECOURSE VARCHAR(1500) NULL,
-    POURBOIRE NUMERIC(5, 2) NULL,
-    CONSTRAINT CK_POURBOIRE CHECK (
-        POURBOIRE >= 0
-        OR POURBOIRE = NULL
+    POURBOIRE NUMERIC(8, 2) NULL,
+    CONSTRAINT CK_COURSE_POURBOIRE CHECK (
+        POURBOIRE IS NULL
+        OR POURBOIRE >= 0
     ),
-    DISTANCE NUMERIC(6, 2) NULL,
-    CONSTRAINT CK_COURSE_DISTANCE CHECK (DISTANCE >= 0),
-    TEMPS INT4 NULL,
-    CONSTRAINT CK_COURSE_TEMPS CHECK (TEMPS >= 0),
+    DISTANCE NUMERIC(8, 2) NULL,
+    CONSTRAINT CK_COURSE_DISTANCE CHECK (
+        DISTANCE IS NULL
+        OR DISTANCE >= 0
+    ),
+    TEMPS INT NULL,
+    CONSTRAINT CK_COURSE_TEMPS CHECK (
+        TEMPS IS NULL
+        OR TEMPS >= 0
+    ),
+    CONSTRAINT CK_COURSE_NOTE_IS_NULL CHECK (
+        STATUTCOURSE <> 'Terminée'
+        AND NOTECOURSE IS NULL
+        OR STATUTCOURSE = 'Terminée'
+    ),
     CONSTRAINT PK_COURSE PRIMARY KEY (IDCOURSE)
 );
 /*==============================================================*/
@@ -10577,7 +10580,7 @@ INSERT INTO COURSE (
     )
 VALUES (
         1,
-        NULL,
+        1,
         7,
         32,
         50,
@@ -10595,7 +10598,7 @@ VALUES (
     ),
     (
         2,
-        NULL,
+        2,
         6,
         35,
         51,
@@ -10685,7 +10688,7 @@ VALUES (
     ),
     (
         7,
-        NULL,
+        7,
         3,
         16,
         56,
@@ -10901,7 +10904,7 @@ VALUES (
     ),
     (
         19,
-        NULL,
+        19,
         1,
         88,
         69,
@@ -10937,7 +10940,7 @@ VALUES (
     ),
     (
         21,
-        NULL,
+        21,
         5,
         93,
         71,
@@ -10973,7 +10976,7 @@ VALUES (
     ),
     (
         23,
-        NULL,
+        23,
         8,
         5,
         73,
@@ -11009,7 +11012,7 @@ VALUES (
     ),
     (
         25,
-        NULL,
+        25,
         10,
         38,
         75,
@@ -11117,7 +11120,7 @@ VALUES (
     ),
     (
         31,
-        NULL,
+        1,
         2,
         83,
         81,
@@ -11171,7 +11174,7 @@ VALUES (
     ),
     (
         34,
-        NULL,
+        4,
         3,
         25,
         84,
@@ -11207,7 +11210,7 @@ VALUES (
     ),
     (
         36,
-        NULL,
+        6,
         10,
         79,
         86,
@@ -11225,7 +11228,7 @@ VALUES (
     ),
     (
         37,
-        NULL,
+        7,
         4,
         100,
         87,
@@ -11315,7 +11318,7 @@ VALUES (
     ),
     (
         42,
-        NULL,
+        12,
         5,
         54,
         92,
@@ -11459,7 +11462,7 @@ VALUES (
     ),
     (
         50,
-        NULL,
+        20,
         3,
         64,
         100,
@@ -11976,13 +11979,18 @@ INSERT
     OR
 UPDATE ON COURSE FOR EACH ROW EXECUTE FUNCTION check_adresse_difference();
 -- check_statut_update statut d'une course terminée ne peut pas être modifié
-CREATE OR REPLACE FUNCTION check_statut_update() RETURNS TRIGGER AS $$ BEGIN IF OLD.STATUTCOURSE = 'Terminée' THEN RAISE EXCEPTION 'Le statut d''une course terminée ne peut pas être modifié';
+CREATE OR REPLACE FUNCTION check_statut_update() RETURNS TRIGGER AS $$ BEGIN
+    IF OLD.STATUTCOURSE = 'Terminée' THEN
+    IF NEW.NOTECOURSE IS DISTINCT
+FROM OLD.NOTECOURSE
+    OR NEW.POURBOIRE IS DISTINCT
+FROM OLD.POURBOIRE THEN RETURN NEW;
+END IF;
+RAISE EXCEPTION 'Le statut d''une course terminée ne peut pas être modifié, sauf pour la note et le pourboire.';
 END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-CREATE TRIGGER trigger_check_statut_update BEFORE
-UPDATE ON COURSE FOR EACH ROW EXECUTE FUNCTION check_statut_update();
 -- empecher_modif empêche l'insertion, la suppression et la modification de la table departement
 CREATE OR REPLACE FUNCTION empecher_modif() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'Impossible de modifier les données des départements !';
 END;

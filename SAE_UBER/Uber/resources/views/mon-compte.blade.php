@@ -1,63 +1,74 @@
-@extends('layouts.connexion')
+@extends('layouts.app')
 
 @section('title', 'Mon compte')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/mon-compte.blade.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 @endsection
 
 @section('content')
-<div class="container mt-5">
-    <h1>Mon compte</h1>
-    <div class="row">
-        <div class="col-md-3">
-            <ul class="list-group">
-                <li class="list-group-item active">Informations sur le compte</li>
-                <li class="list-group-item">Sécurité</li>
-                <li class="list-group-item">Confidentialité et données</li>
-            </ul>
-        </div>
-        <div class="col-md-9">
+    <div class="container">
+        <div class="account mt-5">
+            <h1 class="mb-4 text-center">Mon compte</h1>
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <ul class="list-group shadow-sm">
+                        <li class="list-group-item active">
+                            <i class="fas fa-user me-2"></i> Informations sur le compte
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-shield-alt me-2"></i> Sécurité
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-user-shield me-2"></i> Confidentialité et données
+                        </li>
+                    </ul>
+                </div>
 
-            <div class="d-flex flex-column align-items-start">
-                <img src="https://cdn-icons-png.flaticon.com/512/9706/9706583.png" alt="Avatar" class="rounded-circle" width="100" height="100" id="profileImage">
-                <button class="btn btn-link modify-link mx-2" onclick="document.getElementById('fileInput').click()">Modifier</button>
-                <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="changeProfileImage(event)">
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    <div class="card p-4">
+                        <!-- Section de la photo de profil -->
+                        <div>
+                            <img src="{{ asset($user->photoprofile ? 'storage/' . $user->photoprofile : 'https://institutcommotions.com/wp-content/uploads/2018/05/blank-profile-picture-973460_960_720-1.png') }}"
+                                alt="Photo de profil" class="pdp_picture" id="profileImage">
+                            <form action="{{ route('update.profile.image') }}" method="POST" enctype="multipart/form-data"
+                                class="mt-3 ms-3">
+                                @csrf
+                                <label for="profile_image" class="link-photo">
+                                    Modifier la photo
+                                </label>
+                                <input type="file" id="profile_image" name="profile_image" style="display: none;"
+                                    accept="image/*" onchange="this.form.submit()">
+                            </form>
+                            @if ($errors->has('profile_image'))
+                                <div class="alert alert-danger mt-2">
+                                    {{ $errors->first('profile_image') }}
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Informations sur le compte -->
+                        <h2 class="h4 mt-4">Informations sur le compte</h2>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <p><strong>Nom :</strong> {{ $user->prenomuser }} {{ $user->nomuser }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Numéro de téléphone :</strong> {{ $user->telephone }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Adresse e-mail :</strong> {{ $user->emailuser }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Rôle :</strong> {{ $role === 'client' ? 'Client' : 'Coursier' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h2>Informations sur le compte</h2>
-            <script>
-                window.onload = function() {
-                    const savedImage = localStorage.getItem('profileImage');
-                    if (savedImage) {
-                        document.getElementById('profileImage').src = savedImage;
-                    } else {
-                        document.getElementById('profileImage').src = "https://cdn-icons-png.flaticon.com/512/9706/9706583.png";
-                    }
-                }
-
-                function changeProfileImage(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            document.getElementById('profileImage').src = e.target.result;
-                            localStorage.setItem('profileImage', e.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                }
-            </script>
-@auth
-<div class="font-weight-bold mx-4">
-    <p>Prénom : {{ Auth::user()->prenomuser }}</p>
-    <p>Nom : {{ Auth::user()->nomuser }}</p>
-    <p>Numéro de téléphone : {{ Auth::user()->telephone }}</p>
-    <p>Adresse e-mail : {{ Auth::user()->emailuser }}</p>
-</div>
-@else
-<p>Veuillez vous connecter pour voir vos informations de compte.</p>
-@endauth
         </div>
     </div>
-</div>
 @endsection

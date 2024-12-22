@@ -99,4 +99,58 @@ class CoursierController extends Controller
         }
     }
 
+
+
+
+    public function showTrips()
+    {
+        $coursiers = Coursier::all();
+        return view('coursier-courses', ['coursiers' => $coursiers, 'trips' => [], 'totalAmount' => 0]);
+    }
+
+    public function filterTrips(Request $request)
+{
+    $validated = $request->validate([
+        'idcoursier' => 'required|numeric',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+    ]);
+
+    $idcoursier = $validated['idcoursier'];
+    $startDate = $validated['start_date'];
+    $endDate = $validated['end_date'];
+
+
+    $trips = DB::table('coursier as c')
+        ->join('course as co', 'c.idcoursier', '=', 'co.idcoursier')
+        ->where('c.idcoursier', $idcoursier)
+        ->whereBetween('co.datecourse', [$startDate, $endDate])
+        ->select('c.idcoursier', 'co.idcourse', 'co.datecourse', 'co.prixcourse', 'co.pourboire', 'co.distance', 'co.temps')
+        ->get();
+
+
+    $totalAmount = DB::table('coursier as c')
+        ->join('course as co', 'c.idcoursier', '=', 'co.idcoursier')
+        ->where('c.idcoursier', $idcoursier)
+        ->whereBetween('co.datecourse', [$startDate, $endDate])
+        ->sum(DB::raw('co.prixcourse + COALESCE(co.pourboire, 0)'));
+
+
+    $coursiers = Coursier::all();
+
+    $selectedCoursier = Coursier::find($idcoursier);
+
+
+    return view('coursier-courses', [
+        'coursiers' => $coursiers,
+        'trips' => $trips,
+        'totalAmount' => $totalAmount,
+        'idcoursier' => $idcoursier,
+        'start_date' => $startDate,
+        'end_date' => $endDate,
+        'selectedCoursier' => $selectedCoursier
+    ]);
+}
+
+
 }

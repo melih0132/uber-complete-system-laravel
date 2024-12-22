@@ -1,0 +1,32 @@
+.interface {
+    height: 269px;
+    width: 459px;
+    text-decoration: none;
+
+
+}
+.bloc-interface {
+  -webkit-box-align: center;
+  align-items: center;
+  border-bottom: 1px solid #000000;
+  color:rgb(0, 0, 0);
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  padding-bottom: 40px;
+}
+
+.bloc-interface:hover {
+    color: #4B4B4B;
+}
+
+h2 {
+    font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 44px;
+    color: rgb(0, 0, 0);
+}
+h2:hover {
+    color: #4B4B4B;
+}

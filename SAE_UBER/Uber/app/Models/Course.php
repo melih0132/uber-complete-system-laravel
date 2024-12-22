@@ -7,10 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    use HasFactory;
-
-    protected $table = "course";
-    protected $primaryKey = "idcourse";
+    protected $table = 'course';
+    protected $primaryKey = 'idcourse';
     public $timestamps = false;
 
     protected $fillable = [
@@ -20,26 +18,14 @@ class Course extends Model
         'idreservation',
         'adr_idadresse',
         'idprestation',
-        'prixcourse',
-        'statutcourse',
-        'distance',
-        'temps',
-        'is_validated',
-        'notecourse',
-        'pourboire',
-        'status',
         'datecourse',
         'heurecourse',
+        'prixcourse',
+        'statutcourse',
+        'notecourse',
+        'commentairecourse',
+        'pourboire',
+        'distance',
+        'temps'
     ];
-
-    public function client()
-    {
-        return $this->belongsTo(Client::class, 'idclient');
-    }
-
-    public function coursier()
-    {
-        return $this->belongsTo(Coursier::class, 'idcoursier');
-    }
-
 }

@@ -8,14 +8,13 @@
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
+    <script src="{{ asset('js/scriptCookie.js') }}"></script>
 @endsection
 
 @section('content')
     <main id="main-content" tabindex="-1" class="co">
         <div class="cq ak bu cr al cs ct cu cv" style="position: relative;">
             <picture>
-                <source media="(max-width: 600px)" srcset="../img/ubereat.png">
-                <source media="(min-width: 600px)" srcset="../img/ubereat.png">
                 <img alt="" role="presentation" src="../img/ubereat.png" class="img-accueil"
                     style="width: 100%; height: auto;">
             </picture>
@@ -33,7 +32,7 @@
                                 <input type="text" name="recherche_ville" id="recherche_ville" required
                                     class="search-bar required" placeholder="Recherchez par ville..."
                                     value="{{ request('recherche_ville') }}">
-                                <ul id="suggestions-ville" class="suggestions-list"></ul>
+                               {{--  <ul id="suggestions-ville" class="suggestions-list"></ul> --}}
                             </div>
 
                             <!-- Sélection du jour -->
@@ -62,17 +61,10 @@
                         </div>
                     </form>
 
-                                        <div class="">
+                    <div class="">
                         <a href="{{ route('etablissement.add') }}"
                             class="e9 br bo c4 ea eb al bc ct af ec ed ee ef eg ej du ek el m-2 text-decoration-none">
                             Ajouter votre restaurant
-                        </a>
-                    </div>
-
-                    <div class="">
-                        <a href="{{ url('/commande') }}"
-                            class="e9 br bo c4 ea eb al bc ct af ec ed ee ef eg ei ej du ek el m-2 text-decoration-none">
-                            Livreur
                         </a>
                     </div>
                 </div>
@@ -86,11 +78,11 @@
             <div class="p-3">
                 <h1>Nous utilisons des cookies</h1>
                 <p>
-                    Cliquez sur « Accepter » pour autoriser Uber à utiliser des cookies afin de personnaliser ce
-                    site, ainsi qu'à diffuser des annonces et mesurer leur efficacité sur d'autres applications et sites
-                    Web, y compris les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou
-                    cliquez sur « Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins.
-                    Pour en savoir plus, consultez notre
+                    Cliquez sur « Accepter » pour autoriser Uber à utiliser des cookies afin de personnaliser ce site, ainsi
+                    qu'à diffuser des annonces et mesurer leur efficacité sur d'autres applications et sites Web, y compris
+                    les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou cliquez sur «
+                    Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins. Pour en savoir plus,
+                    consultez notre
                     <a href="{{ url('/Legal') }}" class="text-decoration-underline">
                         Déclaration relative aux cookies
                     </a>
@@ -144,9 +136,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Scripts -->
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="{{ asset('js/scriptCookie.js') }}"></script>
     </section>
 @endsection

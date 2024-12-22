@@ -9,7 +9,7 @@
 @section('content')
     <section>
         <div class="container">
-            <h3 class="mt-5">Courses en attente :</h3>
+            <h1 class="mt-5">Courses en attente :</h1>
             <ul class="liste my-5">
                 @foreach ($views as $view)
                     <div class="item-course mt-3" data-id="{{ $view->idreservation }}">

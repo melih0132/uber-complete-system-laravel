@@ -11,4 +11,8 @@ class Categorie_prestation extends Model
     protected $table = "categorie_prestation";
     protected $primaryKey = "idcategorieprestation";
     public $timestamps = false;
+
+    protected $fillable = [
+        'libellecategorieprestation',
+    ];
 }

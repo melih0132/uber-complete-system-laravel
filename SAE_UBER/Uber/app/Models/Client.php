@@ -14,9 +14,23 @@ class Client extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idclient', 'identreprise', 'idadresse', 'nomuser', 'prenomuser', 'genreuser', 'datenaissance',
-        'telephone', 'emailuser', 'motdepasseuser'
+        'identreprise',
+        'idadresse',
+        'genreuser',
+        'nomuser',
+        'prenomuser',
+        'datenaissance',
+        'telephone',
+        'emailuser',
+        'motdepasseuser',
+        'photoprofile',
+        'souhaiterecevoirbonplan',
     ];
+
+    public function entreprise()
+    {
+        return $this->belongsTo(Entreprise::class, 'identreprise');
+    }
 
     public function adresse()
     {

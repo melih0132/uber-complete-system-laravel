@@ -1,135 +1,189 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app()->getLocale() }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture - {{ $reservation->idcourse }}</title>
+    <title>{{ __('invoice.title') }} N°{{ $idcourse }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            color: #333;
         }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .invoice-details {
-            margin-bottom: 20px;
-        }
-
-        .invoice-details table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .invoice-details th, .invoice-details td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-
-        .total {
-            text-align: right;
-            margin-top: 20px;
+        .title {
+            font-size: 20px;
+            color: green;
             font-weight: bold;
         }
 
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.9em;
-            color: #777;
+        .divider {
+            border-top: 2px solid #28a745;
+            margin: 10px 0;
         }
 
-        .row {
-            margin-bottom: 10px;
+        .section-title {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .total-section {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .grand-total {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        table th,
+        table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table td:nth-child(2),
+        table th:nth-child(2) {
+            text-align: left;
+            padding-left: 8px;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            display: block;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Facture - Course #{{ $reservation->idcourse }}</h1>
+    <div class="container mt-4">
+        <div class="title">
+            {{ __('invoice.title') }}
+            <span class="text-secondary">N°{{ $idcourse }}</span>
+        </div>
+        <div class="divider"></div>
 
-        <div class="row">
-            <strong>Date de réservation :</strong> {{ \Carbon\Carbon::parse($reservation->datereservation)->format('d-m-Y') }}
-            <br>
-            <strong>Heure de réservation :</strong> {{ \Carbon\Carbon::parse($reservation->heurereservation)->format('H:i') }}
+        <div class="logo-container">
+            <img src="img/Uber_logo_2018.png" alt="Uber_logo" class="logo">
         </div>
 
-        <div class="row">
-            <strong>Adresse de départ :</strong> {{ $reservation->startAddress }}
-            <br>
-            <strong>Adresse d'arrivée :</strong> {{ $reservation->endAddress }}
+        <div class="d-flex justify-content-end">
+            <div style="text-align: right;">
+                <div class="section-title">{{ __('invoice.supplier') }}</div>
+                <p style="line-height: 1.5;">
+                    <strong>{{ __('invoice.supplier_company') }}</strong><br>
+                    {{ __('invoice.supplier_team') }}<br>
+                    {{ __('invoice.supplier_country') }}: France, {{ __('invoice.supplier_city') }}: Annecy<br>
+                    {{ __('invoice.supplier_address') }}<br>
+                    74000 - FRANCE<br>
+                    SIRET : 517155028
+                </p>
+            </div>
         </div>
 
-        <div class="row">
-            <strong>Prestation :</strong> {{ $reservation->libelleprestation }}
-            <br>
-            <strong>Date de course :</strong> {{ \Carbon\Carbon::parse($reservation->datecourse)->format('d-m-Y') }}
-            <br>
-            <strong>Heure de course :</strong> {{ \Carbon\Carbon::parse($reservation->heurecourse)->format('H:i') }}
+        <div class="section-title">{{ __('invoice.client') }}</div>
+        <br>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.invoice_date') }}:</strong> 55</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.emission_time') }}:</strong> 99</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.reservation_date') }}:</strong>
+                {{ \Carbon\Carbon::parse($datereservation)->format('d-m-Y') }}</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.reservation_time') }}:</strong>
+                {{ \Carbon\Carbon::parse($heurereservation)->format('H:i') }}</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.course_date') }}:</strong>
+                {{ \Carbon\Carbon::parse($datecourse)->format('d-m-Y') }}</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.course_time') }}:</strong>
+                {{ \Carbon\Carbon::parse($heurecourse)->format('H:i') }}</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.payment_method') }}:</strong> Carte</span>
+        </div>
+        <div class="info-row">
+            <span><strong>{{ __('invoice.prestation') }}:</strong> {{ $libelleprestation }}</span>
         </div>
 
-        <div class="invoice-details">
-            <h3>Détails de la course</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Quantité</th>
-                        <th>Prix Unitaire (€)</th>
-                        <th>Total (€)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Course</td>
-                        <td>1</td>
-                        <td>{{ number_format($reservation->prixcourse, 2, ',', ' ') }}</td>
-                        <td>{{ number_format($reservation->prixcourse, 2, ',', ' ') }}</td>
-                    </tr>
-                    <tr>
-                        <td>Distance</td>
-                        <td>1</td>
-                        <td>{{ number_format($reservation->distance, 2, ',', ' ') }} km</td>
-                        <td>{{ number_format($reservation->distance * 1.00, 2, ',', ' ') }}</td> <!-- Exemple de tarif basé sur la distance -->
-                    </tr>
-                    <tr>
-                        <td>Temps</td>
-                        <td>1</td>
-                        <td>{{ number_format($reservation->temps, 2, ',', ' ') }} min</td>
-                        <td>{{ number_format($reservation->temps * 0.25, 2, ',', ' ') }}</td> <!-- Exemple de tarif basé sur le temps -->
-                    </tr>
-                    <tr>
-                        <td><strong>Total</strong></td>
-                        <td></td>
-                        <td></td>
-                        <td><strong>{{ number_format($reservation->prixcourse + $reservation->distance * 1.00 + $reservation->temps * 0.25, 2, ',', ' ') }} €</strong></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="d-flex justify-content-end">
+            <div style="text-align: right;">
+                <div class="section-title">{{ __('invoice.information') }}</div>
+                <p style="line-height: 1.5;">
+                    <strong>{{ __('invoice.start_address') }}:</strong> {{ $startAddress }}
+                    <br>
+                    <strong>{{ __('invoice.end_address') }}:</strong> {{ $endAddress }}
+                </p>
+            </div>
         </div>
 
-        <div class="total">
-            <h3>Total à payer : {{ number_format($reservation->prixcourse + $reservation->distance * 1.00 + $reservation->temps * 0.25, 2, ',', ' ') }} €</h3>
-        </div>
+        <table class="table table-bordered mt-4">
+            <thead style="background-color: #f8f9fa;">
+                <tr>
+                    <th style="width: 5%;">{{ __('invoice.table_number') }}</th>
+                    <th style="width: 40%;">{{ __('invoice.table_description') }}</th>
+                    <th style="width: 15%;">{{ __('invoice.table_unit_price') }}</th>
+                    <th style="width: 10%;">{{ __('invoice.table_vat_rate') }}</th>
+                    <th style="width: 10%;">{{ __('invoice.table_vat_amount') }}</th>
+                    <th style="width: 15%;">{{ __('invoice.table_total_ht') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>{{ __('invoice.service_transport') }}</td>
+                    <td>{{ number_format($prixcourse, 2, ',', ' ') }} €</td>
+                    <td>{{ ($pourcentagetva) }}</td>
+                    <td>{{ number_format(($prixcourse * $pourcentagetva) / 100, 2, ',', ' ') }} €</td>
+                    <td>{{ number_format($prixcourse, 2, ',', ' ') }} €</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>{{ __('invoice.tipping_service') }}</td>
+                    <td>{{ number_format($pourboire, 2, ',', ' ') }} €</td>
+                    <td>No</td>
+                    <td>0 €</td>
+                    <td>{{ number_format($pourboire, 2, ',', ' ') }} €</td>
+                </tr>
+            </tbody>
+        </table>
 
-        <div class="footer">
-            <p>Merci de nous avoir choisis pour votre course !</p>
-            <p>Adresse de l'entreprise, numéro de téléphone, etc.</p>
+        <div class="row mt-3">
+            <div class="col-md-8"></div>
+            <div class="col-md-4 total-section">
+                <p>{{ __('invoice.total_ht') }} : <strong>{{ number_format($prixcourse + $pourboire, 2, ',', ' ') }}
+                        €</strong></p>
+                <p>{{ __('invoice.vat_amount') }}:
+                    <strong>{{ number_format(($prixcourse * $pourcentagetva) / 100, 2, ',', ' ') }} €</strong>
+                </p>
+                <div class="divider"></div>
+                <p class="grand-total">{{ __('invoice.invoice_total') }}:
+                    {{ number_format(($prixcourse * $pourcentagetva) / 100 + $prixcourse + $pourboire, 2, ',', ' ') }} €
+                </p>
+            </div>
         </div>
     </div>
 </body>
+
 </html>

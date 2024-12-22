@@ -4,30 +4,48 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/auth.blade.css') }}">
-
 @endsection
 
 @section('content')
-
-    <div class="container1 mt-5">
-        <h1 class="text-center fw-bold">Connexion</h1>
-
-        <form method="post" action="{{ route('login') }}">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Connexion</h1>
+        <form method="POST" action="{{ route('auth') }}" class="d-flex flex-column justify-content-center">
             @csrf
-            <div class="d-flex justify-content-center align-items-center flex-column">
-                <input type="text" name="emailuser" placeholder="Email" required class="mb-3" />
-                <input type="password" name="motdepasseuser" placeholder="Password" required class="mb-3" />
-                <select name="role" required class="mb-3">
-                    <option value="" disabled selected>Choisissez un rôle</option>
-                    <option value="client">Client</option>
-                    <option value="coursier">Coursier</option>
-                </select>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                    class="form-control" placeholder="Entrez votre email">
+                @error('email')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
-            <div class="d-flex justify-content-center align-items-center flex-column">
-                <button type="submit" class="btn btn-login">Connexion</button>
-                <a href="{{ url('/register') }}" class="login-link my-3">Créer un compte</a>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" name="password" id="password" required class="form-control"
+                    placeholder="Entrez votre mot de passe">
+                @error('password')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="mb-4">
+                <label for="role" class="form-label">Rôle</label>
+                <select name="role" id="role" required class="form-control">
+                    <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir un rôle</option>
+                    <option value="client" {{ old('role') === 'client' ? 'selected' : '' }}>Client</option>
+                    <option value="coursier" {{ old('role') === 'coursier' ? 'selected' : '' }}>Coursier</option>
+                </select>
+                @error('role')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn-login">Connexion</button>
+
+            <div class="text-center mt-3">
+                <a href="{{ route('register.form') }}" class="login-link">Créer un compte</a>
             </div>
         </form>
     </div>
-
 @endsection

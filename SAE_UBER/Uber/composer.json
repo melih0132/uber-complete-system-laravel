@@ -7,8 +7,9 @@
     "require": {
         "php": "^8.1",
         "barryvdh/laravel-dompdf": "^3.0",
+        "barryvdh/laravel-snappy": "^1.0",
         "cjmellor/rating": "*",
-        "guzzlehttp/guzzle": "^7.2",
+        "guzzlehttp/guzzle": "^7.9",
         "hardevine/shoppingcart": "^3.3",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",

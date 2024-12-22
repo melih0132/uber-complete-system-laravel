@@ -10,11 +10,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'nomuser',
         'prenomuser',
@@ -23,57 +18,67 @@ class User extends Authenticatable
         'telephone',
         'emailuser',
         'motdepasseuser',
+        // pour mdp check j'imagine :
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'motdepasseuser',
         'remember_token',
     ];
 
-    /**
-     * Get the password for authentication.
-     *
-     * @return string
-     */
     public function getAuthPassword()
     {
         return $this->motdepasseuser;
     }
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'datenaissance' => 'date',
         'email_verified_at' => 'datetime',
     ];
 
-    // Configuration pour la table "client" ou "coursier" dynamiquement selon le rôle
-    protected $table = "client"; // Valeur par défaut
+    // partie role des users
+    protected $table = "client";
     public $timestamps = false;
-    protected $primaryKey = "idclient"; // Par défaut pour "client"
+    protected $primaryKey = "idclient";
 
-    /**
-     * Permet de définir dynamiquement la table et la clé primaire si nécessaire.
-     * Exemple : Lors d'un enregistrement d'un "coursier"
-     * @param string $role
-     */
     public function setRole(string $role)
     {
-        if ($role === 'coursier') {
-            $this->table = "coursier";
-            $this->primaryKey = "idcoursier";
-        } else {
-            $this->table = "client";
-            $this->primaryKey = "idclient";
+        switch ($role) {
+            case 'coursier':
+                $this->table = "coursier";
+                $this->primaryKey = "idcoursier";
+                break;
+
+            case 'logistique':
+                $this->table = "service_logistique";
+                $this->primaryKey = "idlogistique";
+                break;
+
+            case 'facturation':
+                $this->table = "service_facturation";
+                $this->primaryKey = "idfacturation";
+                break;
+
+            case 'administratif':
+                $this->table = "service_administratif";
+                $this->primaryKey = "idadministratif";
+                break;
+
+            case 'rh':
+                $this->table = "service_rh";
+                $this->primaryKey = "idrh";
+                break;
+
+            case 'support':
+                $this->table = "service_support";
+                $this->primaryKey = "idsupport";
+                break;
+
+            default:
+                $this->table = "client";
+                $this->primaryKey = "idclient";
+                break;
         }
     }
 }

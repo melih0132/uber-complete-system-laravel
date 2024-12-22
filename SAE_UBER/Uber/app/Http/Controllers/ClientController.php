@@ -11,16 +11,17 @@ class ClientController extends Controller
 {
     public function store(Request $request)
     {
+        // sah il sert à r ce contrpoleur j'crois
         $validated = $request->validate([
             'nomuser' => 'required|string|max:255',
             'emailuser' => 'required|email|unique:client,emailuser',
             'motdepasseuser' => 'required|min:8|confirmed',
         ]);
     }
+
     public function showAccount()
     {
         $user = Auth::user();
         return view('client.account', compact('user'));
     }
-    
 }

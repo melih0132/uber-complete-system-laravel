@@ -1,6 +1,6 @@
     @extends('layouts.ubereats')
 
-    @section('title', 'Recherche')
+    @section('title', 'Commandez votre repas en ligne')
 
     @section('css')
         <link rel="stylesheet" href="{{ asset('css/etablissement.blade.css') }}">
@@ -9,7 +9,7 @@
     @section('content')
 
         <section>
-            <div class="main-container">
+            <div class="container">
                 <form method="GET" action="{{ route('etablissement.index') }}" class="filter-form">
                     <div class="filter">
 
@@ -40,11 +40,8 @@
                         <!-- Sélecteur du type de livraison -->
                         <select name="type_livraison" id="type_livraison" class="combobox">
                             <option value="">Mode de livraison</option>
-                            <option value="retrait" {{ $selectedTypeLivraison == 'retrait' ? 'selected' : '' }}>Retrait
-                            </option>
-                            <option value="livraison" {{ $selectedTypeLivraison == 'livraison' ? 'selected' : '' }}>
-                                Livraison
-                            </option>
+                            <option value="retrait" {{ $selectedTypeLivraison == 'retrait' ? 'selected' : '' }}>Retrait</option>
+                            <option value="livraison" {{ $selectedTypeLivraison == 'livraison' ? 'selected' : '' }}>Livraison</option>
                         </select>
 
                         <!-- Filtres conditionnels -->
@@ -93,7 +90,7 @@
                     <!-- Résultats des établissements -->
                     @if ($selectedTypeAffichage == 'etablissements' || $selectedTypeAffichage == 'all')
                         <div class="etablissements my-4">
-                            <h2>Etablissements</h2>
+                            <h1>Etablissements</h1>
                             @if ($etablissements->isEmpty() && empty(request('recherche_produit')))
                                 <p>Aucun établissement pour ce filtrage</p>
                             @elseif ($etablissements->isEmpty())
@@ -114,9 +111,9 @@
                                                         <div class="etablissement-details pt-4">
                                                             <h5 class="etablissement-name">
                                                                 {{ $etablissement->nometablissement }}</h5>
-                                                            <h6 class="etablissement-type">
+                                                            {{-- <h6 class="etablissement-type">
                                                                 {{ $etablissement->typeetablissement }}
-                                                            </h6>
+                                                            </h6> --}}
                                                         </div>
                                                     </div>
                                                 </button>
@@ -151,7 +148,7 @@
                     <!-- Résultats des produits -->
                     @if ($selectedTypeAffichage == 'produits' || $selectedTypeAffichage == 'all')
                         <div class="produits">
-                            <h2>Produits</h2>
+                            <h1>Produits</h1>
                             @if ($produits->isEmpty() && empty(request('recherche_produit')))
                                 <p>Aucun produit pour ce filtrage</p>
                             @elseif ($produits->isEmpty())
@@ -176,12 +173,13 @@
                                 </div>
                             @endif
                         </div>
+
                         <!-- Pagination des produits -->
-                        <div class="pagination">
+                        <div class="pagination my-5">
                             @if ($produits->onFirstPage())
                                 <span class="page-link disabled">Précédent</span>
                             @else
-                                <a class="page-link"
+                                <a class="previous_page-link"
                                     href="{{ $produits->appends(request()->except('page'))->previousPageUrl() }}">
                                     Précédent
                                 </a>
@@ -199,6 +197,7 @@
                     @endif
                 </div>
             </div>
+            <a href="{{ url('/UberEats/guide') }}" class="help-button text-decoration-none">?</a>
         </section>
 
     @endsection

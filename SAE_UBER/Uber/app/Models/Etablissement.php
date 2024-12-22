@@ -23,12 +23,12 @@ class Etablissement extends Model
         'aemporter',
     ];
 
-   public function categories()
+    public function categories()
     {
         return $this->belongsToMany(Categorie_prestation::class, 'a_comme_categorie', 'idetablissement', 'idcategorieprestation');
     }
 
-   /*   public function horaires()
+    /*   public function horaires()
     {
         return $this->hasMany(Horaires::class, 'idetablissement', 'idetablissement');
     }
@@ -42,6 +42,7 @@ class Etablissement extends Model
     {
         return $this->belongsTo(Ville::class, 'idville');
     } */
+
     public function adresse()
     {
         return $this->belongsTo(Adresse::class, 'idadresse');

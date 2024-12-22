@@ -13,6 +13,16 @@ html {
     transition: font-size 0.3s ease-in-out;
 }
 
+h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+
 .logo-image {
     max-width: 175px;
     height: auto;
@@ -23,8 +33,6 @@ html {
 
 body {
     box-sizing: border-box;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-        sans-serif;
     letter-spacing: 0.5px;
     position: relative;
     overflow-x: hidden;
@@ -40,6 +48,7 @@ body {
 ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 .btn-annuler {
     background-color: rgb(0, 0, 0);
@@ -76,6 +85,7 @@ ul {
     align-items: center;
     white-space: nowrap;
     margin: 0;
+    height: 36px;
 }
 
 .header-links:hover {
@@ -83,6 +93,8 @@ ul {
     border-radius: 30px;
     overflow: hidden;
     text-decoration: none;
+    background-color: #282828;
+    padding: 10px 12px;
 }
 
 
@@ -127,14 +139,6 @@ ul {
     transition-duration: 300ms;
     z-index: 2002;
     overflow: hidden;
-}
-
-.css-ivGTTH {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-
 }
 
 .css-kpeoJm {
@@ -266,7 +270,6 @@ ul {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 10px;
 }
 
 
@@ -312,7 +315,7 @@ ul {
     cursor: pointer;
     padding: 10px 24px;
     text-decoration: none;
-    transition: all 0.1s ease-in-out;
+    transition: all 0.3s ease-in-out;
     padding: 12px;
     background: rgb(0, 0, 0);
     color: rgb(255, 255, 255);
@@ -531,8 +534,6 @@ ul {
     transition-timing-function: cubic-bezier(0, 0, 1, 1);
     cursor: pointer;
     margin: 0px;
-    font-size: 1rem;
-    font-weight: 600;
     line-height: 16px;
     border-radius: 30px;
     padding: 10px 12px;
@@ -542,17 +543,6 @@ ul {
 
 .css-hEENHo:hover {
     background-color: #e3e3e3;
-}
-
-h1 {
-    display: block;
-    font-size: 2em;
-    margin-block-start: 0.67em;
-    margin-block-end: 0.67em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    font-weight: bold;
-    unicode-bidi: isolate;
 }
 
 button,

@@ -14,7 +14,7 @@ class Coursier extends Model
     public $timestamps = false;
 
     public $incrementing = true;
-
+    
     protected $fillable = [
         'idcoursier',
         'identreprise',
@@ -33,7 +33,7 @@ class Coursier extends Model
         'notemoyenne',
     ];
     protected $hidden = [
-        'motdepasseuser',  // Cachez le mot de passe pour la sécurité
+        'motdepasseuser',
     ];
 
     public function courses()

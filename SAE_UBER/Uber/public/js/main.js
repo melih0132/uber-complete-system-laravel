@@ -151,7 +151,7 @@ async function voirPrix() {
         // Проверяем наличие координат
         if (!startCoords || !endCoords) {
             console.error("Coordinates for start or end marker are invalid.");
-           
+
             return;
         }
 
