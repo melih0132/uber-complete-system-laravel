@@ -15,9 +15,21 @@ use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm()
+    public function showDriverRegistrationForm()
     {
-        return view('auth.register');
+        return view('auth.register-driver');
+    }
+    public function showPassengerRegistrationForm()
+    {
+        return view('auth.register-passenger');
+    }
+    public function showEatsRegistrationForm()
+    {
+        return view('auth.register-eats');
+    }
+    public function showServicesRegistrationForm()
+    {
+        return view('auth.register-services');
     }
 
     public function register(Request $request)
@@ -123,7 +135,7 @@ class RegisterController extends Controller
             }
         }
 
-        Coursier::create([
+        $coursier = Coursier::create([
             'identreprise' => $identreprise,
             'idadresse' => $adresse->idadresse,
             'nomuser' => $request->nomuser,
@@ -134,8 +146,15 @@ class RegisterController extends Controller
             'emailuser' => $request->emailuser,
             'motdepasseuser' => Hash::make($request->motdepasseuser),
             'numerocartevtc' => $request->numerocartevtc,
-            'iban' => $request->iban,
-            'datedebutactivite' => $request->datedebutactivite,
+            // Décommentez si nécessaire
+            // 'iban' => $request->iban,
+            // 'datedebutactivite' => $request->datedebutactivite,
+        ]);
+
+        DB::table('entretien')->insert([
+            'idcoursier' => $coursier->idcoursier,
+            'dateentretien' => null, // Pas de date d'entretien initialement
+            'status' => 'En attente',
         ]);
     }
 

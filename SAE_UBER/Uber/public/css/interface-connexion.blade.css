@@ -2,18 +2,17 @@
     height: 269px;
     width: 459px;
     text-decoration: none;
-
-
 }
+
 .bloc-interface {
-  -webkit-box-align: center;
-  align-items: center;
-  border-bottom: 1px solid #000000;
-  color:rgb(0, 0, 0);
-  display: flex;
-  -webkit-box-pack: justify;
-  justify-content: space-between;
-  padding-bottom: 40px;
+    -webkit-box-align: center;
+    align-items: center;
+    border-bottom: 1px solid black;
+    color: black;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    padding-bottom: 40px;
 }
 
 .bloc-interface:hover {
@@ -22,11 +21,13 @@
 
 h2 {
     font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: black;
     font-weight: 700;
-    font-size: 36px;
+    font-size: 34px;
     line-height: 44px;
-    color: rgb(0, 0, 0);
+    padding: 0 2rem;
 }
+
 h2:hover {
     color: #4B4B4B;
 }

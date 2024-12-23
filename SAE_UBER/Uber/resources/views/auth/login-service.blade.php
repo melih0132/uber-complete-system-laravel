@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Connexion</h1>
+        <h1 class="text-center mb-4">Connexion Services</h1>
         <form method="POST" action="{{ route('auth') }}" class="form-login d-flex flex-column justify-content-center">
             @csrf
             <div class="mb-3">
@@ -29,7 +29,20 @@
                 @enderror
             </div>
 
-            <input type="hidden" name="role" value="client">
+            <div class="mb-4">
+                <label for="role" class="form-label">Rôle</label>
+                <select name="role" id="role" required class="form-control">
+                    <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir un rôle</option>
+                    <option value="logistique" {{ old('role') === 'logistique' ? 'selected' : '' }}>Logistique</option>
+                    <option value="facturation" {{ old('role') === 'facturation' ? 'selected' : '' }}>Facturation</option>
+                    <option value="administratif" {{ old('role') === 'administratif' ? 'selected' : '' }}>Administratif</option>
+                    <option value="rh" {{ old('role') === 'rh' ? 'selected' : '' }}>RH</option>
+                    <option value="support" {{ old('role') === 'support' ? 'selected' : '' }}>Support</option>
+                </select>
+                @error('role')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
 
             <button type="submit" class="btn-login">Connexion</button>
 

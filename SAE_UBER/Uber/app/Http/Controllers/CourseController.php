@@ -161,6 +161,8 @@ class CourseController extends Controller
             'heurereservation' => $tripTimeNow,
         ]);
 
+
+
         $courseData = Course::create([
             'idcoursier' => 1,
             'idcb' => 1,
@@ -198,7 +200,7 @@ class CourseController extends Controller
         $validatedData = $request->validate([
             'idreservation' => 'required|integer|exists:course,idreservation',
             'notecourse' => 'nullable|numeric|min:0|max:5',
-            'pourboire' => 'nullable|numeric|min:0',
+            'pourboire' => 'nullable|numeric|min:0|max:80',
         ]);
 
         $course = Course::where('idreservation', $validatedData['idreservation'])->first();

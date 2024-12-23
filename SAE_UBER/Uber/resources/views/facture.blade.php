@@ -175,11 +175,11 @@
                 <p>{{ __('invoice.total_ht') }} : <strong>{{ number_format($prixcourse + $pourboire, 2, ',', ' ') }}
                         €</strong></p>
                 <p>{{ __('invoice.vat_amount') }}:
-                    <strong>{{ number_format(($prixcourse * $pourcentagetva) / 100, 2, ',', ' ') }} €</strong>
+                    <strong>{{ number_format(($prixcourse * 20) / 100, 2, ',', ' ') }} €</strong>
                 </p>
                 <div class="divider"></div>
                 <p class="grand-total">{{ __('invoice.invoice_total') }}:
-                    {{ number_format(($prixcourse * $pourcentagetva) / 100 + $prixcourse + $pourboire, 2, ',', ' ') }} €
+                    {{ number_format(($prixcourse * 20) / 100 + $prixcourse + $pourboire, 2, ',', ' ') }} €
                 </p>
             </div>
         </div>

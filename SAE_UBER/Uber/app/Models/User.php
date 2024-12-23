@@ -18,8 +18,7 @@ class User extends Authenticatable
         'telephone',
         'emailuser',
         'motdepasseuser',
-        // pour mdp check j'imagine :
-        'remember_token',
+        'remember_token', // pour la gestion de la session/mémorisation
     ];
 
     protected $hidden = [
@@ -37,13 +36,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // partie role des users
-    protected $table = "client";
-    public $timestamps = false;
-    protected $primaryKey = "idclient";
-
     public function setRole(string $role)
     {
+        $this->role = $role;
+
         switch ($role) {
             case 'coursier':
                 $this->table = "coursier";
@@ -51,28 +47,23 @@ class User extends Authenticatable
                 break;
 
             case 'logistique':
-                $this->table = "service_logistique";
-                $this->primaryKey = "idlogistique";
+
                 break;
 
             case 'facturation':
-                $this->table = "service_facturation";
-                $this->primaryKey = "idfacturation";
+
                 break;
 
             case 'administratif':
-                $this->table = "service_administratif";
-                $this->primaryKey = "idadministratif";
+
                 break;
 
             case 'rh':
-                $this->table = "service_rh";
-                $this->primaryKey = "idrh";
+
                 break;
 
             case 'support':
-                $this->table = "service_support";
-                $this->primaryKey = "idsupport";
+
                 break;
 
             default:

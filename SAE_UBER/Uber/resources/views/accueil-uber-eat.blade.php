@@ -27,28 +27,26 @@
                 <div class="section_item">
                     <form action="{{ route('etablissement.index') }}" method="GET" class="filter-form">
                         <div class="main-search">
-                            <!-- Recherche par ville -->
                             <div class="mx-2">
                                 <input type="text" name="recherche_ville" id="recherche_ville" required
                                     class="search-bar required" placeholder="Recherchez par ville..."
                                     value="{{ request('recherche_ville') }}">
-                               {{--  <ul id="suggestions-ville" class="suggestions-list"></ul> --}}
+                                {{--  <ul id="suggestions-ville" class="suggestions-list"></ul> --}}
                             </div>
 
-                            <!-- Sélection du jour -->
                             <div class="mx-2">
                                 <input type="date" id="selected_jour" name="selected_jour" class="search-bar datepicker"
                                     value="{{ request('selected_jour') ?: \Carbon\Carbon::now('Europe/Paris')->format('Y-m-d') }}"
                                     aria-label="Sélectionnez une date">
                             </div>
 
-                            <!-- Sélection d'un créneau horaire -->
                             <div class="mx-2">
                                 <select name="selected_horaires" id="selected_horaires" class="search-bar">
-                                    <option value="">Sélectionnez un créneau horaire</option>
+                                    <option value="" {{ empty($selectedHoraire) ? 'selected' : '' }}>
+                                        Sélectionnez un créneau horaire
+                                    </option>
                                     @foreach ($slots as $slot)
-                                        <option value="{{ $slot }}"
-                                            {{ request('selected_horaires') == $slot ? 'selected' : '' }}>
+                                        <option value="{{ $slot }}" {{ $selectedHoraire === $slot ? 'selected' : '' }}>
                                             {{ $slot }}
                                         </option>
                                     @endforeach
@@ -72,7 +70,7 @@
         </div>
     </main>
 
-    <section>
+    {{--     <section>
         <!-- Cookie Banner -->
         <div class="cookie hidden" id="cookie-banner">
             <div class="p-3">
@@ -136,5 +134,5 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 @endsection

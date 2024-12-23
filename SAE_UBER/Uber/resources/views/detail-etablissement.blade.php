@@ -9,8 +9,13 @@
 @section('content')
     <section class="etablissement-detail">
 
+
         <div class="etablissement-banner">
-            <img src="{{ $etablissement->imageetablissement }}" alt="{{ $etablissement->nometablissement }}">
+            @if($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
+                <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}" alt="{{ $etablissement->nometablissement }}">
+            @else
+                <img src="{{ $etablissement->imageetablissement }}" alt="{{ $etablissement->nometablissement }}">
+            @endif
         </div>
 
         <div class="etablissement-info">

@@ -9,7 +9,6 @@
 @section('content')
 
     <div class="container">
-
         <div class="add-form my-5">
             <h1>Créer votre établissement</h1>
 
@@ -52,10 +51,8 @@
                 <label for="typeetablissement">Type d'établissement :</label>
                 <select name="typeetablissement" id="typeetablissement" required>
                     <option value="" disabled selected>Sélectionnez le type d'établissement</option>
-                    <option value="Restaurant" {{ old('typeetablissement') == 'Restaurant' ? 'selected' : '' }}>Restaurant
-                    </option>
-                    <option value="Épicerie" {{ old('typeetablissement') == 'Épicerie' ? 'selected' : '' }}>Épicerie
-                    </option>
+                    <option value="Restaurant" {{ old('typeetablissement') == 'Restaurant' ? 'selected' : '' }}>Restaurant</option>
+                    <option value="Épicerie" {{ old('typeetablissement') == 'Épicerie' ? 'selected' : '' }}>Épicerie</option>
                 </select>
                 @error('typeetablissement')
                     <div class="error">{{ $message }}</div>
@@ -64,7 +61,8 @@
                 <!-- Catégories -->
                 <label for="categorie_restaurant">Catégorie(s) de Restaurant :</label>
                 <input type="text" id="categorie_restaurant" name="categorie_restaurant"
-                    placeholder="Saisissez des catégories existantes...">
+                    placeholder="Saisissez des catégories séparées par des virgules"
+                    value="{{ old('categorie_restaurant') }}">
 
                 <!-- Livraison -->
                 <label for="livraison">Livraison :</label>
@@ -103,39 +101,73 @@
                     <div class="error">{{ $message }}</div>
                 @enderror
 
-                <!-- Image -->
-                <label for="imageetablissement">Insérer une bannière :</label>
-                <input type="file" id="imageetablissement" name="imageetablissement" accept="image/*">
+                <!-- Bannière -->
+                <label for="imageetablissement">Ajouter une bannière pour l'établissement :</label>
+                <input type="file" id="imageetablissement" name="imageetablissement" required accept="">
                 @error('imageetablissement')
                     <div class="error">{{ $message }}</div>
                 @enderror
 
                 <!-- Horaires -->
-                <label for="horaire_ouverture">Horaires d'ouverture :</label>
-                <input type="time" id="horaire_ouverture" name="horaire_ouverture" required
-                    value="{{ old('horaire_ouverture') }}">
-                @error('horaire_ouverture')
-                    <div class="error">{{ $message }}</div>
-                @enderror
+                <div class="horaires">
+                    <div class="header jour">Jour</div>
+                    <div class="header">Ouverture</div>
+                    <div class="header">Fermeture</div>
+                    <div class="header">Fermé</div>
 
-                <label for="horaire_fermeture">Horaires de fermeture :</label>
-                <input type="time" id="horaire_fermeture" name="horaire_fermeture" required
-                    value="{{ old('horaire_fermeture') }}">
-                @error('horaire_fermeture')
-                    <div class="error">{{ $message }}</div>
-                @enderror
+                    @foreach(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as $jour)
+                    <div class="jour">{{ ucfirst($jour) }}</div>
+                    <div><input type="time" id="horaire_ouverture_{{ $jour }}" name="horaire_ouverture_{{ $jour }}"
+                            value="{{ old('horaire_ouverture_' . $jour) }}" oninput="handleHoraireInput('{{ $jour }}')" required></div>
+                    <div><input type="time" id="horaire_fermeture_{{ $jour }}" name="horaire_fermeture_{{ $jour }}"
+                            value="{{ old('horaire_fermeture_' . $jour) }}" oninput="handleHoraireInput('{{ $jour }}')" required></div>
+                    <div><input type="checkbox" id="ferme_{{ $jour }}" name="ferme_{{ $jour }}" value="1"
+                            onclick="toggleFerme('{{ $jour }}')" {{ old('ferme_' . $jour) ? 'checked' : '' }}></div>
+                    @endforeach
 
-                <!-- Bouton de soumission -->
+                </div>
+
                 <div class="d-flex justify-content-center">
                     <button class="btn-add" type="submit">Créer</button>
                 </div>
+
             </form>
         </div>
-
     </div>
 
-    <div class="d-flex justify-content-end">
-        <img role="presentation" src="{{ asset('img/burger.png') }}" alt="Burger">
-    </div>
+    <script>
+        function toggleFerme(jour) {
+            const checkbox = document.getElementById(`ferme_${jour}`);
+            const ouverture = document.getElementById(`horaire_ouverture_${jour}`);
+            const fermeture = document.getElementById(`horaire_fermeture_${jour}`);
+
+            if (checkbox.checked) {
+                ouverture.value = "";
+                fermeture.value = "";
+                ouverture.disabled = true;
+                fermeture.disabled = true;
+                ouverture.removeAttribute("required");
+                fermeture.removeAttribute("required");
+            } else {
+                ouverture.disabled = false;
+                fermeture.disabled = false;
+                ouverture.setAttribute("required", "required");
+                fermeture.setAttribute("required", "required");
+            }
+        }
+
+        function handleHoraireInput(jour) {
+            const checkbox = document.getElementById(`ferme_${jour}`);
+            const ouverture = document.getElementById(`horaire_ouverture_${jour}`);
+            const fermeture = document.getElementById(`horaire_fermeture_${jour}`);
+
+            if (ouverture.value || fermeture.value) {
+                checkbox.checked = false;
+                checkbox.disabled = true;
+            } else {
+                checkbox.disabled = false;
+            }
+        }
+    </script>
 
 @endsection

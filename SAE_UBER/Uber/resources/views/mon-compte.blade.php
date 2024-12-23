@@ -18,6 +18,11 @@
                         <li class="list-group-item active">
                             <i class="fas fa-user me-2"></i> Informations sur le compte
                         </li>
+                        @if ($role === 'client')
+                            <li class="list-group-item">
+                                <i class="fas fa-taxi me-2"></i> Courses
+                            </li>
+                        @endif
                         <li class="list-group-item">
                             <i class="fas fa-shield-alt me-2"></i> Sécurité
                         </li>
@@ -31,41 +36,90 @@
                 <div class="col-md-9">
                     <div class="card p-4">
                         <!-- Section de la photo de profil -->
-                        <div>
-                            <img src="{{ asset($user->photoprofile ? 'storage/' . $user->photoprofile : 'https://institutcommotions.com/wp-content/uploads/2018/05/blank-profile-picture-973460_960_720-1.png') }}"
-                                alt="Photo de profil" class="pdp_picture" id="profileImage">
-                            <form action="{{ route('update.profile.image') }}" method="POST" enctype="multipart/form-data"
-                                class="mt-3 ms-3">
-                                @csrf
-                                <label for="profile_image" class="link-photo">
-                                    Modifier la photo
-                                </label>
-                                <input type="file" id="profile_image" name="profile_image" style="display: none;"
-                                    accept="image/*" onchange="this.form.submit()">
-                            </form>
-                            @if ($errors->has('profile_image'))
-                                <div class="alert alert-danger mt-2">
-                                    {{ $errors->first('profile_image') }}
-                                </div>
-                            @endif
-                        </div>
+                        @if ($role === 'client')
+                            <div>
+                                <img src="{{ $user->photoprofile ? asset('storage/' . $user->photoprofile) : 'https://institutcommotions.com/wp-content/uploads/2018/05/blank-profile-picture-973460_960_720-1.png' }}"
+                                    alt="Photo de profil" class="pdp_picture" id="profileImage">
+                                <form action="{{ route('update.profile.image') }}" method="POST"
+                                    enctype="multipart/form-data" class="mt-3 ms-3">
+                                    @csrf
+                                    <label for="profile_image" class="link-photo">
+                                        Modifier la photo
+                                    </label>
+                                    <input type="file" id="profile_image" name="profile_image" style="display: none;"
+                                        accept="image/*" onchange="this.form.submit()">
+                                </form>
+                                @if ($errors->has('profile_image'))
+                                    <div class="alert alert-danger mt-2">
+                                        {{ $errors->first('profile_image') }}
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
 
                         <!-- Informations sur le compte -->
                         <h2 class="h4 mt-4">Informations sur le compte</h2>
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <p><strong>Nom :</strong> {{ $user->prenomuser }} {{ $user->nomuser }}</p>
+                                @if (in_array($role, ['client', 'coursier']))
+                                    <p><strong>Nom :</strong> {{ $user->prenomuser }} {{ $user->nomuser }}</p>
+                                @else
+                                    <p><strong>Nom :</strong> Aucun nom (utilisateur système)</p>
+                                @endif
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Numéro de téléphone :</strong> {{ $user->telephone }}</p>
+                                @if (in_array($role, ['client', 'coursier']))
+                                    <p><strong>Numéro de téléphone :</strong> {{ $user->telephone }}</p>
+                                @else
+                                    <p><strong>Adresse mail :</strong> {{ $user['email'] }}</p>
+                                @endif
                             </div>
+                            @if (in_array($role, ['client', 'coursier']))
+                                <div class="col-md-6">
+                                    <p><strong>Adresse mail :</strong> {{ $user->emailuser }}</p>
+                                </div>
+                            @endif
                             <div class="col-md-6">
-                                <p><strong>Adresse e-mail :</strong> {{ $user->emailuser }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Rôle :</strong> {{ $role === 'client' ? 'Client' : 'Coursier' }}</p>
+                                <p><strong>Rôle :</strong>
+                                    @if ($role === 'client')
+                                        Client
+                                    @elseif ($role === 'coursier')
+                                        Coursier
+                                    @else
+                                        {{ ucfirst($role) }}
+                                    @endif
+                                </p>
                             </div>
                         </div>
+
+                        <!-- Informations sur les entretiens -->
+                        @if ($role === 'coursier')
+                        <h2 class="h4 mt-4">Entretien RH</h2>
+                            <div class="table-responsive mt-3">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Statut</th>
+                                            <th>Résultat</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($entretiens as $entretien)
+                                            <tr>
+                                                <td>{{ $entretien->dateentretien ? $entretien->dateentretien->format('d/m/Y H:i') : 'N/A' }}</td>
+                                                <td>{{ $entretien->status }}</td>
+                                                <td>{{ $entretien->resultat ?? 'Non défini' }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center">Aucun entretien trouvé.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

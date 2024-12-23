@@ -4,40 +4,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Commande;
-use Illuminate\Support\Facades\DB;
+use App\Models\Panier;
 
 class CommandeController extends Controller
 {
-    public function index(){
-        $commandes = Commande::all();
+    public function createAndShowCommande(Request $request)
+    {
+        $user = session('user');
+        if (!$user || !isset($user['idclient'])) {
+            return redirect('/interface-connexion')->with('error', 'Veuillez vous connecter pour passer une commande.');
+        }
 
-        $views = DB::table('commande as cm')
-        ->join('panier as p', 'p.idpanier', '=', 'cm.idpanier')
-        ->join('client as c', 'c.idclient', '=', 'p.idclient')
-        ->leftJoin('adresse as a', 'a.idadresse', '=', 'cm.idadresse')
-        ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
-        ->leftJoin('code_postal as cp', 'v.idcodepostal', '=', 'cp.idcodepostal')
-        ->leftJoin('adresse as a2', 'cm.adr_idadresse', '=', 'a2.idadresse')
-        ->where('statutcommande', 'En attente')
-        ->select(
-            'c.nomuser',
-            'c.prenomuser',
-            'c.genreuser',
-            'cm.idadresse',
-            'a.libelleadresse as libelle_idadresse',
-            'cm.adr_idadresse',
-            'cm.idcommande',
-            'a2.libelleadresse as libelle_adr_idadresse',
-            'v.nomville',
-            'cp.codepostal',
-            'cm.prixcommande',
-            'cm.statutcommande',
-            'cm.tempscommande'
-        )
-        ->get();
+        $idclient = $user['idclient'];
 
-        return view('commande',  ['commandes' => $commandes,
-                                'views' => $views ]);
+        $panier = Panier::where('idclient', $idclient)->with('produits')->first();
 
+        if (!$panier || $panier->produits->isEmpty()) {
+            return redirect()->route('panier.index')->with('error', 'Votre panier est vide.');
+        }
+
+        $prixTotal = $panier->produits->sum(function ($produit, $_) {
+            return $produit->pivot->quantite * $produit->prixproduit;
+        });
+
+        $commande = Commande::create([
+            'idpanier' => $panier->idpanier,
+            'idadresse' => $request->input('idadresse'),
+            'adr_idadresse' => $request->input('adr_idadresse'),
+            'prixcommande' => $prixTotal,
+            'statutcommande' => 'En attente',
+            'tempscommande' => now(),
+        ]);
+
+        $panier->produits()->detach();
+
+        return redirect()->route('commande.show', ['idcommande' => $commande->idcommande])
+            ->with('success', 'Votre commande a été créée avec succès.');
+    }
+
+    public function show($idcommande)
+    {
+        $commande = Commande::with(['panier.client', 'adresse', 'ville', 'codePostal'])
+            ->where('idcommande', $idcommande)
+            ->first();
+
+        if (!$commande) {
+            return redirect()->route('commande.index')->with('error', 'Commande introuvable.');
+        }
+
+        $user = session('user');
+
+        $commandes = collect([$commande]);
+
+        return view('commande', compact('commandes', 'user'));
     }
 }

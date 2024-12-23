@@ -105,9 +105,13 @@
                                                 <button class="btn-etablissement">
                                                     <div class="etablissement-card">
                                                         <div class="etablissement-image">
-                                                            <img src="{{ $etablissement->imageetablissement }}"
-                                                                alt="{{ $etablissement->nometablissement }}">
+                                                            @if($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
+                                                                <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}" alt="{{ $etablissement->nometablissement }}">
+                                                            @else
+                                                                <img src="{{ $etablissement->imageetablissement }}" alt="{{ $etablissement->nometablissement }}">
+                                                            @endif
                                                         </div>
+
                                                         <div class="etablissement-details pt-4">
                                                             <h5 class="etablissement-name">
                                                                 {{ $etablissement->nometablissement }}</h5>
@@ -197,7 +201,6 @@
                     @endif
                 </div>
             </div>
-            <a href="{{ url('/UberEats/guide') }}" class="help-button text-decoration-none">?</a>
         </section>
 
     @endsection

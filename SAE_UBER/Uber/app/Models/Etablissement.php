@@ -28,23 +28,13 @@ class Etablissement extends Model
         return $this->belongsToMany(Categorie_prestation::class, 'a_comme_categorie', 'idetablissement', 'idcategorieprestation');
     }
 
-    /*   public function horaires()
-    {
-        return $this->hasMany(Horaires::class, 'idetablissement', 'idetablissement');
-    }
-
-    public function codepostal()
-    {
-        return $this->belongsTo(Code_postal::class, 'idcodepostal');
-    }
-
-    public function ville()
-    {
-        return $this->belongsTo(Ville::class, 'idville');
-    } */
-
     public function adresse()
     {
         return $this->belongsTo(Adresse::class, 'idadresse');
     }
+    public function horaires()
+    {
+        return $this->hasMany(Horaires::class, 'idetablissement');
+    }
+
 }

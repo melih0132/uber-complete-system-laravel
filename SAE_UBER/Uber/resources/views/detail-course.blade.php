@@ -20,7 +20,15 @@
                     <li><strong>Nom du client :</strong> Monsieur Jean DUPONT</li>
                     <li><strong>Prix de la course :</strong> {{ $course['calculated_price'] }} €</li>
                     <li><strong>Distance :</strong> {{ $course['distance'] }} km</li>
-                    <li><strong>Temps estimé :</strong> {{ $course['adjusted_time'] }} minutes</li>
+                    <li><strong>Temps estimé :</strong>
+                        @php
+                            $adjusted_time = $course['adjusted_time'] ?? 0; // Récupérer les minutes ou 0 si non défini
+                            $hours = floor($adjusted_time / 60);             // Calcul des heures
+                            $minutes = $adjusted_time % 60;                 // Calcul des minutes restantes
+                            $formatted_time = sprintf("%2dh%02d minutes", $hours, $minutes); // Formatage en hh:mm
+                        @endphp
+                        {{ $formatted_time }}
+                    </li>
                 </ul>
             </div>
 

@@ -96,7 +96,16 @@
                                 <p class="p-prestation">{{ $prestation->descriptionprestation }}.</p>
                                 <div class="details">
                                     <p class="p-prestation">Distance : <b>{{ $distance }} km</b></p>
-                                    <p class="p-prestation">Temps estimé : <b>{{ $prestation->adjusted_time }} minutes</b>
+                                    <p class="p-prestation">Temps estimé :
+                                        <b>
+                                            @php
+                                                $adjusted_time = $prestation->adjusted_time ?? 0; // Récupérer les minutes ou 0 si non défini
+                                                $hours = floor($adjusted_time / 60);             // Calcul des heures
+                                                $minutes = $adjusted_time % 60;                 // Calcul des minutes restantes
+                                                $formatted_time = sprintf("%2dh%02d minutes", $hours, $minutes); // Formatage en hh:mm
+                                            @endphp
+                                            {{ $formatted_time }}
+                                        </b>
                                     </p>
                                     <p class="p-prestation">Prix estimé : <b>{{ $prestation->calculated_price }} €</b></p>
 

@@ -90,3 +90,64 @@ input[type="submit"] {
 .suggestion-list li:hover {
     background-color: #f0f0f0;
 }
+.horaires {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr; /* Quatre colonnes : Jour, Ouverture, Fermeture, Fermé */
+    gap: 10px;
+    border: 2px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.header {
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #06c167;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.jour {
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: bold;
+    color: #333;
+    background-color: #f1f1f1;
+}
+
+input[type="time"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input[type="checkbox"] {
+    display: block;
+    margin: 10px auto;
+}
+
+.horaires div {
+    text-align: center;
+}
+
+.horaires .jour {
+    background-color: #f0f0f0;
+    border-right: 1px solid #ddd;
+    text-align: left;
+}
+
+.horaires div:nth-child(4n) {
+    text-align: center;
+}
+input:disabled {
+    background-color: #b0b0b0;
+    cursor: not-allowed;
+}

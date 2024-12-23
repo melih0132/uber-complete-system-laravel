@@ -6,38 +6,81 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Client;
 use App\Models\Coursier;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Entretien;
+//use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    private $serviceAccounts = [
+        'logistique' => [
+            'email' => 'logistique@example.com',
+            'password' => 'logistique123',
+        ],
+        'facturation' => [
+            'email' => 'facturation@example.com',
+            'password' => 'facturation123',
+        ],
+        'administratif' => [
+            'email' => 'administratif@example.com',
+            'password' => 'admin123',
+        ],
+        'rh' => [
+            'email' => 'rh@example.com',
+            'password' => 'ressourceh123',
+        ],
+        'support' => [
+            'email' => 'support@example.com',
+            'password' => 'support123',
+        ],
+    ];
+
     public function auth(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:client,coursier'],
+            'role' => ['required', 'in:client,coursier,logistique,facturation,administratif,rh,support'],
         ]);
 
-        if ($credentials['role'] === 'client') {
-            $user = Client::where('emailuser', $credentials['email'])->first();
-        } elseif ($credentials['role'] === 'coursier') {
-            $user = Coursier::where('emailuser', $credentials['email'])->first();
-        } else {
-            $user = null;
-        }
+        if (in_array($credentials['role'], ['client', 'coursier'])) {
+            $user = new User();
+            $user->setRole($credentials['role']);
 
-        if (!$user || !Hash::check($credentials['password'], $user->motdepasseuser)) {
-            return back()->withErrors([
-                'email' => 'Les informations de connexion sont incorrectes.',
+            $userRecord = $user->where('emailuser', $credentials['email'])->first();
+
+            if (!$userRecord || !Hash::check($credentials['password'], $userRecord->motdepasseuser)) {
+                return back()->withErrors([
+                    'email' => 'Les informations de connexion sont incorrectes.',
+                ])->withInput($request->only('email', 'role'));
+            }
+
+            $request->session()->put('user', [
+                'id' => $userRecord->{$user->getKeyName()},
+                'role' => $credentials['role'],
             ]);
+
+            return redirect()->route('mon-compte')->with('success', 'Connexion réussie.');
         }
 
-        $request->session()->put('user', [
-            'id' => $credentials['role'] === 'client' ? $user->idclient : $user->idcoursier,
-            'role' => $credentials['role'],
-        ]);
+        if (isset($this->serviceAccounts[$credentials['role']])) {
+            $account = $this->serviceAccounts[$credentials['role']];
 
-        return redirect()->intended('/mon-compte')->with('success', 'Connexion réussie.');
+            if ($credentials['email'] !== $account['email'] || $credentials['password'] !== $account['password']) {
+                return back()->withErrors([
+                    'email' => 'Les informations de connexion sont incorrectes.',
+                ])->withInput($request->only('email', 'role'));
+            }
+
+            $request->session()->put('user', [
+                'email' => $account['email'],
+                'role' => $credentials['role'],
+            ]);
+
+            return redirect()->route('mon-compte')->with('success', 'Connexion réussie.');
+        }
+
+        return back()->withErrors(['role' => 'Rôle invalide.']);
     }
 
     public function monCompte(Request $request)
@@ -45,22 +88,40 @@ class LoginController extends Controller
         $sessionUser = $request->session()->get('user');
 
         if (!$sessionUser) {
-            return redirect('/login')->withErrors(['Vous devez être connecté pour accéder à cette page.']);
+            return redirect()->route('login')->withErrors(['Vous devez être connecté pour accéder à cette page.']);
         }
 
-        $user = $sessionUser['role'] === 'client'
-            ? Client::find($sessionUser['id'])
-            : Coursier::find($sessionUser['id']);
+        if (in_array($sessionUser['role'], ['client', 'coursier'])) {
+            $user = new User();
+            $user->setRole($sessionUser['role']);
 
-        if (!$user) {
-            $request->session()->forget('user');
-            return redirect('/login')->withErrors(['Utilisateur introuvable. Veuillez vous reconnecter.']);
+            $userRecord = $user->find($sessionUser['id'] ?? null);
+
+            if (!$userRecord) {
+                $request->session()->forget('user');
+                return redirect()->route('login')->withErrors(['Utilisateur introuvable. Veuillez vous reconnecter.']);
+            }
+
+            $entretiens = [];
+            if ($sessionUser['role'] === 'coursier') {
+                $entretiens = Entretien::where('idcoursier', $userRecord->idcoursier)->get();
+            }
+
+            return view('mon-compte', [
+                'user' => $userRecord,
+                'role' => $sessionUser['role'],
+                'entretiens' => $entretiens,
+            ]);
         }
 
-        return view('mon-compte', [
-            'user' => $user,
-            'role' => $sessionUser['role'],
-        ]);
+        if (isset($sessionUser['email']) && isset($sessionUser['role'])) {
+            return view('mon-compte', [
+                'user' => $sessionUser,
+                'role' => $sessionUser['role'],
+            ]);
+        }
+
+        return redirect()->route('login')->withErrors(['Rôle ou utilisateur invalide.']);
     }
 
     public function updateProfileImage(Request $request)

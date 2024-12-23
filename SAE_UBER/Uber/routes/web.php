@@ -12,6 +12,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\CarteBancaireController;
+use App\Http\Controllers\EntretienController;
 use App\Models\Categorie_prestation;
 use Illuminate\Http\Request;
 
@@ -40,14 +41,15 @@ Route::post('/course/validate', [CourseController::class, 'courseAdd'])->name('c
 Route::post('/course/cancel', [CourseController::class, 'endCourse'])->name('course.cancel');
 
 // 2 - Après la course
-Route::post('/course/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.addTipRate');
+/* Route::post('/course/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.addTipRate'); */
 Route::post('/invoice/reservation/{idreservation}', [FactureController::class, 'index'])->name('invoice.view');
 
 
-// * POV COURSIER
-Route::get('/coursier', [CoursierController::class, 'index'])->name('coursier.index');
-Route::post('/coursier/accept/{idreservation}', [CoursierController::class, 'setBDAccept'])->name('coursier.accept');
-Route::post('/coursier/cancel/{idreservation}', [CoursierController::class, 'setBDCancel'])->name('coursier.cancel');
+
+
+
+
+
 
 
 
@@ -61,23 +63,30 @@ Route::post('/coursier/cancel/{idreservation}', [CoursierController::class, 'set
 Route::get('/UberEats', [EtablissementController::class, 'accueilubereats'])->name('etablissement.accueilubereats');
 Route::get('/addRestaurant', [EtablissementController::class, 'add'])->name('etablissement.add');
 Route::post('/addRestaurant', [EtablissementController::class, 'store'])->name('etablissement.store');
+// ajout bannière etablissement
+Route::post('/store-etablissement-banner', [EtablissementController::class, 'storeBanner'])->name('store.etablissement.banner');
 
 Route::get('/etablissement', [EtablissementController::class, 'index'])->name('etablissement.index');
 Route::get('/etablissement/{idetablissement}', [EtablissementController::class, 'detail'])->name('etablissement.detail');
 
-Route::get('/commande', [CommandeController::class, 'index']);
 
-Route::post('/panier/ajouter', [PanierController::class, 'ajouterAuPanier'])->name('panier.ajouter');
 Route::get('/panier', [PanierController::class, 'index'])->name('panier.index');
+Route::post('/panier/ajouter', [PanierController::class, 'ajouterAuPanier'])->name('panier.ajouter');
 Route::put('/panier/mettre-a-jour/{idproduit}', [PanierController::class, 'mettreAJour'])->name('panier.mettreAJour');
 Route::delete('/panier/supprimer/{idProduit}', [PanierController::class, 'supprimerDuPanier'])->name('panier.supprimer');
 Route::post('/panier/vider', [PanierController::class, 'viderPanier'])->name('panier.vider');
 
-Route::get('/carte-bancaire', [CarteBancaireController::class, 'create'])->name('carte_bancaire.create');
-Route::post('/carte-bancaire', [CarteBancaireController::class, 'store'])->name('carte_bancaire.store');
+// Commander -> nécessite la connexion
+Route::post('/panier/commander', [PanierController::class, 'passerCommande'])->name('panier.commander');
+Route::get('/commande/{idcommande}', [CommandeController::class, 'show'])->name('commande.show');
 
-Route::get('/coursier-courses', [CoursierController::class, 'showTrips'])->name('courier.courses');
-Route::post('/coursier-courses', [CoursierController::class, 'filterTrips'])->name('courier.courses.filter');
+
+
+
+
+
+
+
 
 
 
@@ -95,6 +104,27 @@ Route::get('/UberVelo', function () {
 
 
 
+// * POV COURSIER
+Route::get('/coursier/courses', [CoursierController::class, 'index'])->name('coursier.courses.index');
+Route::get('/coursier/livraisons', [CoursierController::class, 'index'])->name('coursier.livraisons.index');
+
+// Coursiers VTC
+Route::post('/coursier/courses/accept/{idreservation}', [CoursierController::class, 'acceptTask'])->name('coursier.courses.accept');
+Route::post('/coursier/courses/cancel/{idreservation}', [CoursierController::class, 'cancelTask'])->name('coursier.courses.cancel');
+Route::post('/coursier/courses/finish/{idreservation}', [CoursierController::class, 'finishTask'])->name('coursier.courses.finish');
+
+// Coursiers Uber Eats
+Route::post('/coursier/livraisons/accept/{idreservation}', [CoursierController::class, 'acceptTask'])->name('coursier.livraisons.accept');
+Route::post('/coursier/livraisons/cancel/{idreservation}', [CoursierController::class, 'cancelTask'])->name('coursier.livraisons.cancel');
+Route::post('/coursier/livraisons/finish/{idreservation}', [CoursierController::class, 'finishTask'])->name('coursier.livraisons.finish');
+
+
+
+
+
+
+
+
 // ! Login
 Route::get('/interface-connexion', function () {
     return view('interface-connexion');
@@ -103,17 +133,71 @@ Route::get('/interface-connexion', function () {
 Route::get('/login', function () {
     return view('auth/login');
 })->name('login');
+Route::get('/login-driver', function () {
+    return view('auth/login-driver');
+});
+Route::get('/login-service', function () {
+    return view('auth/login-service');
+});
 
 Route::post('/login', [LoginController::class, 'auth'])->name('auth');
 Route::get('/mon-compte', [LoginController::class, 'monCompte'])->name('mon-compte');
 Route::post('/update-profile-image', [LoginController::class, 'updateProfileImage'])->name('update.profile.image');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+
+// CB
+Route::get('/carte-bancaire', [CarteBancaireController::class, 'create'])->name('carte_bancaire.create');
+Route::post('/carte-bancaire', [CarteBancaireController::class, 'store'])->name('carte_bancaire.store');
+
+
+
+
+
+
 // ! Register
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register.form');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+Route::get('/interface-inscription', function () {
+    return view('interface-inscription');
+});
+
+Route::get('/register/driver', [RegisterController::class, 'showDriverRegistrationForm'])->name('register.driver');
+Route::get('/register/passenger', [RegisterController::class, 'showPassengerRegistrationForm'])->name('register.passenger');
+Route::get('/register/eats', [RegisterController::class, 'showEatsRegistrationForm'])->name('register.eats');
+Route::get('/register/services', [RegisterController::class, 'showServicesRegistrationForm'])->name('register.services');
+
+Route::post('/register/driver/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/passenger/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/eats/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/services/form', [RegisterController::class, 'register'])->name('register');
 
 
+
+
+
+
+
+
+
+// ! SERVICE UBER
+// RH
+Route::get('/entretiens/en-attente', [EntretienController::class, 'index'])->name('entretiens.index');
+Route::get('/entretiens/plannifies', [EntretienController::class, 'listePlannifies'])->name('entretiens.plannifies');
+Route::get('/entretiens/termines', [EntretienController::class, 'listeTermines'])->name('entretiens.termines');
+
+Route::get('/entretiens/planifier/{id?}', [EntretienController::class, 'showPlanifierForm'])->name('entretiens.planifierForm');
+Route::post('/entretiens/planifier/{id?}', [EntretienController::class, 'planifier'])->name('entretiens.planifier');
+
+Route::post('/entretiens/resultat/{id}', [EntretienController::class, 'enregistrerResultat'])->name('entretiens.resultat');
+Route::delete('/entretiens/supprimer/{id}', [EntretienController::class, 'supprimer'])->name('entretiens.supprimer');
+
+Route::post('/entretiens/{id}/valider', [EntretienController::class, 'validerCoursier'])->name('entretiens.validerCoursier');
+Route::post('/entretiens/{id}/refuser', [EntretienController::class, 'refuserCoursier'])->name('entretiens.refuserCoursier');
+
+
+// Logistique
+Route::get('/UberLogistique', function () {
+    return view('logistique');
+});
 
 
 
@@ -122,6 +206,8 @@ Route::post('/register', [RegisterController::class, 'register'])->name('registe
 Route::get('/Legal', function () {
     return view('cookie-politique');
 });
+
+
 
 
 
@@ -138,6 +224,11 @@ Route::get('/UberEats/guide', function () {
 });
 
 Route::post('/translate', [TranslationController::class, 'translate']);
+
+
+
+
+
 
 
 

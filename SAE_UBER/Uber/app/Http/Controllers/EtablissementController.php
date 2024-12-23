@@ -161,37 +161,12 @@ class EtablissementController extends Controller
     public function accueilubereats(Request $request)
     {
         $searchVille = $request->input('recherche_ville');
-        $selectedJour = $request->input('selected_jour');
+        $selectedJour = $request->input('selected_jour') ?: Carbon::now('Europe/Paris')->format('Y-m-d');
         $selectedHoraire = $request->input('selected_horaires');
 
-        $horairesQuery = DB::table('horaires as h')
-            ->join('etablissement as et', 'et.idetablissement', '=', 'h.idetablissement');
-
-        $jourSemaine = $this->getJourSemaine($selectedJour);
-        $horairesQuery->where('h.joursemaine', '=', $jourSemaine);
-
-        $heureDebut = '06:00:00';
-        $heureFin = '23:00:00';
-
-        if (!empty($selectedHoraire)) {
-            [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
-
-            $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s');
-            $heureFin = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s');
-        }
-
-        if (!empty($selectedHoraire)) {
-            $horairesQuery->where(function ($query) use ($heureDebut, $heureFin) {
-                $query->whereRaw('?::time BETWEEN h.horairesouverture AND h.horairesfermeture', [$heureDebut])
-                    ->whereRaw('?::time BETWEEN h.horairesouverture AND h.horairesfermeture', [$heureFin]);
-            });
-        }
-
-        $etablissementsFiltreHoraires = $horairesQuery->pluck('et.idetablissement')->unique();
-
         $slots = [];
-        $start = Carbon::createFromFormat('H:i:s', $heureDebut);
-        $end = Carbon::createFromFormat('H:i:s', $heureFin);
+        $start = Carbon::createFromTime(0, 0, 0);
+        $end = Carbon::createFromTime(23, 59, 59);
 
         while ($start->lessThan($end)) {
             $slotStart = $start->format('H:i');
@@ -200,11 +175,30 @@ class EtablissementController extends Controller
             $slots[] = "$slotStart - $slotEnd";
         }
 
+        $heureActuelle = Carbon::now('Europe/Paris')->format('H:i');
+        $defaultHoraire = null;
+        foreach ($slots as $slot) {
+            [$slotStart, $slotEnd] = explode(' - ', $slot);
+            if ($heureActuelle >= $slotStart && $heureActuelle < $slotEnd) {
+                $defaultHoraire = $slot;
+                break;
+            }
+        }
+
+        if (empty($defaultHoraire)) {
+            $defaultHoraire = $slots[0] ?? null;
+        }
+
+        if (empty($selectedHoraire)) {
+            $selectedHoraire = $defaultHoraire;
+        }
+
         return view('accueil-uber-eat', [
             'slots' => $slots,
             'searchVille' => $searchVille,
             'selectedJour' => $selectedJour,
             'selectedHoraire' => $selectedHoraire,
+            'defaultHoraire' => $defaultHoraire,
         ]);
     }
 
@@ -248,37 +242,102 @@ class EtablissementController extends Controller
 
     public function store(Request $request)
     {
-        $imagePath = null;
-        if ($request->hasFile('imageetablissement') && $request->file('imageetablissement')->isValid()) {
-            $imagePath = $request->file('imageetablissement')->store('images/etablissements', 'public');
-        }
+        //dd($request->all()); // Débogage pour voir les données envoyées
 
-        $adresse = $this->getOrCreateAdresse($request);
+        // Validation des données
+        $validatedData = $request->validate([
+            'nometablissement' => 'required|string|max:50',
+            'libelleadresse' => 'required|string|max:100',
+            'nomville' => 'required|string|max:50',
+            'codepostal' => 'required|string|max:5|regex:/^\d{5}$/',
+            'typeetablissement' => 'required|in:Restaurant,Épicerie',
+            'livraison' => 'required|boolean',
+            'aemporter' => 'required|boolean',
+            'imageetablissement' => 'nullable|file|max:2048',
 
-        $etablissement = Etablissement::create([
-            'idadresse' => $adresse->idadresse,
-            'typeetablissement' => $request->typeetablissement,
-            'nometablissement' => $request->nometablissement,
-            'description' => $request->description,
-            'imageetablissement' => $imagePath,
-            'livraison' => $request->livraison,
-            'aemporter' => $request->aemporter,
+            // Validation des horaires
+            'horaire_ouverture_lundi'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_lundi' => 'nullable|date_format:H:i|after:horaire_ouverture_lundi',
+            'ferme_lundi' => 'nullable|boolean',
+
+            'horaire_ouverture_mardi'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_mardi' => 'nullable|date_format:H:i|after:horaire_ouverture_mardi',
+            'ferme_mardi' => 'nullable|boolean',
+
+            'horaire_ouverture_mercredi'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_mercredi' => 'nullable|date_format:H:i|after:horaire_ouverture_mercredi',
+            'ferme_mercredi' => 'nullable|boolean',
+
+            'horaire_ouverture_jeudi'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_jeudi' => 'nullable|date_format:H:i|after:horaire_ouverture_jeudi',
+            'ferme_jeudi' => 'nullable|boolean',
+
+            'horaire_ouverture_vendredi'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_vendredi' => 'nullable|date_format:H:i|after:horaire_ouverture_vendredi',
+            'ferme_vendredi' => 'nullable|boolean',
+
+            'horaire_ouverture_samedi'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_samedi' => 'nullable|date_format:H:i|after:horaire_ouverture_samedi',
+            'ferme_samedi' => 'nullable|boolean',
+
+            'horaire_ouverture_dimanche'=> 'nullable|date_format:H:i',
+            'horaire_fermeture_dimanche' => 'nullable|date_format:H:i|after:horaire_ouverture_dimanche',
+            'ferme_dimanche' => 'nullable|boolean',
         ]);
 
-        if (!empty($request->categorie_restaurant)) {
-            $categories = array_map('trim', explode(',', $request->categorie_restaurant));
-
-            $categoriesPrestationIds = Categorie_prestation::whereIn('libellecategorieprestation', $categories)
-                ->pluck('idcategorieprestation')
-                ->toArray();
-
-            if (!empty($categoriesPrestationIds)) {
-                $etablissement->categories()->sync($categoriesPrestationIds);
+        try {
+            $filePath = null;
+            if ($request->hasFile('imageetablissement')) {
+                $file = $request->file('imageetablissement');
+                $filePath = $file->store('images/etablissements', 'public');
             }
-        }
 
-        return redirect()->route('etablissement.index')->with('success', 'Établissement créé avec succès.');
+            $adresse = $this->getOrCreateAdresse($request);
+
+            $etablissement = Etablissement::create([
+                'idadresse' => $adresse->idadresse,
+                'typeetablissement' => $validatedData['typeetablissement'],
+                'nometablissement' => $validatedData['nometablissement'],
+                'description' => $request->description,
+                'imageetablissement' => $filePath,
+                'livraison' => $validatedData['livraison'],
+                'aemporter' => $validatedData['aemporter'],
+            ]);
+            $joursSemaine = [
+                'lundi' => ['horaire_ouverture_lundi', 'horaire_fermeture_lundi', 'ferme_lundi'],
+                'mardi' => ['horaire_ouverture_mardi', 'horaire_fermeture_mardi', 'ferme_mardi'],
+                'mercredi' => ['horaire_ouverture_mercredi', 'horaire_fermeture_mercredi', 'ferme_mercredi'],
+                'jeudi' => ['horaire_ouverture_jeudi', 'horaire_fermeture_jeudi', 'ferme_jeudi'],
+                'vendredi' => ['horaire_ouverture_vendredi', 'horaire_fermeture_vendredi', 'ferme_vendredi'],
+                'samedi' => ['horaire_ouverture_samedi', 'horaire_fermeture_samedi', 'ferme_samedi'],
+                'dimanche' => ['horaire_ouverture_dimanche', 'horaire_fermeture_dimanche', 'ferme_dimanche']
+            ];
+
+            foreach ($joursSemaine as $jour => $horaires) {
+                $ferme = $request->input($horaires[2]) ?? false;
+
+                if ($ferme) {
+                    continue;
+                }
+
+                if (!empty($request->input($horaires[0])) && !empty($request->input($horaires[1]))) {
+                    Horaires::create([
+                        'idetablissement' => $etablissement->idetablissement,
+                        'joursemaine' => ucfirst($jour),
+                        'horairesouverture' => Carbon::parse($request->input($horaires[0])),
+                        'horairesfermeture' => Carbon::parse($request->input($horaires[1])),
+                    ]);
+                }
+            }
+
+            return redirect()->route('etablissement.index')->with('success', 'Établissement créé avec succès.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la création de l’établissement : ' . $e->getMessage()]);
+        }
     }
+
+
+
 
     private function getOrCreateAdresse(Request $request)
     {
@@ -311,6 +370,7 @@ class EtablissementController extends Controller
         if (!$adresse) {
             $adresse = Adresse::create([
                 'libelleadresse' => $request->libelleadresse,
+                'idville' => $ville->idville,
             ]);
         }
 

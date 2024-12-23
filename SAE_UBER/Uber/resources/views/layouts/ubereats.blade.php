@@ -19,44 +19,44 @@
 </head>
 
 <body>
-    <nav data-baseweb="header-navigation" role="navigation" class="css-esMPmm">
-        <div class="css-ivGTTH" data-testid="nav-grid" tabindex="-1">
-            <ul class="css-kpeoJm">
-                <li class="css-dkqmeR">
+    <nav data-baseweb="header-navigation" role="navigation" class="nav-uber">
+        <div class="d-flex align-items-center w-100 justify-content-between">
+            <ul class="px-4">
+                <li>
                     <a data-baseweb="link" href="{{ url('./UberEats') }}" target="_self" class="header-links">
                         <img src="/img/UberEats.png" alt="Uber Eats" class="logo-image">
                     </a>
                 </li>
             </ul>
-            <ul class="css-eOLFUs">
+            <ul class="ul-links">
                 <div class="d-flex justify-content-center align-items-center">
                     <li class="mx-3">
                         <a href="{{ url('/panier') }}">
                             <i class="fas fa-cart-shopping panier"></i>
                         </a>
                     </li>
-                    <li class="css-hvdsGH mx-2">
-                        <a class="css-iqWTbl" href="{{ url('/UberEats/guide') }}">Aide</a>
+                    <li class="li-links mx-2">
+                        <a class="a-login" href="{{ url('/UberEats/guide') }}">Aide</a>
                     </li>
                     @php
                         $user = session('user');
                     @endphp
                     @if ($user)
-                        <li class="css-hvdsGH mx-2">
-                            <a class="css-iqWTbl" href="{{ url('/mon-compte') }}">Mon Compte</a>
+                        <li class="li-links mx-2">
+                            <a class="a-login" href="{{ url('/mon-compte') }}">Mon Compte</a>
                         </li>
                         <li class="css-fyrSIO mx-2">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button class="css-hrsTVr" type="submit">Se déconnecter</button>
+                                <button class="a-register" type="submit">Se déconnecter</button>
                             </form>
                         </li>
                     @else
-                        <li class="css-hvdsGH mx-2">
-                            <a class="css-iqWTbl" href="{{ url('/login') }}">Connexion</a>
+                        <li class="li-links mx-2">
+                            <a class="a-login" href="{{ url('/interface-connexion') }}">Connexion</a>
                         </li>
                         <li class="css-fyrSIO mx-2">
-                            <a class="css-hrsTVr" href="{{ url('/register') }}">Inscription</a>
+                            <a class="a-register" href="{{ url('/interface-inscription') }}">Inscription</a>
                         </li>
                     @endif
                 </div>

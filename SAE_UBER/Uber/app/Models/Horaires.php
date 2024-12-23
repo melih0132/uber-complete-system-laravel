@@ -11,4 +11,17 @@ class Horaires extends Model
     protected $table = 'horaires';
     protected $primaryKey = 'idhoraires';
     public $timestamps = false;
+
+    protected $fillable = [
+        'idetablissement',
+        'joursemaine',
+        'horairesouverture',
+        'horairesfermeture',
+    ];
+
+    public function etablissement()
+    {
+        return $this->belongsTo(Etablissement::class, 'idetablissement');
+    }
+
 }

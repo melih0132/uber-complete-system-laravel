@@ -12,7 +12,7 @@ class FactureController extends Controller
     public function index(Request $request, $idreservation)
     {
         // ceci fonctionne mais dès qu'on l'enlève, elle ne marche plus
-        dd($idreservation);
+        
         $locale = $request->input('locale', 'fr');
         app()->setLocale($locale);
 

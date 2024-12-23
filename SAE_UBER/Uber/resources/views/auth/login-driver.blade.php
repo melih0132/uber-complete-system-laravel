@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Connexion</h1>
+        <h1 class="text-center mb-4">Connexion driver</h1>
         <form method="POST" action="{{ route('auth') }}" class="form-login d-flex flex-column justify-content-center">
             @csrf
             <div class="mb-3">
@@ -29,7 +29,7 @@
                 @enderror
             </div>
 
-            <input type="hidden" name="role" value="client">
+            <input type="hidden" name="role" value="coursier">
 
             <button type="submit" class="btn-login">Connexion</button>
 

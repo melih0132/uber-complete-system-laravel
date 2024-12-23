@@ -1,55 +1,53 @@
 @extends('layouts.ubereats')
 
-@section('title', 'Commande')
+@section('title', 'Mes Commandes')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/commande.blade.css') }}">
 @endsection
 
 @section('content')
-    <section>
-        <div data-baseweb="block" class="main-container">
-            <h3 class="css-fXLKki mt-5">Commandes à livrer :</h3>
-            <ul class="liste">
-                @foreach ($views as $view)
-                    <div class="item-course">
-                        <div class="div-course">
-                            <ul>
+    <div class="container mt-5">
+        <h2 class="mb-4">Mes Commandes</h2>
 
-                                <li class="courses-items">
-                                    Client : <strong>{{ $view->genreuser }} {{ $view->nomuser }}
-                                        {{ $view->prenomuser }}</strong>.
-                                </li>
-                                <li class="courses-items">
-                                    Adresse de départ : <strong>{{ $view->libelle_idadresse }}, {{ $view->nomville }},
-                                        ({{ $view->codepostal }})
-                                    </strong>.
-                                </li>
-                                <li class="courses-items">
-                                    Adresse de destination : <strong>{{ $view->libelle_adr_idadresse }} ,
-                                        {{ $view->nomville }}, ({{ $view->codepostal }})</strong>.
-                                </li>
-                                <li class="courses-items">
-                                    Prix : <strong>{{ $view->prixcommande }}</strong> €.
-                                </li>
-                                <li class="courses-items">
-                                    Temps estimé : <strong>{{ $view->tempscommande }}</strong> minutes.
-                                </li>
-                            </ul>
-                            {{--                             <div class="d-inline-flex">
-                                <form method="POST" action="{{ route('commande.accept', ['idcommande' => $view->idcommande]) }}">
-                                    @csrf
-                                    <button target="_self" class="btn-accepter mx-2">ACCEPTER</button>
-                                </form>
-                                <form method="POST" action="{{ route('commande.refuse', ['idcommande' => $view->idcommande]) }}">
-                                    @csrf
-                                    <button target="_self" class="btn-refuser mx-2">REFUSER</button>
-                                </form>
-                            </div> --}}
-                        </div>
-                    </div>
-                @endforeach
-            </ul>
-        </div>
-    </section>
+        @if ($commandes->isEmpty())
+            <div class="alert alert-info">
+                <p>Vous n'avez pas encore passé de commande.</p>
+            </div>
+        @else
+            <table class="table table-striped table-hover mt-4">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID Commande</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Prix Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($commandes as $commande)
+                        <tr>
+                            <td>{{ $commande->idcommande }}</td>
+                            <td>{{ $commande->tempscommande ? $commande->tempscommande->format('d/m/Y H:i') : '-' }}</td>
+                            <td>
+                                <span class="badge
+                                    @if ($commande->statutcommande === 'En attente') badge-warning
+                                    @elseif ($commande->statutcommande === 'Confirmée') badge-success
+                                    @else badge-secondary @endif">
+                                    {{ $commande->statutcommande }}
+                                </span>
+                            </td>
+                            <td>{{ number_format($commande->prixcommande, 2, ',', ' ') }} €</td>
+                            <td>
+                                <a href="{{ route('commande.show', ['idcommande' => $commande->idcommande]) }}" class="btn btn-primary btn-sm">
+                                    Voir détails
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
 @endsection

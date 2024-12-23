@@ -9,77 +9,68 @@
 @section('content')
     <section>
         <div class="container">
-            <h1 class="mt-5">Courses en attente :</h1>
+            <h1 class="mt-5">{{ $type === 'courses' ? 'Courses en attente :' : 'Livraisons en attente :' }}</h1>
             <ul class="liste my-5">
-                @foreach ($views as $view)
-                    <div class="item-course mt-3" data-id="{{ $view->idreservation }}">
+                @foreach ($tasks as $task)
+                    <div class="item-course mt-3" data-id="{{ $task->idreservation ?? $task->idcommande }}">
                         <ul>
-                            <li class="courses-items">
-                                N° réservation : <strong>{{ $view->idreservation }}</strong>
+                            <li class="task-items">
+                                N° {{ $type === 'courses' ? 'réservation' : 'commande' }} :
+                                <strong>{{ $task->idreservation ?? $task->idcommande }}</strong>
                             </li>
-                            <li class="courses-items">
-                                Client : <strong>{{ $view->genreuser }} {{ $view->nomuser }}
-                                    {{ $view->prenomuser }}</strong>
+                            <li class="task-items">
+                                Client : <strong>{{ $task->genreuser }} {{ $task->nomuser }}
+                                    {{ $task->prenomuser }}</strong>
                             </li>
-                            <li class="courses-items">
-                                Date de la course :
-                                @php
-                                    $months = [
-                                        'January' => 'Janvier',
-                                        'February' => 'Février',
-                                        'March' => 'Mars',
-                                        'April' => 'Avril',
-                                        'May' => 'Mai',
-                                        'June' => 'Juin',
-                                        'July' => 'Juillet',
-                                        'August' => 'Août',
-                                        'September' => 'Septembre',
-                                        'October' => 'Octobre',
-                                        'November' => 'Novembre',
-                                        'December' => 'Décembre',
-                                    ];
-                                    $formattedDate = $view->datecourse
-                                        ? \Carbon\Carbon::parse($view->datecourse)->format('d') .
-                                            ' ' .
-                                            $months[\Carbon\Carbon::parse($view->datecourse)->format('F')] .
-                                            ' ' .
-                                            \Carbon\Carbon::parse($view->datecourse)->format('Y')
-                                        : 'Non spécifiée';
-                                @endphp
-                                <strong>{{ $formattedDate }}</strong>
-
+                            @if ($type === 'courses')
+                                <li class="task-items">
+                                    Date de la course :
+                                    @php
+                                        $formattedDate = $task->datecourse
+                                            ? \Carbon\Carbon::parse($task->datecourse)->isoFormat('D MMMM YYYY')
+                                            : 'Non spécifiée';
+                                    @endphp
+                                    <strong>{{ $formattedDate }}</strong>
+                                </li>
+                                <li class="task-items">
+                                    Heure de départ :
+                                    <strong>{{ $task->heurecourse ? \Carbon\Carbon::parse($task->heurecourse)->format('H:i') : 'Non spécifiée' }}</strong>
+                                </li>
+                            @else
+                                <li class="task-items">
+                                    Temps estimé de livraison :
+                                    <strong>{{ $task->tempscommande ? \Carbon\Carbon::parse($task->tempscommande)->format('H:i') : 'Non spécifiée' }}</strong>
+                                </li>
+                            @endif
+                            <li class="task-items">
+                                Adresse de départ : <strong>{{ $task->libelle_idadresse ?? 'Non spécifiée' }},
+                                    {{ $task->nomville ?? 'Non spécifiée' }}</strong>
                             </li>
-                            <li class="courses-items">
-                                Heure de départ :
-                                <strong>{{ $view->heurecourse ? \Carbon\Carbon::parse($view->heurecourse)->format('H:i') : 'Non spécifiée' }}</strong>
+                            <li class="task-items">
+                                Adresse de destination : <strong>{{ $task->libelle_adr_idadresse ?? 'Non spécifiée' }},
+                                    {{ $task->nomville ?? 'Non spécifiée' }}</strong>
                             </li>
-                            <li class="courses-items">
-                                Adresse de départ : <strong>{{ $view->libelle_idadresse }}, {{ $view->nomville }}</strong>
+                            <li class="task-items">
+                                Prix estimé : <strong>{{ $task->prixcourse ?? $task->prixcommande }}</strong> €
                             </li>
-                            <li class="courses-items">
-                                Adresse de destination : <strong>{{ $view->libelle_adr_idadresse }},
-                                    {{ $view->nomville }}</strong>
-                            </li>
-                            <li class="courses-items">
-                                Prix estimé : <strong>{{ $view->prixcourse }}</strong> €
-                            </li>
-                            <li class="courses-items">
-                                Distance : <strong>{{ $view->distance }}</strong> km
-                            </li>
-                            <li class="courses-items">
-                                Temps estimé : <strong>{{ $view->temps }}</strong> minutes
-                            </li>
+                            @if ($type === 'courses')
+                                <li class="task-items">
+                                    Distance : <strong>{{ $task->distance }}</strong> km
+                                </li>
+                                <li class="task-items">
+                                    Temps estimé : <strong>{{ $task->temps }}</strong> minutes
+                                </li>
+                            @endif
                             <div class="d-inline-flex pt-3">
                                 <form method="POST"
-                                    action="{{ route('coursier.accept', ['idreservation' => $view->idreservation]) }}">
+                                    action="{{ route($type === 'courses' ? 'coursier.courses.accept' : 'coursier.livraisons.accept', ['idreservation' => $task->idreservation ?? $task->idcommande]) }}">
                                     @csrf
-                                    <button type="submit"  class="btn-accepter mx-2">ACCEPTER</button>
+                                    <button type="submit" class="btn-accepter mx-2">ACCEPTER</button>
                                 </form>
                                 <form method="POST"
-                                    action="{{ route('coursier.cancel', ['idreservation' => $view->idreservation]) }}">
+                                    action="{{ route($type === 'courses' ? 'coursier.courses.cancel' : 'coursier.livraisons.cancel', ['idreservation' => $task->idreservation ?? $task->idcommande]) }}">
                                     @csrf
-                                    <button type="button" class="btn-refuser mx-2"
-                                        onclick="refuserCourse({{ $view->idreservation }})">REFUSER</button>
+                                    <button type="submit" class="btn-refuser mx-2">REFUSER</button>
                                 </form>
                             </div>
                         </ul>
@@ -88,5 +79,4 @@
             </ul>
         </div>
     </section>
-
 @endsection

@@ -19,67 +19,131 @@
 </head>
 
 <body>
-    <nav data-baseweb="header-navigation" role="navigation" class="css-esMPmm">
-        <div class="d-flex align-items-center w-100 justify-content-between" data-testid="nav-grid" tabindex="-1">
-            <ul class="css-kpeoJm">
-                <li class="css-dkqmeR">
-                    <a data-baseweb="link" href="{{ url('./') }}" target="_self">
+    <nav data-baseweb="header-navigation" role="navigation" class="navbar-uber">
+        <div class="d-flex align-items-center w-100 justify-content-between">
+            @php
+                $user = session('user');
+            @endphp
+            <ul>
+                @if (!$user || $user['role'] === 'client')
+                    <li>
+                        <a data-baseweb="link" href="{{ url('./') }}" target="_self">
+                            <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
+                        </a>
+                    </li>
+                @endif
+                @if ($user && $user['role'] === 'coursier')
+                    <li>
                         <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
-                    </a>
-                </li>
+                    </li>
+                @endif
+                @if ($user && $user['role'] === 'logistique')
+                    <li>
+                        <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
+                    </li>
+                @endif
+                @if ($user && $user['role'] === 'rh')
+                    <li>
+                        <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
+                    </li>
+                @endif
+                @if ($user && $user['role'] === 'facturation')
+                    <li>
+                        <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
+                    </li>
+                @endif
             </ul>
-            <ul class="css-ceakVg">
-                @php
-                    $user = session('user');
-                @endphp
+            <ul class="ul-links">
+                @if ($user && $user['role'] === 'coursier')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Conduisez avec l'application Uber"
+                            href="{{ route('coursier.courses.index') }}" target="_self"
+                            class="header-links">Conduire</a>
+                    </li>
+                @endif
+
+                @if ($user && $user['role'] === 'logistique')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Conduisez avec l'application Uber"
+                            href="{{ url('/UberLogistique') }}" target="_self" class="header-links">Véhicules</a>
+                    </li>
+                @endif
+                @if ($user && $user['role'] === 'rh')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Gestion des entretiens en attente"
+                            href="{{ route('entretiens.index') }}" target="_self" class="header-links">
+                            Entretiens en Attente
+                        </a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Gestion des entretiens planifiés"
+                            href="{{ route('entretiens.plannifies') }}" target="_self" class="header-links">
+                            Entretiens Planifiés
+                        </a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Gestion des entretiens terminés"
+                            href="{{ route('entretiens.termines') }}" target="_self" class="header-links">
+                            Entretiens Terminés
+                        </a>
+                    </li>
+                @endif
 
                 @if ($user && $user['role'] === 'coursier')
-                    <li class="css-hvdsGH">
+                    <li class="pr-1">
                         <a data-baseweb="button" aria-label="Conduisez avec l'application Uber"
-                            href="{{ url('/coursier') }}" target="_self" class="header-links">Conduire</a>
+                            href="{{ url('') }}" target="_self" class="header-links">Conduire</a>
                     </li>
                 @endif
 
-                @if ($user && $user['role'] === 'client')
-                    <li class="css-hvdsGH">
-                        <a data-baseweb="button" aria-label="Commander un Uber" href="{{ url('./') }}"
-                            target="_self" class="header-links">Réserver un Uber</a>
+                @if (!$user || $user['role'] === 'client')
+                    <li class="pr-1">
+                        <a href="{{ url('./') }}" class="header-links">Réserver un Uber</a>
                     </li>
                 @endif
 
-                <li class="css-hvdsGH">
-                    <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Eats"
-                        href="{{ url('/UberEats') }}" target="_self" class="header-links">Uber&nbsp;Eats</a>
-                </li>
-                <li class="css-hvdsGH">
-                    <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Velo"
-                        href="{{ url('/UberVelo') }}" target="_self" class="header-links">Uber&nbsp;Velo</a>
-                </li>
-                <li class="css-hvdsGH">
-                    <a data-baseweb="button" aria-label="Besoin d'aide" href="{{ url('/Uber/guide') }}" target="_self"
-                        class="header-links">Besoin&nbsp;d'aide&nbsp;?</a>
-                </li>
+
+                @if (!$user || $user['role'] === 'client')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Eats"
+                            href="{{ url('/UberEats') }}" target="_self" class="header-links">Uber&nbsp;Eats</a>
+                    </li>
+                @endif
+
+                @if (!$user || $user['role'] === 'client')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Velo"
+                            href="{{ url('/UberVelo') }}" target="_self" class="header-links">Uber&nbsp;Velo</a>
+                    </li>
+                @endif
+
+                @if (!$user || $user['role'] === 'client')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Besoin d'aide" href="{{ url('/Uber/guide') }}"
+                            target="_self"class="header-links">Besoin&nbsp;d'aide&nbsp;?</a>
+                    </li>
+                @endif
             </ul>
-            <ul class="css-eOLFUs">
+            <ul class="d-flex align-items-center">
                 @if ($user)
-                    <li class="css-hvdsGH">
+                    <li class="pr-1">
                         <a data-baseweb="button" aria-label="Mon compte" href="{{ url('/mon-compte') }}"
-                            class="css-iqWTbl">Mon Compte</a>
+                            class="a-login">Mon Compte</a>
                     </li>
-                    <li class="css-fyrSIO">
+                    <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="css-hrsTVr" type="submit">Se déconnecter</button>
+                            <button class="a-register" type="submit">Se déconnecter</button>
                         </form>
                     </li>
                 @else
-                    <li class="css-hvdsGH">
+                    <li class="pr-1">
                         <a data-baseweb="button" aria-label="Se connecter" href="{{ url('/interface-connexion') }}"
-                            class="css-iqWTbl">Se connecter</a>
+                            class="a-login">Se connecter</a>
                     </li>
-                    <li class="css-fyrSIO">
-                        <a data-baseweb="button" aria-label="S'inscrire" href="{{ url('/register') }}"
-                            class="css-hrsTVr">S'inscrire</a>
+                    <li>
+                        <a data-baseweb="button" aria-label="S'inscrire" href="{{ url('/interface-inscription') }}"
+                            class="a-register">S'inscrire</a>
                     </li>
                 @endif
             </ul>
@@ -87,24 +151,6 @@
     </nav>
 
     <div class="container">
-        {{-- <section>
-            <div class="main-container">
-                <div data-baseweb="block" class="css-dGDWFE">
-                    <div data-testid="content-group-dynamic" class="css-cYTjpz">
-                        <div data-baseweb="block" class="css-PKJb">
-                            <div class="css-etjCRc">
-                                <div class="css-hPnljU">
-                                    <h1 class="css-bIdYaZ">@yield('name_client')</h1>
-                                </div>
-                            </div>
-                        </div>
-                        <div data-baseweb="block" class="css-PKJb">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section> --}}
 
         @yield('content')
     </div>
