@@ -267,7 +267,7 @@ CREATE TABLE ENTRETIEN (
     STATUS VARCHAR(20) NOT NULL DEFAULT 'En attente',
     RESULTAT VARCHAR(20) NULL,
     CONSTRAINT CK_STATUS_ENTRETIEN CHECK (
-        STATUS IN ('En attente', 'Plannifié', 'Terminée', 'Annulée')
+        STATUS IN ('En attente', 'Planifié', 'Terminée', 'Annulée')
     ),
     CONSTRAINT CK_RESULTAT_ENTRETIEN CHECK (
         RESULTAT IN ('Retenu', 'Rejeté')
@@ -4112,7 +4112,7 @@ INSERT INTO ENTRETIEN (
         RESULTAT
     )
 VALUES (1, 1, NULL, 'En attente', NULL),
-    (2, 2, '2023-12-02 11:00:00', 'Plannifié', NULL),
+    (2, 2, '2023-12-02 11:00:00', 'Planifié', NULL),
     (
         3,
         3,
@@ -4122,7 +4122,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
     ),
     (4, 4, '2023-12-04 09:00:00', 'Annulée', NULL),
     (5, 5, NULL, 'En attente', NULL),
-    (6, 6, '2023-12-06 15:00:00', 'Plannifié', NULL),
+    (6, 6, '2023-12-06 15:00:00', 'Planifié', NULL),
     (
         7,
         7,
@@ -4132,7 +4132,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
     ),
     (8, 8, NULL, 'En attente', NULL),
     (9, 9, NULL, 'En attente', NULL),
-    (10, 10, '2023-12-10 11:00:00', 'Plannifié', NULL),
+    (10, 10, '2023-12-10 11:00:00', 'Planifié', NULL),
     (
         11,
         11,
@@ -4141,7 +4141,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Retenu'
     ),
     (12, 12, '2023-12-12 16:00:00', 'Annulée', NULL),
-    (13, 13, '2023-12-13 09:30:00', 'Plannifié', NULL),
+    (13, 13, '2023-12-13 09:30:00', 'Planifié', NULL),
     (
         14,
         14,
@@ -4157,7 +4157,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Retenu'
     ),
     (16, 16, NULL, 'En attente', NULL),
-    (17, 17, '2023-12-17 10:00:00', 'Plannifié', NULL),
+    (17, 17, '2023-12-17 10:00:00', 'Planifié', NULL),
     (
         18,
         18,
@@ -4181,7 +4181,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Terminée',
         'Retenu'
     ),
-    (23, 23, '2023-12-23 16:00:00', 'Plannifié', NULL),
+    (23, 23, '2023-12-23 16:00:00', 'Planifié', NULL),
     (
         24,
         24,
@@ -4189,7 +4189,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Terminée',
         'Retenu'
     ),
-    (25, 25, '2023-12-25 10:30:00', 'Plannifié', NULL),
+    (25, 25, '2023-12-25 10:30:00', 'Planifié', NULL),
     (
         26,
         26,
@@ -4213,7 +4213,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Retenu'
     ),
     (30, 30, NULL, 'En attente', NULL),
-    (31, 31, '2023-12-31 11:00:00', 'Plannifié', NULL),
+    (31, 31, '2023-12-31 11:00:00', 'Planifié', NULL),
     (
         32,
         32,
@@ -4245,7 +4245,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Retenu'
     ),
     (38, 38, NULL, 'En attente', NULL),
-    (39, 39, '2024-01-09 11:00:00', 'Plannifié', NULL),
+    (39, 39, '2024-01-09 11:00:00', 'Planifié', NULL),
     (
         40,
         40,
@@ -4254,7 +4254,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Retenu'
     ),
     (41, 41, '2024-01-11 16:00:00', 'Annulée', NULL),
-    (42, 42, '2024-01-12 09:30:00', 'Plannifié', NULL),
+    (42, 42, '2024-01-12 09:30:00', 'Planifié', NULL),
     (
         43,
         43,
@@ -4264,7 +4264,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
     ),
     (44, 44, NULL, 'En attente', NULL),
     (45, 45, NULL, 'En attente', NULL),
-    (46, 46, '2024-01-16 10:00:00', 'Plannifié', NULL),
+    (46, 46, '2024-01-16 10:00:00', 'Planifié', NULL),
     (
         47,
         47,
@@ -4308,7 +4308,7 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         'Terminée',
         'Retenu'
     ),
-    (70, 70, '2024-01-12 09:30:00', 'Plannifié', NULL);
+    (70, 70, '2024-01-12 09:30:00', 'Planifié', NULL);
 INSERT INTO COMMANDE (
         IDCOMMANDE,
         IDPANIER,
