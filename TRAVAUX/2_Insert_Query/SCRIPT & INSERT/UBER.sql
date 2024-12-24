@@ -77,7 +77,9 @@ CREATE TABLE CARTE_BANCAIRE (
     CONSTRAINT CK_CB_DATEEXPIRE CHECK (DATEEXPIRECB >= CURRENT_DATE),
     CRYPTOGRAMME NUMERIC(3, 0) NOT NULL,
     TYPECARTE VARCHAR(30) NOT NULL,
-    TYPERESEAUX VARCHAR(30) NOT NULL
+    CONSTRAINT CK_TYPECARTE CHECK (TYPECARTE IN ('Crédit', 'Débit')),
+    TYPERESEAUX VARCHAR(30) NOT NULL,
+    CONSTRAINT CK_TYPERESEAUX CHECK (TYPERESEAUX IN ('Visa', 'MasterCard'))
 );
 /*==============================================================*/
 /* Table : CATEGORIE_PRODUIT                                    */
@@ -1846,80 +1848,80 @@ VALUES (
         1234567890123456,
         '2027-05-31',
         789,
-        'Visa',
-        'CB'
+        'Crédit',
+        'Visa'
     ),
     (
         2,
         9876543210987654,
         '2028-11-30',
         234,
-        'MasterCard',
-        'CB'
+        'Débit',
+        'MasterCard'
     ),
     (
         3,
         1234123412341234,
         '2026-07-15',
         567,
-        'American Express',
-        'CB'
+        'Crédit',
+        'Visa'
     ),
     (
         4,
         4321432143214321,
         '2029-09-28',
         890,
-        'Discover',
-        'CB'
+        'Débit',
+        'MasterCard'
     ),
     (
         5,
         8765876587658765,
         '2025-03-20',
         123,
-        'Visa',
-        'CB'
+        'Crédit',
+        'Visa'
     ),
     (
         6,
         5678567856785678,
         '2028-12-31',
         345,
-        'MasterCard',
-        'CB'
+        'Débit',
+        'MasterCard'
     ),
     (
         7,
         3456345634563456,
         '2027-08-30',
         678,
-        'Visa',
-        'CB'
+        'Crédit',
+        'Visa'
     ),
     (
         8,
         2345234523452345,
         '2026-04-15',
         456,
-        'American Express',
-        'CB'
+        'Débit',
+        'MasterCard'
     ),
     (
         9,
         9876987698769876,
         '2029-02-28',
         789,
-        'MasterCard',
-        'CB'
+        'Crédit',
+        'Visa'
     ),
     (
         10,
         6543654365436543,
         '2030-01-31',
         234,
-        'Visa',
-        'CB'
+        'Débit',
+        'MasterCard'
     );
 INSERT INTO ENTREPRISE (
         IDENTREPRISE,
