@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Etablissement;
 use App\Models\Ville;
-use App\Models\Horaires;
-use App\Models\Produit;
 use App\Models\Adresse;
 use App\Models\Code_postal;
 use App\Models\Categorie_prestation;
 use App\Models\Categorie_produit;
+use App\Models\Horaires;
+// use App\Models\Produit;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +18,10 @@ class EtablissementController extends Controller
 {
     public function index(Request $request)
     {
+        /* dd($request); */
+
+        /* dd($request->all()); */
+
         $searchVille = $request->input('recherche_ville');
         $selectedJour = $request->input('selected_jour');
         $selectedHoraire = $request->input('selected_horaires');
@@ -160,6 +164,8 @@ class EtablissementController extends Controller
 
     public function accueilubereats(Request $request)
     {
+        /* dd($request); */
+
         $searchVille = $request->input('recherche_ville');
         $selectedJour = $request->input('selected_jour') ?: Carbon::now('Europe/Paris')->format('Y-m-d');
         $selectedHoraire = $request->input('selected_horaires');
@@ -242,102 +248,75 @@ class EtablissementController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all()); // Débogage pour voir les données envoyées
-
-        // Validation des données
-        $validatedData = $request->validate([
-            'nometablissement' => 'required|string|max:50',
-            'libelleadresse' => 'required|string|max:100',
-            'nomville' => 'required|string|max:50',
-            'codepostal' => 'required|string|max:5|regex:/^\d{5}$/',
-            'typeetablissement' => 'required|in:Restaurant,Épicerie',
-            'livraison' => 'required|boolean',
-            'aemporter' => 'required|boolean',
-            'imageetablissement' => 'nullable|file|max:2048',
-
-            // Validation des horaires
-            'horaire_ouverture_lundi'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_lundi' => 'nullable|date_format:H:i|after:horaire_ouverture_lundi',
-            'ferme_lundi' => 'nullable|boolean',
-
-            'horaire_ouverture_mardi'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_mardi' => 'nullable|date_format:H:i|after:horaire_ouverture_mardi',
-            'ferme_mardi' => 'nullable|boolean',
-
-            'horaire_ouverture_mercredi'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_mercredi' => 'nullable|date_format:H:i|after:horaire_ouverture_mercredi',
-            'ferme_mercredi' => 'nullable|boolean',
-
-            'horaire_ouverture_jeudi'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_jeudi' => 'nullable|date_format:H:i|after:horaire_ouverture_jeudi',
-            'ferme_jeudi' => 'nullable|boolean',
-
-            'horaire_ouverture_vendredi'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_vendredi' => 'nullable|date_format:H:i|after:horaire_ouverture_vendredi',
-            'ferme_vendredi' => 'nullable|boolean',
-
-            'horaire_ouverture_samedi'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_samedi' => 'nullable|date_format:H:i|after:horaire_ouverture_samedi',
-            'ferme_samedi' => 'nullable|boolean',
-
-            'horaire_ouverture_dimanche'=> 'nullable|date_format:H:i',
-            'horaire_fermeture_dimanche' => 'nullable|date_format:H:i|after:horaire_ouverture_dimanche',
-            'ferme_dimanche' => 'nullable|boolean',
-        ]);
-
         try {
-            $filePath = null;
-            if ($request->hasFile('imageetablissement')) {
-                $file = $request->file('imageetablissement');
-                $filePath = $file->store('images/etablissements', 'public');
-            }
-
             $adresse = $this->getOrCreateAdresse($request);
 
             $etablissement = Etablissement::create([
                 'idadresse' => $adresse->idadresse,
-                'typeetablissement' => $validatedData['typeetablissement'],
-                'nometablissement' => $validatedData['nometablissement'],
+                'typeetablissement' => $request->typeetablissement,
+                'nometablissement' => $request->nometablissement,
                 'description' => $request->description,
-                'imageetablissement' => $filePath,
-                'livraison' => $validatedData['livraison'],
-                'aemporter' => $validatedData['aemporter'],
+                'livraison' => $request->livraison,
+                'aemporter' => $request->aemporter,
             ]);
-            $joursSemaine = [
-                'lundi' => ['horaire_ouverture_lundi', 'horaire_fermeture_lundi', 'ferme_lundi'],
-                'mardi' => ['horaire_ouverture_mardi', 'horaire_fermeture_mardi', 'ferme_mardi'],
-                'mercredi' => ['horaire_ouverture_mercredi', 'horaire_fermeture_mercredi', 'ferme_mercredi'],
-                'jeudi' => ['horaire_ouverture_jeudi', 'horaire_fermeture_jeudi', 'ferme_jeudi'],
-                'vendredi' => ['horaire_ouverture_vendredi', 'horaire_fermeture_vendredi', 'ferme_vendredi'],
-                'samedi' => ['horaire_ouverture_samedi', 'horaire_fermeture_samedi', 'ferme_samedi'],
-                'dimanche' => ['horaire_ouverture_dimanche', 'horaire_fermeture_dimanche', 'ferme_dimanche']
-            ];
 
-            foreach ($joursSemaine as $jour => $horaires) {
-                $ferme = $request->input($horaires[2]) ?? false;
+            foreach (['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'] as $jour) {
+                $ferme = $request->input("ferme.$jour", false);
+
+                $horairesOuverture = $request->input("horairesouverture.$jour");
+                $horairesFermeture = $request->input("horairesfermeture.$jour");
 
                 if ($ferme) {
-                    continue;
+                    $horairesOuverture = null;
+                    $horairesFermeture = null;
                 }
 
-                if (!empty($request->input($horaires[0])) && !empty($request->input($horaires[1]))) {
-                    Horaires::create([
-                        'idetablissement' => $etablissement->idetablissement,
-                        'joursemaine' => ucfirst($jour),
-                        'horairesouverture' => Carbon::parse($request->input($horaires[0])),
-                        'horairesfermeture' => Carbon::parse($request->input($horaires[1])),
-                    ]);
-                }
+                Horaires::create([
+                    'idetablissement' => $etablissement->idetablissement,
+                    'joursemaine' => $jour,
+                    'horairesouverture' => $horairesOuverture ? $horairesOuverture . '+01' : null,
+                    'horairesfermeture' => $horairesFermeture ? $horairesFermeture . '+01' : null,
+                ]);
             }
 
-            return redirect()->route('etablissement.index')->with('success', 'Établissement créé avec succès.');
+            return redirect()->route('etablissement.addBanner', $etablissement->idetablissement)
+                ->with('success', 'Établissement créé avec succès. Vous pouvez maintenant ajouter une bannière.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Erreur lors de la création de l’établissement : ' . $e->getMessage()]);
         }
     }
 
+    public function addBanner($id)
+    {
+        $etablissement = Etablissement::findOrFail($id);
+        return view('add-banner', ['etablissement' => $etablissement]);
+    }
 
+    public function storeBanner(Request $request)
+    {
+        $request->validate([
+            'banner_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'etablissement_id' => 'required|exists:etablissement,idetablissement',
+        ]);
 
+        try {
+            $etablissement = Etablissement::findOrFail($request->input('etablissement_id'));
+
+            if ($request->hasFile('banner_image')) {
+                $path = $request->file('banner_image')->store('etablissements/banners', 'public');
+
+                $etablissement->imageetablissement = $path;
+                $etablissement->save();
+
+                return redirect()->route('etablissement.index', $etablissement->idetablissement)
+                    ->with('success', 'Bannière ajoutée avec succès.');
+            } else {
+                return back()->withErrors(['error' => 'Aucun fichier n’a été téléchargé.']);
+            }
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la mise à jour de la bannière : ' . $e->getMessage()]);
+        }
+    }
 
     private function getOrCreateAdresse(Request $request)
     {
@@ -348,7 +327,7 @@ class EtablissementController extends Controller
         if (!$codePostal) {
             $codePostal = Code_postal::create([
                 'idpays' => 1,
-                'codepostal' => $request->codepostal,
+                'codepostal' => $request->codepostal
             ]);
         }
 
@@ -359,7 +338,7 @@ class EtablissementController extends Controller
 
         if (!$ville) {
             $ville = Ville::create([
-                'nomville' => $request->nomville,
+                'nomville' => $request->nomville
             ]);
         }
 
@@ -370,7 +349,7 @@ class EtablissementController extends Controller
         if (!$adresse) {
             $adresse = Adresse::create([
                 'libelleadresse' => $request->libelleadresse,
-                'idville' => $ville->idville,
+                'idville' => $ville->idville
             ]);
         }
 

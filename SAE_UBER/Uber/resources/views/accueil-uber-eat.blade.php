@@ -5,11 +5,11 @@
 @section('css')
 @endsection
 
-@section('js')
+{{-- @section('js')
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="{{ asset('js/scriptCookie.js') }}"></script>
-@endsection
+@endsection --}}
 
 @section('content')
     <main id="main-content" tabindex="-1" class="co">
@@ -29,7 +29,7 @@
                         <div class="main-search">
                             <div class="mx-2">
                                 <input type="text" name="recherche_ville" id="recherche_ville" required
-                                    class="search-bar required" placeholder="Recherchez par ville..."
+                                    class="search-bar" placeholder="Recherchez par ville..."
                                     value="{{ request('recherche_ville') }}">
                                 {{--  <ul id="suggestions-ville" class="suggestions-list"></ul> --}}
                             </div>
@@ -46,13 +46,13 @@
                                         Sélectionnez un créneau horaire
                                     </option>
                                     @foreach ($slots as $slot)
-                                        <option value="{{ $slot }}" {{ $selectedHoraire === $slot ? 'selected' : '' }}>
+                                        <option value="{{ $slot }}"
+                                            {{ $selectedHoraire === $slot ? 'selected' : '' }}>
                                             {{ $slot }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
-
                             <button type="submit" class="e9 br bo c4 ea eb al bc ct af ec ed ee ef eg ej du ek el m-2">
                                 Rechercher
                             </button>
@@ -62,7 +62,7 @@
                     <div class="">
                         <a href="{{ route('etablissement.add') }}"
                             class="e9 br bo c4 ea eb al bc ct af ec ed ee ef eg ej du ek el m-2 text-decoration-none">
-                            Ajouter votre restaurant
+                            Ajouter un établissement
                         </a>
                     </div>
                 </div>

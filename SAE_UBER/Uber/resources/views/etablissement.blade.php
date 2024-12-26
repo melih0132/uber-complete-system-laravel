@@ -10,7 +10,7 @@
 
         <section>
             <div class="container">
-                <form method="GET" action="{{ route('etablissement.index') }}" class="filter-form">
+                <form action="{{ route('etablissement.index') }}" method="GET" class="filter-form">
                     <div class="filter">
 
                         <!-- Champs cachés pour conserver les paramètres existants -->
@@ -40,8 +40,10 @@
                         <!-- Sélecteur du type de livraison -->
                         <select name="type_livraison" id="type_livraison" class="combobox">
                             <option value="">Mode de livraison</option>
-                            <option value="retrait" {{ $selectedTypeLivraison == 'retrait' ? 'selected' : '' }}>Retrait</option>
-                            <option value="livraison" {{ $selectedTypeLivraison == 'livraison' ? 'selected' : '' }}>Livraison</option>
+                            <option value="retrait" {{ $selectedTypeLivraison == 'retrait' ? 'selected' : '' }}>Retrait
+                            </option>
+                            <option value="livraison" {{ $selectedTypeLivraison == 'livraison' ? 'selected' : '' }}>
+                                Livraison</option>
                         </select>
 
                         <!-- Filtres conditionnels -->
@@ -105,19 +107,21 @@
                                                 <button class="btn-etablissement">
                                                     <div class="etablissement-card">
                                                         <div class="etablissement-image">
-                                                            @if($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
-                                                                <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}" alt="{{ $etablissement->nometablissement }}">
+                                                            @if ($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
+                                                                <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}"
+                                                                    alt="{{ $etablissement->nometablissement }}">
                                                             @else
-                                                                <img src="{{ $etablissement->imageetablissement }}" alt="{{ $etablissement->nometablissement }}">
+                                                                <img src="{{ $etablissement->imageetablissement }}"
+                                                                    alt="{{ $etablissement->nometablissement }}">
                                                             @endif
                                                         </div>
 
                                                         <div class="etablissement-details pt-4">
                                                             <h5 class="etablissement-name">
                                                                 {{ $etablissement->nometablissement }}</h5>
-                                                            {{-- <h6 class="etablissement-type">
+                                                            <h6 class="etablissement-type">
                                                                 {{ $etablissement->typeetablissement }}
-                                                            </h6> --}}
+                                                            </h6>
                                                         </div>
                                                     </div>
                                                 </button>

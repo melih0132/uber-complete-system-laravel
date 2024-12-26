@@ -11,8 +11,9 @@
 
 
         <div class="etablissement-banner">
-            @if($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
-                <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}" alt="{{ $etablissement->nometablissement }}">
+            @if ($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
+                <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}"
+                    alt="{{ $etablissement->nometablissement }}">
             @else
                 <img src="{{ $etablissement->imageetablissement }}" alt="{{ $etablissement->nometablissement }}">
             @endif
@@ -38,16 +39,20 @@
             </div>
 
             <div class="hours-section">
-                <p><strong>Horaires:</strong>
-
-                    @foreach ($horaires as $horaire)
-                        <div>{{ $horaire->joursemaine }}:
+                <p><strong>Horaires:</strong></p>
+                @foreach ($horaires as $horaire)
+                    <div>
+                        {{ $horaire->joursemaine }}:
+                        @if (is_null($horaire->horairesouverture) || is_null($horaire->horairesfermeture))
+                            Fermé
+                        @else
                             {{ \Carbon\Carbon::parse($horaire->horairesouverture)->format('H\hi') }} -
                             {{ \Carbon\Carbon::parse($horaire->horairesfermeture)->format('H\hi') }}
-                        </div>
-                    @endforeach
-                </p>
+                        @endif
+                    </div>
+                @endforeach
             </div>
+
         </div>
     </section>
 
@@ -69,5 +74,7 @@
             </div>
         @endforeach
     </div>
-
+    {{--     <div>
+        <button type="submit" class="btn-panier" onclick="window.location.href='{{ route('produit.store') }}'">Ajouter un produit</button>
+    </div> --}}
 @endsection

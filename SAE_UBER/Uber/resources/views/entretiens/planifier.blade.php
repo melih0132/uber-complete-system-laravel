@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@section('title', 'UBER RH')
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/entretien.blade.css') }}">
+@endsection
+
 @section('content')
     <div class="container">
         <h1>Planifier un entretien</h1>
@@ -28,7 +34,7 @@
                 <input type="datetime-local" name="dateentretien" id="dateentretien" class="form-control" required>
             </div>
 
-            <input type="hidden" name="status" value="Plannifié">
+            <input type="hidden" name="status" value="Planifié">
 
             <button type="submit" class="btn btn-primary">Planifier</button>
         </form>

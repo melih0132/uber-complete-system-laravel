@@ -179,7 +179,8 @@ class CourseController extends Controller
         ]);
 
         return view('terminer-course', [
-            'course' => $courseData
+            'course' => $courseData,
+            'idreservation' => $reservation->idreservation
         ]);
     }
 
@@ -195,25 +196,13 @@ class CourseController extends Controller
         return response()->json(['message' => 'Course annulée.'], 200);
     }
 
-    public function addTipAndRate(Request $request)
+    public function addTipAndRate(Request $request )
     {
-        $validatedData = $request->validate([
-            'idreservation' => 'required|integer|exists:course,idreservation',
-            'notecourse' => 'nullable|numeric|min:0|max:5',
-            'pourboire' => 'nullable|numeric|min:0|max:80',
-        ]);
+        $idreservation = $request->input('idreservation');
 
-        $course = Course::where('idreservation', $validatedData['idreservation'])->first();
-
-        $updated = $course->update([
-            'notecourse' => $validatedData['notecourse'] ?? 0,
-            'pourboire' => $validatedData['pourboire'] ?? 0,
-            'statutcourse' => 'Terminée',
-        ]);
 
         return view('note-pourboire', [
-            'course' => $course,
-            'idreservation' => $course->idreservation
+            'idreservation' => $idreservation
         ]);
     }
 

@@ -32,7 +32,7 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <form method="POST" class="mx-2" action="{{ route('invoice.view', ['idreservation' => $idreservation]) }}">
+            <form method="POST" class="mx-2" action="{{ route('course.addTipRate') }}">
                 @csrf
                 <input type="hidden" name="idreservation" value="{{ $course['idreservation'] }}">
                 <button type="submit" class="btn-annuler">Terminer la Course</button>

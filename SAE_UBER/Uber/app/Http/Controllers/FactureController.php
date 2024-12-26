@@ -4,23 +4,27 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf as PDF;
 use Carbon\Carbon;
+
 
 class FactureController extends Controller
 {
     public function index(Request $request, $idreservation)
     {
+        $validated = $request->validate([
+            'pourboire' => 'nullable|numeric|min:0|max:80',
+        ]);
+
         // ceci fonctionne mais dès qu'on l'enlève, elle ne marche plus
-        
+        $pourboire = $validated['pourboire'] ?? 0;
+
         $locale = $request->input('locale', 'fr');
         app()->setLocale($locale);
 
         $course = DB::table('course as c')
-            ->leftJoin('coursier as cou', 'cou.idcoursier', '=', 'c.idcoursier')
+            ->join('coursier as cou', 'cou.idcoursier', '=', 'c.idcoursier')
             ->join('reservation as r', 'c.idreservation', '=', 'r.idreservation')
-            ->join('facture_course as fa', 'c.idcourse', '=', 'fa.idcourse')
-            ->join('pays as p', 'p.idpays', '=', 'fa.idpays')
             ->join('client as cl', 'r.idclient', '=', 'cl.idclient')
             ->join('adresse as a_start', 'c.idadresse', '=', 'a_start.idadresse')
             ->join('adresse as a_end', 'c.adr_idadresse', '=', 'a_end.idadresse')
@@ -39,19 +43,23 @@ class FactureController extends Controller
                 'tp.libelleprestation',
                 'r.datereservation',
                 'r.heurereservation',
-                'p.pourcentagetva',
                 'cl.*'
             )
             ->where('c.idreservation', $idreservation)
             ->first();
 
-        if (!$course) {
-            return redirect()->back()->withErrors(['error' => 'Reservation not found.']);
-        }
+
+        $TVA = DB::table('pays')
+            ->select(
+                'pourcentagetva',
+            )
+            ->where('nompays', 'France')
+            ->first();
 
         $datecourse = Carbon::parse($course->datecourse)
             ->locale('fr')
             ->isoFormat('D MMMM YYYY');
+
 
         $duree_course = Carbon::parse($course->temps)->format('H:i:s');
 
@@ -65,14 +73,28 @@ class FactureController extends Controller
             'pourboire' => $course->pourboire,
             'datecourse' => $datecourse,
             'duree_course' => $duree_course,
+            'pourboire' => $pourboire,
+            'datereservation' => $course->datereservation,
+            'heurereservation' => $course->heurereservation,
+            'datecourse' => $course->datecourse,
+            'heurecourse' => $course->heurecourse,
+            'libelleprestation' => $course->libelleprestation,
+            'pourcentagetva' => $TVA->pourcentagetva,
+            'monnaie' => '€'
         ];
 
-        $pdf = PDF::loadView('facture', $data)
-            ->setOption('isHtml5ParserEnabled', true)
-            ->setOption('isUtf8Enabled', true)
-            ->setOption('encoding', 'UTF-8')
-            ->setOption('defaultFont', 'DejaVu Sans');
+        $html = view('facture', $data)->render();
 
-        return $pdf->stream('Facture_' . $course->idcourse . '.pdf');
+
+        $pdf = new PDF([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+        ]);
+
+
+        $pdf->WriteHTML($html);
+
+        return response($pdf->Output("Facture_" . $idreservation . "pdf", 'I'), 200)
+            ->header('Content-Type', 'application/pdf');
     }
 }

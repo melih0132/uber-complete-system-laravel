@@ -17,9 +17,9 @@
             <div class="d-flex justify-content-center pt-3">
                 <!-- Formulaire pour ajouter une note et un pourboire -->
                 <!-- Formulaire pour recevoir la facture -->
-                <form action="{{ route('invoice.view', ['idreservation' => $course['idreservation']]) }}" method="POST" class="mx-3">
+                <form action="{{ route('invoice.view', ['idreservation' => $idreservation]) }}" method="POST"
+                    class="mx-3">
                     @csrf
-
                     <div class="rating-system mb-4">
                         <label for="note" class="form-label">Note de la course :</label>
                         <div class="star-rating pb-3 px-2">
@@ -54,18 +54,6 @@
                         <button type="submit" class="btn btn-secondary btn-recap my-4">Recevoir ma facture</button>
                     </div>
                 </form>
-                {{-- <form action="{{ route('course.addTipRate') }}" method="POST" class="mx-3">
-                    @csrf
-                    <input type="hidden" name="idreservation" value="{{ $course['idreservation'] }}">
-
-
-
-                    {{-- <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-recap my-4">Envoyer la note et le
-                            pourboire</button>
-                    </div>
-                </form> --}}
-
             </div>
         </div>
     </section>

@@ -13,6 +13,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\CarteBancaireController;
 use App\Http\Controllers\EntretienController;
+use App\Http\Controllers\ProductController;
 use App\Models\Categorie_prestation;
 use Illuminate\Http\Request;
 
@@ -41,7 +42,7 @@ Route::post('/course/validate', [CourseController::class, 'courseAdd'])->name('c
 Route::post('/course/cancel', [CourseController::class, 'endCourse'])->name('course.cancel');
 
 // 2 - Après la course
-/* Route::post('/course/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.addTipRate'); */
+Route::post('/course/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.addTipRate');
 Route::post('/invoice/reservation/{idreservation}', [FactureController::class, 'index'])->name('invoice.view');
 
 
@@ -61,14 +62,8 @@ Route::post('/invoice/reservation/{idreservation}', [FactureController::class, '
 
 // ! Uber Eats
 Route::get('/UberEats', [EtablissementController::class, 'accueilubereats'])->name('etablissement.accueilubereats');
-Route::get('/addRestaurant', [EtablissementController::class, 'add'])->name('etablissement.add');
-Route::post('/addRestaurant', [EtablissementController::class, 'store'])->name('etablissement.store');
-// ajout bannière etablissement
-Route::post('/store-etablissement-banner', [EtablissementController::class, 'storeBanner'])->name('store.etablissement.banner');
-
-Route::get('/etablissement', [EtablissementController::class, 'index'])->name('etablissement.index');
-Route::get('/etablissement/{idetablissement}', [EtablissementController::class, 'detail'])->name('etablissement.detail');
-
+Route::get('/UberEats/etablissements', [EtablissementController::class, 'index'])->name('etablissement.index');
+Route::get('/UberEats/etablissements/{idetablissement}', [EtablissementController::class, 'detail'])->name('etablissement.detail');
 
 Route::get('/panier', [PanierController::class, 'index'])->name('panier.index');
 Route::post('/panier/ajouter', [PanierController::class, 'ajouterAuPanier'])->name('panier.ajouter');
@@ -80,7 +75,15 @@ Route::post('/panier/vider', [PanierController::class, 'viderPanier'])->name('pa
 Route::post('/panier/commander', [PanierController::class, 'passerCommande'])->name('panier.commander');
 Route::get('/commande/{idcommande}', [CommandeController::class, 'show'])->name('commande.show');
 
+Route::get('/UberEats/addRestaurant', [EtablissementController::class, 'add'])->name('etablissement.add');
+Route::post('/UberEats/addRestaurant', [EtablissementController::class, 'store'])->name('etablissement.store');
+// ajout bannière etablissement
+Route::get('/UberEats/etablissement/{id}/add-banner', [EtablissementController::class, 'addBanner'])->name('etablissement.addBanner');
+Route::post('/UberEats/store-etablissement-banner', [EtablissementController::class, 'storeBanner'])->name('store.etablissement.banner');
 
+//ajout produit pour les nouveaux etablissements
+Route::get('/addProduct', [ProductController::class, 'create'])->name('produit.create');
+Route::post('/addProduct', [ProductController::class, 'store'])->name('produit.store');
 
 
 
@@ -105,6 +108,13 @@ Route::get('/UberVelo', function () {
 
 
 // * POV COURSIER
+// Entretien RH
+Route::get('/coursier/entretien', [CoursierController::class, 'entretien'])->name('coursier.entretien');
+Route::post('/coursier/entretien/valider/{entretien}', [CoursierController::class, 'validerEntretien'])->name('coursier.entretien.valider');
+Route::post('/coursier/entretien/annuler/{entretien}', [CoursierController::class, 'annulerEntretien'])->name('coursier.entretien.annuler');
+Route::get('/coursier/entretien/planifie', [CoursierController::class, 'planifie'])->name('coursier.entretien.planifie');
+
+// Diff Type Coursier
 Route::get('/coursier/courses', [CoursierController::class, 'index'])->name('coursier.courses.index');
 Route::get('/coursier/livraisons', [CoursierController::class, 'index'])->name('coursier.livraisons.index');
 
@@ -244,5 +254,5 @@ Route::get('/map', function () {
 
 Route::post('/send-distance', [CourseController::class, 'receiveDistance']);
 
-Route::get('clients/create', [ClientController::class, 'create']);
-Route::post('clients', [ClientController::class, 'store']);
+/* Route::get('clients/create', [ClientController::class, 'create']);
+Route::post('clients', [ClientController::class, 'store']); */

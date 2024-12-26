@@ -1,12 +1,18 @@
 @extends('layouts.app')
 
+@section('title', 'UBER RH')
+
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/entretien.blade.css') }}">
+@endsection
+
 @section('content')
     <div class="container">
         <h1 class="mb-4">Liste des entretiens</h1>
 
         {{-- Table des entretiens --}}
         <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
+            <table class="table table-striped align-middle">
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
@@ -53,7 +59,7 @@
                                 </form>
 
                                 {{-- Action: Enregistrer Résultat --}}
-                                @if ($entretien->status === 'Plannifié')
+                                @if ($entretien->status === 'Planifié')
                                     <form action="{{ route('entretiens.resultat', ['id' => $entretien->identretien]) }}"
                                         method="POST" style="display:inline;">
                                         @csrf

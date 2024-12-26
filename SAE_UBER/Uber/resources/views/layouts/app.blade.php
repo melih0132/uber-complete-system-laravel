@@ -31,23 +31,7 @@
                             <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
                         </a>
                     </li>
-                @endif
-                @if ($user && $user['role'] === 'coursier')
-                    <li>
-                        <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
-                    </li>
-                @endif
-                @if ($user && $user['role'] === 'logistique')
-                    <li>
-                        <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
-                    </li>
-                @endif
-                @if ($user && $user['role'] === 'rh')
-                    <li>
-                        <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
-                    </li>
-                @endif
-                @if ($user && $user['role'] === 'facturation')
+                @else
                     <li>
                         <img src="/img/UberLogo.png" alt="Uber Logo" class="logo-image">
                     </li>
@@ -59,6 +43,11 @@
                         <a data-baseweb="button" aria-label="Conduisez avec l'application Uber"
                             href="{{ route('coursier.courses.index') }}" target="_self"
                             class="header-links">Conduire</a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Consulter votre entretien"
+                            href="{{ route('coursier.entretien') }}" target="_self" class="header-links">Consulter mon
+                            entretien</a>
                     </li>
                 @endif
 
@@ -89,38 +78,24 @@
                     </li>
                 @endif
 
-                @if ($user && $user['role'] === 'coursier')
-                    <li class="pr-1">
-                        <a data-baseweb="button" aria-label="Conduisez avec l'application Uber"
-                            href="{{ url('') }}" target="_self" class="header-links">Conduire</a>
-                    </li>
-                @endif
-
                 @if (!$user || $user['role'] === 'client')
                     <li class="pr-1">
                         <a href="{{ url('./') }}" class="header-links">Réserver un Uber</a>
                     </li>
-                @endif
-
-
-                @if (!$user || $user['role'] === 'client')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Eats"
-                            href="{{ url('/UberEats') }}" target="_self" class="header-links">Uber&nbsp;Eats</a>
+                            href="{{ url('/UberEats') }}" target="_self" class="header-links">Uber&nbsp;Eats
+                        </a>
                     </li>
-                @endif
-
-                @if (!$user || $user['role'] === 'client')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Velo"
-                            href="{{ url('/UberVelo') }}" target="_self" class="header-links">Uber&nbsp;Velo</a>
+                            href="{{ url('/UberVelo') }}" target="_self" class="header-links">Uber&nbsp;Velo
+                        </a>
                     </li>
-                @endif
-
-                @if (!$user || $user['role'] === 'client')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Besoin d'aide" href="{{ url('/Uber/guide') }}"
-                            target="_self"class="header-links">Besoin&nbsp;d'aide&nbsp;?</a>
+                            target="_self"class="header-links">Besoin&nbsp;d'aide&nbsp;?
+                        </a>
                     </li>
                 @endif
             </ul>
@@ -139,11 +114,13 @@
                 @else
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Se connecter" href="{{ url('/interface-connexion') }}"
-                            class="a-login">Se connecter</a>
+                            class="a-login">Se connecter
+                        </a>
                     </li>
                     <li>
                         <a data-baseweb="button" aria-label="S'inscrire" href="{{ url('/interface-inscription') }}"
-                            class="a-register">S'inscrire</a>
+                            class="a-register">S'inscrire
+                        </a>
                     </li>
                 @endif
             </ul>

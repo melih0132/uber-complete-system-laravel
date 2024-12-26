@@ -23,5 +23,4 @@ class Horaires extends Model
     {
         return $this->belongsTo(Etablissement::class, 'idetablissement');
     }
-
 }

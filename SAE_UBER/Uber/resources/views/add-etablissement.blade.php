@@ -12,7 +12,8 @@
         <div class="add-form my-5">
             <h1>Créer votre établissement</h1>
 
-            <form action="{{ route('etablissement.store') }}" method="POST" enctype="multipart/form-data">
+            <!-- Formulaire principal -->
+            <form action="{{ route('etablissement.store') }}" method="POST">
                 @csrf
 
                 <!-- Nom de l'établissement -->
@@ -51,18 +52,14 @@
                 <label for="typeetablissement">Type d'établissement :</label>
                 <select name="typeetablissement" id="typeetablissement" required>
                     <option value="" disabled selected>Sélectionnez le type d'établissement</option>
-                    <option value="Restaurant" {{ old('typeetablissement') == 'Restaurant' ? 'selected' : '' }}>Restaurant</option>
-                    <option value="Épicerie" {{ old('typeetablissement') == 'Épicerie' ? 'selected' : '' }}>Épicerie</option>
+                    <option value="Restaurant" {{ old('typeetablissement') == 'Restaurant' ? 'selected' : '' }}>Restaurant
+                    </option>
+                    <option value="Épicerie" {{ old('typeetablissement') == 'Épicerie' ? 'selected' : '' }}>Épicerie
+                    </option>
                 </select>
                 @error('typeetablissement')
                     <div class="error">{{ $message }}</div>
                 @enderror
-
-                <!-- Catégories -->
-                <label for="categorie_restaurant">Catégorie(s) de Restaurant :</label>
-                <input type="text" id="categorie_restaurant" name="categorie_restaurant"
-                    placeholder="Saisissez des catégories séparées par des virgules"
-                    value="{{ old('categorie_restaurant') }}">
 
                 <!-- Livraison -->
                 <label for="livraison">Livraison :</label>
@@ -101,13 +98,6 @@
                     <div class="error">{{ $message }}</div>
                 @enderror
 
-                <!-- Bannière -->
-                <label for="imageetablissement">Ajouter une bannière pour l'établissement :</label>
-                <input type="file" id="imageetablissement" name="imageetablissement" required accept="">
-                @error('imageetablissement')
-                    <div class="error">{{ $message }}</div>
-                @enderror
-
                 <!-- Horaires -->
                 <div class="horaires">
                     <div class="header jour">Jour</div>
@@ -115,22 +105,32 @@
                     <div class="header">Fermeture</div>
                     <div class="header">Fermé</div>
 
-                    @foreach(['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as $jour)
-                    <div class="jour">{{ ucfirst($jour) }}</div>
-                    <div><input type="time" id="horaire_ouverture_{{ $jour }}" name="horaire_ouverture_{{ $jour }}"
-                            value="{{ old('horaire_ouverture_' . $jour) }}" oninput="handleHoraireInput('{{ $jour }}')" required></div>
-                    <div><input type="time" id="horaire_fermeture_{{ $jour }}" name="horaire_fermeture_{{ $jour }}"
-                            value="{{ old('horaire_fermeture_' . $jour) }}" oninput="handleHoraireInput('{{ $jour }}')" required></div>
-                    <div><input type="checkbox" id="ferme_{{ $jour }}" name="ferme_{{ $jour }}" value="1"
-                            onclick="toggleFerme('{{ $jour }}')" {{ old('ferme_' . $jour) ? 'checked' : '' }}></div>
+                    @foreach (['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'] as $jour)
+                        <div class="jour">{{ ucfirst($jour) }}</div>
+                        <div>
+                            <input type="time" id="horairesouverture_{{ $jour }}"
+                                name="horairesouverture[{{ $jour }}]"
+                                value="{{ old('horairesouverture.' . $jour) }}" class="horaires-field"
+                                {{ old('ferme.' . $jour) ? 'disabled' : '' }} required>
+                        </div>
+                        <div>
+                            <input type="time" id="horairesfermeture_{{ $jour }}"
+                                name="horairesfermeture[{{ $jour }}]"
+                                value="{{ old('horairesfermeture.' . $jour) }}" class="horaires-field"
+                                {{ old('ferme.' . $jour) ? 'disabled' : '' }} required>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="ferme_{{ $jour }}" name="ferme[{{ $jour }}]"
+                                value="1" onclick="toggleFerme('{{ $jour }}')"
+                                {{ old('ferme.' . $jour) ? 'checked' : '' }}>
+                        </div>
                     @endforeach
-
                 </div>
 
+                <!-- Bouton de validation -->
                 <div class="d-flex justify-content-center">
                     <button class="btn-add" type="submit">Créer</button>
                 </div>
-
             </form>
         </div>
     </div>
@@ -138,8 +138,8 @@
     <script>
         function toggleFerme(jour) {
             const checkbox = document.getElementById(`ferme_${jour}`);
-            const ouverture = document.getElementById(`horaire_ouverture_${jour}`);
-            const fermeture = document.getElementById(`horaire_fermeture_${jour}`);
+            const ouverture = document.getElementById(`horairesouverture_${jour}`);
+            const fermeture = document.getElementById(`horairesfermeture_${jour}`);
 
             if (checkbox.checked) {
                 ouverture.value = "";
@@ -158,8 +158,8 @@
 
         function handleHoraireInput(jour) {
             const checkbox = document.getElementById(`ferme_${jour}`);
-            const ouverture = document.getElementById(`horaire_ouverture_${jour}`);
-            const fermeture = document.getElementById(`horaire_fermeture_${jour}`);
+            const ouverture = document.getElementById(`horairesouverture_${jour}`);
+            const fermeture = document.getElementById(`horairesfermeture_${jour}`);
 
             if (ouverture.value || fermeture.value) {
                 checkbox.checked = false;
@@ -168,6 +168,16 @@
                 checkbox.disabled = false;
             }
         }
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'].forEach(jour => {
+                const checkbox = document.getElementById(`ferme_${jour}`);
+                if (checkbox && checkbox.checked) {
+                    toggleFerme(jour);
+                }
+            });
+        });
     </script>
 
 @endsection

@@ -32,9 +32,4 @@ class Etablissement extends Model
     {
         return $this->belongsTo(Adresse::class, 'idadresse');
     }
-    public function horaires()
-    {
-        return $this->hasMany(Horaires::class, 'idetablissement');
-    }
-
 }

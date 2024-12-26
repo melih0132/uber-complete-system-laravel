@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" >
 
 <head>
     <meta charset="UTF-8">
@@ -66,6 +66,10 @@
             justify-content: center;
             align-items: center;
             height: 100px;
+        }
+        .ltr {
+            direction: ltr;
+            display: inline-block;
         }
     </style>
 </head>
@@ -153,18 +157,18 @@
                 <tr>
                     <td>1</td>
                     <td>{{ __('invoice.service_transport') }}</td>
-                    <td>{{ number_format($prixcourse, 2, ',', ' ') }} €</td>
-                    <td>{{ ($pourcentagetva) }}</td>
-                    <td>{{ number_format(($prixcourse * $pourcentagetva) / 100, 2, ',', ' ') }} €</td>
-                    <td>{{ number_format($prixcourse, 2, ',', ' ') }} €</td>
+                    <td>{{ number_format($prixcourse, 2, ',', ' ') }} {{ $monnaie }}</td>
+                    <td>{{ ($pourcentagetva) }}%</td>
+                    <td>{{ number_format(($prixcourse * $pourcentagetva) / 100, 2, ',', ' ') }} {{ $monnaie }}</td>
+                    <td>{{ number_format($prixcourse, 2, ',', ' ') }} {{ $monnaie }}</td>
                 </tr>
                 <tr>
                     <td>2</td>
                     <td>{{ __('invoice.tipping_service') }}</td>
-                    <td>{{ number_format($pourboire, 2, ',', ' ') }} €</td>
+                    <td>{{ number_format($pourboire, 2, ',', ' ') }} {{ $monnaie }}</td>
                     <td>No</td>
-                    <td>0 €</td>
-                    <td>{{ number_format($pourboire, 2, ',', ' ') }} €</td>
+                    <td>0 {{ $monnaie }}</td>
+                    <td>{{ number_format($pourboire, 2, ',', ' ') }} {{ $monnaie }}</td>
                 </tr>
             </tbody>
         </table>
@@ -172,14 +176,16 @@
         <div class="row mt-3">
             <div class="col-md-8"></div>
             <div class="col-md-4 total-section">
-                <p>{{ __('invoice.total_ht') }} : <strong>{{ number_format($prixcourse + $pourboire, 2, ',', ' ') }}
-                        €</strong></p>
+                <p>{{ __('invoice.total_ht') }} : <strong>{{ number_format($prixcourse + $pourboire, 2, ',', ' ') }} {{ $monnaie }}</strong></p>
                 <p>{{ __('invoice.vat_amount') }}:
-                    <strong>{{ number_format(($prixcourse * 20) / 100, 2, ',', ' ') }} €</strong>
+                    <strong>{{ number_format(($prixcourse * 20) / 100, 2, ',', ' ') }} {{ $monnaie }}</strong>
                 </p>
                 <div class="divider"></div>
-                <p class="grand-total">{{ __('invoice.invoice_total') }}:
-                    {{ number_format(($prixcourse * 20) / 100 + $prixcourse + $pourboire, 2, ',', ' ') }} €
+                <p class="grand-total">
+                    {{ __('invoice.invoice_total') }}:
+                    <span class="ltr">
+                        {{ number_format(($prixcourse * 20) / 100 + $prixcourse + $pourboire, 2, ',', ' ') }} {{ $monnaie }}
+                    </span>
                 </p>
             </div>
         </div>

@@ -22,7 +22,7 @@ class EntretienController extends Controller
     // Afficher la liste des entretiens planifiés
     public function listePlannifies()
     {
-        $entretiens = Entretien::where('status', 'Plannifié')->get();
+        $entretiens = Entretien::where('status', 'Planifié')->get();
 
         return view('entretiens.index', compact('entretiens'));
     }
@@ -49,7 +49,7 @@ class EntretienController extends Controller
     // Planifier ou mettre à jour un entretien
     public function planifier(Request $request, $id = null)
     {
-        $statuses = ['En attente', 'Plannifié', 'Terminée', 'Annulée'];
+        $statuses = ['En attente', 'Planifié', 'Terminée', 'Annulée'];
 
         $validated = $request->validate([
             'idcoursier' => 'required|exists:coursier,idcoursier',
@@ -94,7 +94,7 @@ class EntretienController extends Controller
         try {
             $entretien = Entretien::findOrFail($id);
 
-            if ($entretien->status !== 'Plannifié') {
+            if ($entretien->status !== 'Planifié') {
                 return redirect()->route('entretiens.index')
                     ->with('error', 'Seuls les entretiens planifiés peuvent être terminés ou annulés.');
             }

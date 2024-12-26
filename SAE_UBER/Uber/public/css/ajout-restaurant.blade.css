@@ -62,6 +62,10 @@ input[type="submit"] {
     color: rgb(255, 255, 255);
 }
 
+.link-banner {
+    cursor: pointer;
+}
+
 .footer {
     text-align: center;
     margin-top: 20px;
@@ -90,9 +94,11 @@ input[type="submit"] {
 .suggestion-list li:hover {
     background-color: #f0f0f0;
 }
+
 .horaires {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr; /* Quatre colonnes : Jour, Ouverture, Fermeture, Fermé */
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    /* Quatre colonnes : Jour, Ouverture, Fermeture, Fermé */
     gap: 10px;
     border: 2px solid #ddd;
     padding: 15px;
@@ -147,6 +153,7 @@ input[type="checkbox"] {
 .horaires div:nth-child(4n) {
     text-align: center;
 }
+
 input:disabled {
     background-color: #b0b0b0;
     cursor: not-allowed;

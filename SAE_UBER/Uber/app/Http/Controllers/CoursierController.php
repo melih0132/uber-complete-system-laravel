@@ -18,6 +18,79 @@ class CoursierController extends Controller
         return $entretien !== null;
     }
 
+    public function entretien(Request $request)
+    {
+        $user = session('user');
+
+        if (!$user) {
+            return redirect()->route('mon-compte')->with('error', 'Accès refusé.');
+        }
+
+        $entretien = Entretien::where('idcoursier', $user['id'])->first();
+
+        if (!$entretien) {
+            return redirect()->route('mon-compte')->with('error', 'Aucun entretien trouvé.');
+        }
+
+        switch ($entretien->status) {
+            case 'En attente':
+                return view('entretien.en-attente', compact('entretien'));
+                break;
+
+            case 'Planifié':
+                return view('entretien.planifie', compact('entretien'));
+                break;
+
+            case 'Terminée':
+                return view('entretien.termine', compact('entretien'));
+                break;
+
+            case 'Annulée':
+                return view('entretien.annule', compact('entretien'));
+                break;
+
+            default:
+                return redirect()->route('mon-compte')->with('error', 'Statut d\'entretien inconnu.');
+        }
+    }
+
+    public function validerEntretien($entretienId)
+    {
+        $entretien = Entretien::findOrFail($entretienId);
+
+        $entretien->status = 'Planifié';
+        $entretien->save();
+
+        return redirect()->route('coursier.entretien')->with('success', 'Entretien planifié avec succès.');
+    }
+
+    public function annulerEntretien($entretienId)
+    {
+        $entretien = Entretien::findOrFail($entretienId);
+
+        $entretien->status = 'Annulée';
+        $entretien->save();
+
+        return redirect()->route('coursier.entretien')->with('error', 'Entretien annulé.');
+    }
+
+    public function planifie(Request $request)
+    {
+        $user = session('user');
+
+        if (!$user) {
+            return redirect()->route('mon-compte')->with('error', 'Accès refusé.');
+        }
+
+        $entretien = Entretien::where('idcoursier', $user['id'])->where('status', 'Plannifié')->first();
+
+        if (!$entretien) {
+            return redirect()->route('coursier.entretien')->with('error', 'Aucun entretien planifié trouvé.');
+        }
+
+        return view('entretien.planifie', compact('entretien'));
+    }
+
     public function index(Request $request)
     {
         $user = session('user');

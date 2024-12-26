@@ -13,45 +13,41 @@ class CarteBancaireController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Валидация данных
-    $validated = $request->validate([
-        'numerocb' => ['required', 'digits:16', 'numeric'], // Exactement 16 chiffres
-        'dateexpirecb' => ['required', 'date', 'after:today'], // La date ne doit pas être dans le passé
-        'cryptogramme' => ['required', 'digits:3', 'numeric'], // Exactement 3 chiffres
-        'typecarte' => ['required', 'string', 'in:Visa,mastercard,americanexpress'], // Doit être l'une des valeurs spécifiées
-        'typereseaux' => ['required', 'string', 'in:CB'], // Doit être CB
-    ], [
-        // Messages d'erreur
-        'numerocb.required' => 'Le numéro de la carte est requis.',
-        'numerocb.digits' => 'Le numéro de la carte doit contenir exactement 16 chiffres.',
-        'numerocb.numeric' => 'Le numéro de la carte doit être composé uniquement de chiffres.',
+    {
+        // Validation des données
+        $validated = $request->validate([
+            'numerocb' => ['required', 'digits:16', 'numeric'],
+            'dateexpirecb' => ['required', 'date', 'after:today'],
+            'cryptogramme' => ['required', 'digits:3', 'numeric'],
+            'typecarte' => ['required', 'string', 'in:Crédit,Débit'],
+            'typereseaux' => ['required', 'string', 'in:Visa,MasterCard'],
+        ], [
+            'numerocb.required' => 'Le numéro de la carte est requis.',
+            'numerocb.digits' => 'Le numéro de la carte doit contenir exactement 16 chiffres.',
+            'numerocb.numeric' => 'Le numéro de la carte doit être composé uniquement de chiffres.',
 
-        'dateexpirecb.required' => 'La date d\'expiration est requise.',
-        'dateexpirecb.after' => 'La date d\'expiration doit être dans le futur.',
+            'dateexpirecb.required' => 'La date d\'expiration est requise.',
+            'dateexpirecb.after' => 'La date d\'expiration doit être dans le futur.',
 
-        'cryptogramme.required' => 'Le cryptogramme est requis.',
-        'cryptogramme.digits' => 'Le cryptogramme doit contenir exactement 3 chiffres.',
-        'cryptogramme.numeric' => 'Le cryptogramme doit être composé uniquement de chiffres.',
+            'cryptogramme.required' => 'Le cryptogramme est requis.',
+            'cryptogramme.digits' => 'Le cryptogramme doit contenir exactement 3 chiffres.',
+            'cryptogramme.numeric' => 'Le cryptogramme doit être composé uniquement de chiffres.',
 
-        'typecarte.required' => 'Le type de carte est requis.',
-        'typecarte.in' => 'Le type de carte doit être Visa, MasterCard ou American Express.',
+            'typecarte.required' => 'Le type de carte est requis.',
+            'typecarte.in' => 'Le type de carte doit être "Crédit" ou "Débit".',
 
-        'typereseaux.required' => 'Le type de réseau est requis.',
-        'typereseaux.in' => 'Le type de réseau doit être CB.',
-    ]);
+            'typereseaux.required' => 'Le type de réseau est requis.',
+            'typereseaux.in' => 'Le type de réseau doit être "Visa" ou "MasterCard".',
+        ]);
 
-    // Sauvegarde de la carte dans la base de données
-    CarteBancaire::create([
-        'numerocb' => $validated['numerocb'],
-        'dateexpirecb' => $validated['dateexpirecb'],
-        'cryptogramme' => $validated['cryptogramme'],
-        'typecarte' => $validated['typecarte'],
-        'typereseaux' => $validated['typereseaux'],
-    ]);
+        CarteBancaire::create([
+            'numerocb' => $validated['numerocb'],
+            'dateexpirecb' => $validated['dateexpirecb'],
+            'cryptogramme' => $validated['cryptogramme'],
+            'typecarte' => $validated['typecarte'],
+            'typereseaux' => $validated['typereseaux'],
+        ]);
 
-    return redirect()->back()->with('success', 'La carte a été ajoutée avec succès.');
+        return redirect()->back()->with('success', 'La carte a été ajoutée avec succès.');
+    }
 }
-
-}
-
