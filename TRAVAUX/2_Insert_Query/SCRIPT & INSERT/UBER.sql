@@ -264,6 +264,10 @@ CREATE TABLE ENTRETIEN (
     IDENTRETIEN INT4 NOT NULL,
     IDCOURSIER INT4 NOT NULL,
     DATEENTRETIEN TIMESTAMP NULL,
+    CONSTRAINT CK_DATEENTRETIEN CHECK (
+        DATEENTRETIEN >= CURRENT_DATE
+        OR DATEENTRETIEN IS NULL
+    ),
     STATUS VARCHAR(20) NOT NULL DEFAULT 'En attente',
     RESULTAT VARCHAR(20) NULL,
     CONSTRAINT CK_STATUS_ENTRETIEN CHECK (
@@ -4112,64 +4116,64 @@ INSERT INTO ENTRETIEN (
         RESULTAT
     )
 VALUES (1, 1, NULL, 'En attente', NULL),
-    (2, 2, '2023-12-02 11:00:00', 'Planifié', NULL),
+    (2, 2, '2025-01-07 11:00:00', 'Planifié', NULL),
     (
         3,
         3,
-        '2023-12-03 14:30:00',
+        '2025-01-05 14:30:00',
         'Terminée',
         'Retenu'
     ),
-    (4, 4, '2023-12-04 09:00:00', 'Annulée', NULL),
+    (4, 4, '2025-01-06 09:00:00', 'Annulée', NULL),
     (5, 5, NULL, 'En attente', NULL),
-    (6, 6, '2023-12-06 15:00:00', 'Planifié', NULL),
+    (6, 6, '2025-01-08 15:00:00', 'Planifié', NULL),
     (
         7,
         7,
-        '2023-12-07 16:30:00',
+        '2025-01-04 16:30:00',
         'Terminée',
         'Rejeté'
     ),
     (8, 8, NULL, 'En attente', NULL),
     (9, 9, NULL, 'En attente', NULL),
-    (10, 10, '2023-12-10 11:00:00', 'Planifié', NULL),
+    (10, 10, '2025-01-09 11:00:00', 'Planifié', NULL),
     (
         11,
         11,
-        '2023-12-11 14:30:00',
+        '2025-01-05 14:30:00',
         'Terminée',
         'Retenu'
     ),
-    (12, 12, '2023-12-12 16:00:00', 'Annulée', NULL),
-    (13, 13, '2023-12-13 09:30:00', 'Planifié', NULL),
+    (12, 12, '2025-01-08 16:00:00', 'Annulée', NULL),
+    (13, 13, '2025-01-10 09:30:00', 'Planifié', NULL),
     (
         14,
         14,
-        '2023-12-14 15:00:00',
+        '2025-01-06 15:00:00',
         'Terminée',
         'Retenu'
     ),
     (
         15,
         15,
-        '2023-12-15 10:30:00',
+        '2025-01-03 10:30:00',
         'Terminée',
-        'Retenu'
+        NULL
     ),
     (16, 16, NULL, 'En attente', NULL),
-    (17, 17, '2023-12-17 10:00:00', 'Planifié', NULL),
+    (17, 17, '2025-01-11 10:00:00', 'Planifié', NULL),
     (
         18,
         18,
-        '2023-12-18 15:30:00',
+        '2025-01-05 15:30:00',
         'Terminée',
         'Rejeté'
     ),
-    (19, 19, '2023-12-19 14:00:00', 'Annulée', NULL),
+    (19, 19, '2025-01-08 14:00:00', 'Annulée', NULL),
     (
         20,
         20,
-        '2023-12-20 09:00:00',
+        '2025-01-06 09:00:00',
         'Terminée',
         'Retenu'
     ),
@@ -4177,138 +4181,178 @@ VALUES (1, 1, NULL, 'En attente', NULL),
     (
         22,
         22,
-        '2023-12-22 11:00:00',
+        '2025-01-05 11:00:00',
         'Terminée',
         'Retenu'
     ),
-    (23, 23, '2023-12-23 16:00:00', 'Planifié', NULL),
+    (23, 23, '2025-01-10 16:00:00', 'Planifié', NULL),
     (
         24,
         24,
-        '2023-12-24 12:30:00',
+        '2025-01-03 12:30:00',
         'Terminée',
         'Retenu'
     ),
-    (25, 25, '2023-12-25 10:30:00', 'Planifié', NULL),
+    (25, 25, '2025-01-11 10:30:00', 'Planifié', NULL),
     (
         26,
         26,
-        '2023-12-26 15:00:00',
+        '2025-01-02 15:00:00',
         'Terminée',
         'Retenu'
     ),
-    (27, 27, '2023-12-27 12:00:00', 'Annulée', NULL),
+    (27, 27, '2025-01-08 12:00:00', 'Annulée', NULL),
     (
         28,
         28,
-        '2023-12-28 09:30:00',
+        '2025-01-04 09:30:00',
         'Terminée',
         'Retenu'
     ),
     (
         29,
         29,
-        '2023-12-29 14:00:00',
+        '2025-01-05 14:00:00',
         'Terminée',
         'Retenu'
     ),
     (30, 30, NULL, 'En attente', NULL),
-    (31, 31, '2023-12-31 11:00:00', 'Planifié', NULL),
+    (31, 31, '2025-01-13 11:00:00', 'Planifié', NULL),
     (
         32,
         32,
-        '2024-01-01 14:30:00',
+        '2025-01-01 14:30:00',
         'Terminée',
-        NULL
+        'Rejeté'
     ),
-    (33, 33, '2024-01-02 09:00:00', 'Annulée', NULL),
+    (33, 33, '2025-01-09 09:00:00', 'Annulée', NULL),
     (34, 34, NULL, 'En attente', NULL),
     (
         35,
         35,
-        '2024-01-04 15:00:00',
+        '2025-01-06 15:00:00',
         'Terminée',
         'Retenu'
     ),
     (
         36,
         36,
-        '2024-01-05 16:30:00',
+        '2025-01-05 16:30:00',
         'Terminée',
         'Retenu'
     ),
     (
         37,
         37,
-        '2024-01-06 10:30:00',
+        '2025-01-04 10:30:00',
         'Terminée',
         'Retenu'
     ),
     (38, 38, NULL, 'En attente', NULL),
-    (39, 39, '2024-01-09 11:00:00', 'Planifié', NULL),
+    (39, 39, '2025-01-15 11:00:00', 'Planifié', NULL),
     (
         40,
         40,
-        '2024-01-10 14:30:00',
+        '2025-01-02 14:30:00',
         'Terminée',
         'Retenu'
     ),
-    (41, 41, '2024-01-11 16:00:00', 'Annulée', NULL),
-    (42, 42, '2024-01-12 09:30:00', 'Planifié', NULL),
+    (41, 41, '2025-01-09 16:00:00', 'Annulée', NULL),
+    (42, 42, '2025-01-12 09:30:00', 'Planifié', NULL),
     (
         43,
         43,
-        '2024-01-13 15:00:00',
+        '2025-01-03 15:00:00',
         'Terminée',
-        NULL
+        'Rejeté'
     ),
     (44, 44, NULL, 'En attente', NULL),
     (45, 45, NULL, 'En attente', NULL),
-    (46, 46, '2024-01-16 10:00:00', 'Planifié', NULL),
+    (46, 46, '2025-01-17 10:00:00', 'Planifié', NULL),
     (
         47,
         47,
-        '2024-01-17 15:30:00',
+        '2025-01-04 15:30:00',
         'Terminée',
         'Retenu'
     ),
     (
         48,
         48,
-        '2024-01-18 14:00:00',
+        '2025-01-06 14:00:00',
         'Terminée',
         'Retenu'
     ),
     (
         49,
         49,
-        '2024-01-19 09:00:00',
+        '2025-01-05 09:00:00',
         'Terminée',
         'Retenu'
     ),
     (50, 50, NULL, 'En attente', NULL),
+    (51, 51, '2025-01-09 10:00:00', 'Planifié', NULL),
+    (52, 52, '2025-01-12 13:30:00', 'Planifié', NULL),
+    (53, 53, '2025-01-07 14:00:00', 'Annulée', NULL),
+    (54, 54, NULL, 'En attente', NULL),
+    (55, 55, NULL, 'En attente', NULL),
     (
-        58,
-        58,
-        '2024-01-28 14:00:00',
+        56,
+        56,
+        '2025-01-11 11:30:00',
         'Terminée',
         'Retenu'
     ),
     (
+        57,
+        57,
+        '2025-01-05 15:00:00',
+        'Terminée', 
+        NULL
+    ),
+    (
+        58,
+        58,
+        '2025-01-02 14:00:00',
+        'Terminée',
+        'Retenu'
+    ),
+    (
+        59,
+        59,
+        '2025-01-03 16:00:00',
+        'Terminée',
+        'Rejeté'
+    ),
+    (60, 60, NULL, 'En attente', NULL),
+    (61, 61, '2025-01-10 10:30:00', 'Planifié', NULL),
+    (62, 62, '2025-01-14 15:00:00', 'Annulée', NULL),
+    (63, 63, NULL, 'En attente', NULL),
+    (64, 64, '2025-01-13 09:00:00', 'Planifié', NULL),
+    (
         65,
         65,
-        '2024-02-04 16:30:00',
+        '2025-01-04 16:30:00',
+        'Terminée',
+        'Retenu'
+    ),
+    (66, 66, '2025-01-02 12:00:00', 'Annulée', NULL),
+    (67, 67, NULL, 'En attente', NULL),
+    (
+        68,
+        68,
+        '2025-01-05 14:00:00',
         'Terminée',
         'Retenu'
     ),
     (
         69,
         69,
-        '2024-02-08 14:30:00',
+        '2025-01-03 14:30:00',
         'Terminée',
         'Retenu'
     ),
-    (70, 70, '2024-01-12 09:30:00', 'Planifié', NULL);
+    (70, 70, '2025-01-12 09:30:00', 'Planifié', NULL);
 INSERT INTO COMMANDE (
         IDCOMMANDE,
         IDPANIER,
@@ -12058,7 +12102,7 @@ CREATE SEQUENCE COURSIER_ID_SEQ START 1;
 ALTER TABLE COURSIER
 ALTER COLUMN IDCOURSIER
 SET DEFAULT NEXTVAL('COURSIER_id_seq');
-SELECT SETVAL('COURSIER_id_seq', 30);
+SELECT SETVAL('COURSIER_id_seq', 70);
 -- DEPARTEMENT
 DROP SEQUENCE IF EXISTS DEPARTEMENT_ID_SEQ CASCADE;
 CREATE SEQUENCE DEPARTEMENT_ID_SEQ START 1;
@@ -12071,14 +12115,14 @@ CREATE SEQUENCE ENTREPRISE_ID_SEQ START 1;
 ALTER TABLE ENTREPRISE
 ALTER COLUMN IDENTREPRISE
 SET DEFAULT NEXTVAL('ENTREPRISE_id_seq');
-SELECT SETVAL('ENTREPRISE_id_seq', 20);
+SELECT SETVAL('ENTREPRISE_id_seq', 40);
 -- ENTRETIEN
 DROP SEQUENCE IF EXISTS ENTRETIEN_ID_SEQ CASCADE;
 CREATE SEQUENCE ENTRETIEN_ID_SEQ START 1;
 ALTER TABLE ENTRETIEN
 ALTER COLUMN IDENTRETIEN
 SET DEFAULT NEXTVAL('ENTRETIEN_id_seq');
-SELECT SETVAL('ENTRETIEN_id_seq', 30);
+SELECT SETVAL('ENTRETIEN_id_seq', 70);
 -- ETABLISSEMENT
 DROP SEQUENCE IF EXISTS ETABLISSEMENT_ID_SEQ CASCADE;
 CREATE SEQUENCE ETABLISSEMENT_ID_SEQ START 1;
