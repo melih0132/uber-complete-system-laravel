@@ -264,18 +264,24 @@ CREATE TABLE ENTRETIEN (
     IDENTRETIEN INT4 NOT NULL,
     IDCOURSIER INT4 NOT NULL,
     DATEENTRETIEN TIMESTAMP NULL,
+    STATUS VARCHAR(20) NOT NULL DEFAULT 'En attente',
+    RESULTAT VARCHAR(20) NULL,
+    RDVLOGISTIQUEDATE TIMESTAMP NULL,
+    RDVLOGISTIQUELIEU VARCHAR(255) NULL,
     CONSTRAINT CK_DATEENTRETIEN CHECK (
         DATEENTRETIEN >= CURRENT_DATE
         OR DATEENTRETIEN IS NULL
     ),
-    STATUS VARCHAR(20) NOT NULL DEFAULT 'En attente',
-    RESULTAT VARCHAR(20) NULL,
     CONSTRAINT CK_STATUS_ENTRETIEN CHECK (
         STATUS IN ('En attente', 'Planifié', 'Terminée', 'Annulée')
     ),
     CONSTRAINT CK_RESULTAT_ENTRETIEN CHECK (
         RESULTAT IN ('Retenu', 'Rejeté')
         OR RESULTAT IS NULL
+    ),
+    CONSTRAINT CK_RDVLOGISTIQUEDATE CHECK (
+        RDVLOGISTIQUEDATE >= CURRENT_DATE
+        OR RDVLOGISTIQUEDATE IS NULL
     ),
     CONSTRAINT PK_ENTRETIEN PRIMARY KEY (IDENTRETIEN)
 );
@@ -477,6 +483,15 @@ CREATE TABLE VEHICULE (
     ESTRECENT BOOL NOT NULL,
     ESTLUXUEUX BOOL NOT NULL,
     COULEUR VARCHAR(20) NULL,
+    STATUSPROCESSUSLOGISTIQUE VARCHAR(50) NOT NULL DEFAULT 'En attente',
+    CONSTRAINT CK_STATUS_VEHICULE CHECK (
+        STATUSPROCESSUSLOGISTIQUE IN (
+            'En attente',
+            'Validé',
+            'Refusé',
+            'Modifications demandées'
+        )
+    ),
     CONSTRAINT PK_VEHICULE PRIMARY KEY (IDVEHICULE)
 );
 /*==============================================================*/
@@ -4113,201 +4128,409 @@ INSERT INTO ENTRETIEN (
         IDCOURSIER,
         DATEENTRETIEN,
         STATUS,
-        RESULTAT
+        RESULTAT,
+        RDVLOGISTIQUEDATE,
+        RDVLOGISTIQUELIEU
     )
-VALUES (1, 1, NULL, 'En attente', NULL),
-    (2, 2, '2025-01-07 11:00:00', 'Planifié', NULL),
+VALUES (1, 1, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        2,
+        2,
+        '2025-01-07 11:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         3,
         3,
         '2025-01-05 14:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-08 10:00:00',
+        'Centre logistique Uber'
     ),
-    (4, 4, '2025-01-06 09:00:00', 'Annulée', NULL),
-    (5, 5, NULL, 'En attente', NULL),
-    (6, 6, '2025-01-08 15:00:00', 'Planifié', NULL),
+    (
+        4,
+        4,
+        '2025-01-06 09:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (5, 5, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        6,
+        6,
+        '2025-01-08 15:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         7,
         7,
         '2025-01-04 16:30:00',
         'Terminée',
-        'Rejeté'
+        'Rejeté',
+        NULL,
+        NULL
     ),
-    (8, 8, NULL, 'En attente', NULL),
-    (9, 9, NULL, 'En attente', NULL),
-    (10, 10, '2025-01-09 11:00:00', 'Planifié', NULL),
+    (8, 8, NULL, 'En attente', NULL, NULL, NULL),
+    (9, 9, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        10,
+        10,
+        '2025-01-09 11:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         11,
         11,
         '2025-01-05 14:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-09 14:00:00',
+        'Centre logistique Uber'
     ),
-    (12, 12, '2025-01-08 16:00:00', 'Annulée', NULL),
-    (13, 13, '2025-01-10 09:30:00', 'Planifié', NULL),
+    (
+        12,
+        12,
+        '2025-01-08 16:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (
+        13,
+        13,
+        '2025-01-10 09:30:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         14,
         14,
         '2025-01-06 15:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-10 09:00:00',
+        'Centre logistique Uber'
     ),
     (
         15,
         15,
         '2025-01-03 10:30:00',
         'Terminée',
+        NULL,
+        NULL,
         NULL
     ),
-    (16, 16, NULL, 'En attente', NULL),
-    (17, 17, '2025-01-11 10:00:00', 'Planifié', NULL),
+    (16, 16, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        17,
+        17,
+        '2025-01-11 10:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         18,
         18,
         '2025-01-05 15:30:00',
         'Terminée',
-        'Rejeté'
+        'Rejeté',
+        NULL,
+        NULL
     ),
-    (19, 19, '2025-01-08 14:00:00', 'Annulée', NULL),
+    (
+        19,
+        19,
+        '2025-01-08 14:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         20,
         20,
         '2025-01-06 09:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-10 10:00:00',
+        'Centre logistique Uber'
     ),
-    (21, 21, NULL, 'En attente', NULL),
+    (21, 21, NULL, 'En attente', NULL, NULL, NULL),
     (
         22,
         22,
         '2025-01-05 11:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-09 15:00:00',
+        'Centre logistique Uber'
     ),
-    (23, 23, '2025-01-10 16:00:00', 'Planifié', NULL),
+    (
+        23,
+        23,
+        '2025-01-10 16:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         24,
         24,
         '2025-01-03 12:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-07 11:30:00',
+        'Centre logistique Uber'
     ),
-    (25, 25, '2025-01-11 10:30:00', 'Planifié', NULL),
+    (
+        25,
+        25,
+        '2025-01-11 10:30:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         26,
         26,
         '2025-01-02 15:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-05 10:00:00',
+        'Centre logistique Uber'
     ),
-    (27, 27, '2025-01-08 12:00:00', 'Annulée', NULL),
+    (
+        27,
+        27,
+        '2025-01-08 12:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         28,
         28,
         '2025-01-04 09:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-06 14:00:00',
+        'Centre logistique Uber'
     ),
     (
         29,
         29,
         '2025-01-05 14:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-08 09:00:00',
+        'Centre logistique Uber'
     ),
-    (30, 30, NULL, 'En attente', NULL),
-    (31, 31, '2025-01-13 11:00:00', 'Planifié', NULL),
+    (30, 30, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        31,
+        31,
+        '2025-01-13 11:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         32,
         32,
         '2025-01-01 14:30:00',
         'Terminée',
-        'Rejeté'
+        'Rejeté',
+        NULL,
+        NULL
     ),
-    (33, 33, '2025-01-09 09:00:00', 'Annulée', NULL),
-    (34, 34, NULL, 'En attente', NULL),
+    (
+        33,
+        33,
+        '2025-01-09 09:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (34, 34, NULL, 'En attente', NULL, NULL, NULL),
     (
         35,
         35,
         '2025-01-06 15:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-10 16:00:00',
+        'Centre logistique Uber'
     ),
     (
         36,
         36,
         '2025-01-05 16:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-09 10:00:00',
+        'Centre logistique Uber'
     ),
     (
         37,
         37,
         '2025-01-04 10:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-08 11:00:00',
+        'Centre logistique Uber'
     ),
-    (38, 38, NULL, 'En attente', NULL),
-    (39, 39, '2025-01-15 11:00:00', 'Planifié', NULL),
+    (38, 38, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        39,
+        39,
+        '2025-01-15 11:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         40,
         40,
         '2025-01-02 14:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-06 09:30:00',
+        'Centre logistique Uber'
     ),
-    (41, 41, '2025-01-09 16:00:00', 'Annulée', NULL),
-    (42, 42, '2025-01-12 09:30:00', 'Planifié', NULL),
+    (
+        41,
+        41,
+        '2025-01-09 16:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (
+        42,
+        42,
+        '2025-01-12 09:30:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         43,
         43,
         '2025-01-03 15:00:00',
         'Terminée',
-        'Rejeté'
+        'Rejeté',
+        NULL,
+        NULL
     ),
-    (44, 44, NULL, 'En attente', NULL),
-    (45, 45, NULL, 'En attente', NULL),
-    (46, 46, '2025-01-17 10:00:00', 'Planifié', NULL),
+    (44, 44, NULL, 'En attente', NULL, NULL, NULL),
+    (45, 45, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        46,
+        46,
+        '2025-01-17 10:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         47,
         47,
         '2025-01-04 15:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-09 13:30:00',
+        'Centre logistique Uber'
     ),
     (
         48,
         48,
         '2025-01-06 14:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-10 10:30:00',
+        'Centre logistique Uber'
     ),
     (
         49,
         49,
         '2025-01-05 09:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-08 12:00:00',
+        'Centre logistique Uber'
     ),
-    (50, 50, NULL, 'En attente', NULL),
-    (51, 51, '2025-01-09 10:00:00', 'Planifié', NULL),
-    (52, 52, '2025-01-12 13:30:00', 'Planifié', NULL),
-    (53, 53, '2025-01-07 14:00:00', 'Annulée', NULL),
-    (54, 54, NULL, 'En attente', NULL),
-    (55, 55, NULL, 'En attente', NULL),
+    (50, 50, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        51,
+        51,
+        '2025-01-09 10:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (
+        52,
+        52,
+        '2025-01-12 13:30:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (
+        53,
+        53,
+        '2025-01-07 14:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (54, 54, NULL, 'En attente', NULL, NULL, NULL),
+    (55, 55, NULL, 'En attente', NULL, NULL, NULL),
     (
         56,
         56,
         '2025-01-11 11:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-15 14:00:00',
+        'Centre logistique Uber'
     ),
     (
         57,
         57,
         '2025-01-05 15:00:00',
-        'Terminée', 
+        'Terminée',
+        NULL,
+        NULL,
         NULL
     ),
     (
@@ -4315,44 +4538,94 @@ VALUES (1, 1, NULL, 'En attente', NULL),
         58,
         '2025-01-02 14:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-06 11:00:00',
+        'Centre logistique Uber'
     ),
     (
         59,
         59,
         '2025-01-03 16:00:00',
         'Terminée',
-        'Rejeté'
+        'Rejeté',
+        NULL,
+        NULL
     ),
-    (60, 60, NULL, 'En attente', NULL),
-    (61, 61, '2025-01-10 10:30:00', 'Planifié', NULL),
-    (62, 62, '2025-01-14 15:00:00', 'Annulée', NULL),
-    (63, 63, NULL, 'En attente', NULL),
-    (64, 64, '2025-01-13 09:00:00', 'Planifié', NULL),
+    (60, 60, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        61,
+        61,
+        '2025-01-10 10:30:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (
+        62,
+        62,
+        '2025-01-14 15:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (63, 63, NULL, 'En attente', NULL, NULL, NULL),
+    (
+        64,
+        64,
+        '2025-01-13 09:00:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    ),
     (
         65,
         65,
         '2025-01-04 16:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-10 10:00:00',
+        'Centre logistique Uber'
     ),
-    (66, 66, '2025-01-02 12:00:00', 'Annulée', NULL),
-    (67, 67, NULL, 'En attente', NULL),
+    (
+        66,
+        66,
+        '2025-01-02 12:00:00',
+        'Annulée',
+        NULL,
+        NULL,
+        NULL
+    ),
+    (67, 67, NULL, 'En attente', NULL, NULL, NULL),
     (
         68,
         68,
         '2025-01-05 14:00:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-09 15:30:00',
+        'Centre logistique Uber'
     ),
     (
         69,
         69,
         '2025-01-03 14:30:00',
         'Terminée',
-        'Retenu'
+        'Retenu',
+        '2025-01-07 10:30:00',
+        'Centre logistique Uber'
     ),
-    (70, 70, '2025-01-12 09:30:00', 'Planifié', NULL);
+    (
+        70,
+        70,
+        '2025-01-12 09:30:00',
+        'Planifié',
+        NULL,
+        NULL,
+        NULL
+    );
 INSERT INTO COMMANDE (
         IDCOMMANDE,
         IDPANIER,
@@ -4926,7 +5199,8 @@ INSERT INTO VEHICULE (
         ESTCONFORTABLE,
         ESTRECENT,
         ESTLUXUEUX,
-        COULEUR
+        COULEUR,
+        STATUSPROCESSUSLOGISTIQUE
     )
 VALUES (
         1,
@@ -4940,7 +5214,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         2,
@@ -4954,7 +5229,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         3,
@@ -4968,7 +5244,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         4,
@@ -4982,7 +5259,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         5,
@@ -4996,7 +5274,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         6,
@@ -5010,7 +5289,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Vert'
+        'Vert',
+        'En attente'
     ),
     (
         7,
@@ -5024,7 +5304,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Jaune'
+        'Jaune',
+        'En attente'
     ),
     (
         8,
@@ -5038,7 +5319,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         9,
@@ -5052,7 +5334,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         10,
@@ -5066,7 +5349,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         11,
@@ -5080,7 +5364,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Argent'
+        'Argent',
+        'En attente'
     ),
     (
         12,
@@ -5094,7 +5379,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         13,
@@ -5108,7 +5394,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         14,
@@ -5122,7 +5409,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         15,
@@ -5136,7 +5424,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         16,
@@ -5150,7 +5439,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         17,
@@ -5164,7 +5454,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Vert'
+        'Vert',
+        'En attente'
     ),
     (
         18,
@@ -5178,7 +5469,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Jaune'
+        'Jaune',
+        'En attente'
     ),
     (
         19,
@@ -5192,7 +5484,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         20,
@@ -5206,7 +5499,8 @@ VALUES (
         TRUE,
         FALSE,
         TRUE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         21,
@@ -5220,7 +5514,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         22,
@@ -5234,7 +5529,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Rose'
+        'Rose',
+        'En attente'
     ),
     (
         23,
@@ -5248,7 +5544,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         24,
@@ -5262,7 +5559,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         25,
@@ -5276,7 +5574,8 @@ VALUES (
         TRUE,
         FALSE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         26,
@@ -5290,7 +5589,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         27,
@@ -5304,7 +5604,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         28,
@@ -5318,7 +5619,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         29,
@@ -5332,7 +5634,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         30,
@@ -5346,7 +5649,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Orange'
+        'Orange',
+        'En attente'
     ),
     (
         31,
@@ -5360,7 +5664,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         32,
@@ -5374,7 +5679,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         33,
@@ -5388,7 +5694,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         34,
@@ -5402,7 +5709,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Argent'
+        'Argent',
+        'En attente'
     ),
     (
         35,
@@ -5416,7 +5724,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         36,
@@ -5430,7 +5739,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Vert'
+        'Vert',
+        'En attente'
     ),
     (
         37,
@@ -5444,7 +5754,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Jaune'
+        'Jaune',
+        'En attente'
     ),
     (
         38,
@@ -5458,7 +5769,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         39,
@@ -5472,7 +5784,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         40,
@@ -5486,7 +5799,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         41,
@@ -5500,7 +5814,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         42,
@@ -5514,7 +5829,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Jaune'
+        'Jaune',
+        'En attente'
     ),
     (
         43,
@@ -5528,7 +5844,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Vert'
+        'Vert',
+        'En attente'
     ),
     (
         44,
@@ -5542,7 +5859,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         45,
@@ -5556,7 +5874,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         46,
@@ -5570,7 +5889,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         47,
@@ -5584,7 +5904,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         48,
@@ -5598,7 +5919,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         49,
@@ -5612,7 +5934,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         50,
@@ -5626,7 +5949,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         51,
@@ -5640,7 +5964,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Argent'
+        'Argent',
+        'En attente'
     ),
     (
         52,
@@ -5654,7 +5979,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Vert'
+        'Vert',
+        'En attente'
     ),
     (
         53,
@@ -5668,7 +5994,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         54,
@@ -5682,7 +6009,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         55,
@@ -5696,7 +6024,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         56,
@@ -5710,7 +6039,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         57,
@@ -5724,7 +6054,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         58,
@@ -5738,7 +6069,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         59,
@@ -5752,7 +6084,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         60,
@@ -5766,7 +6099,8 @@ VALUES (
         TRUE,
         FALSE,
         TRUE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         61,
@@ -5780,7 +6114,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Argent'
+        'Argent',
+        'En attente'
     ),
     (
         62,
@@ -5794,7 +6129,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         63,
@@ -5808,7 +6144,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         64,
@@ -5822,7 +6159,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Rouge'
+        'Rouge',
+        'En attente'
     ),
     (
         65,
@@ -5836,7 +6174,8 @@ VALUES (
         TRUE,
         FALSE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     ),
     (
         66,
@@ -5850,7 +6189,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Gris'
+        'Gris',
+        'En attente'
     ),
     (
         67,
@@ -5864,7 +6204,8 @@ VALUES (
         TRUE,
         FALSE,
         FALSE,
-        'Vert'
+        'Vert',
+        'En attente'
     ),
     (
         68,
@@ -5878,7 +6219,8 @@ VALUES (
         TRUE,
         TRUE,
         FALSE,
-        'Bleu'
+        'Bleu',
+        'En attente'
     ),
     (
         69,
@@ -5892,7 +6234,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Blanc'
+        'Blanc',
+        'En attente'
     ),
     (
         70,
@@ -5906,7 +6249,8 @@ VALUES (
         TRUE,
         TRUE,
         TRUE,
-        'Noir'
+        'Noir',
+        'En attente'
     );
 INSERT INTO A_COMME_TYPE (IDVEHICULE, IDPRESTATION)
 VALUES (1, 7),
