@@ -492,6 +492,7 @@ CREATE TABLE VEHICULE (
             'Modifications demandées'
         )
     ),
+    DEMANDEMODIFICATION TEXT NULL,
     CONSTRAINT PK_VEHICULE PRIMARY KEY (IDVEHICULE)
 );
 /*==============================================================*/
@@ -5200,7 +5201,8 @@ INSERT INTO VEHICULE (
         ESTRECENT,
         ESTLUXUEUX,
         COULEUR,
-        STATUSPROCESSUSLOGISTIQUE
+        STATUSPROCESSUSLOGISTIQUE,
+        DEMANDEMODIFICATION
     )
 VALUES (
         1,
@@ -5215,7 +5217,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         2,
@@ -5230,7 +5233,8 @@ VALUES (
         TRUE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         3,
@@ -5245,7 +5249,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         4,
@@ -5260,7 +5265,8 @@ VALUES (
         TRUE,
         TRUE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         5,
@@ -5275,7 +5281,8 @@ VALUES (
         TRUE,
         TRUE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         6,
@@ -5290,7 +5297,8 @@ VALUES (
         TRUE,
         FALSE,
         'Vert',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         7,
@@ -5305,7 +5313,8 @@ VALUES (
         FALSE,
         FALSE,
         'Jaune',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         8,
@@ -5320,7 +5329,8 @@ VALUES (
         TRUE,
         FALSE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         9,
@@ -5335,7 +5345,8 @@ VALUES (
         FALSE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         10,
@@ -5350,7 +5361,8 @@ VALUES (
         TRUE,
         FALSE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         11,
@@ -5365,7 +5377,8 @@ VALUES (
         TRUE,
         TRUE,
         'Argent',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         12,
@@ -5380,7 +5393,8 @@ VALUES (
         TRUE,
         FALSE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         13,
@@ -5395,7 +5409,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         14,
@@ -5410,7 +5425,8 @@ VALUES (
         TRUE,
         TRUE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         15,
@@ -5425,7 +5441,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         16,
@@ -5440,7 +5457,8 @@ VALUES (
         TRUE,
         FALSE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         17,
@@ -5455,7 +5473,8 @@ VALUES (
         TRUE,
         TRUE,
         'Vert',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         18,
@@ -5470,7 +5489,8 @@ VALUES (
         TRUE,
         FALSE,
         'Jaune',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         19,
@@ -5485,7 +5505,8 @@ VALUES (
         FALSE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         20,
@@ -5500,7 +5521,8 @@ VALUES (
         FALSE,
         TRUE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         21,
@@ -5515,7 +5537,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         22,
@@ -5530,7 +5553,8 @@ VALUES (
         FALSE,
         FALSE,
         'Rose',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         23,
@@ -5545,7 +5569,8 @@ VALUES (
         TRUE,
         TRUE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         24,
@@ -5560,7 +5585,8 @@ VALUES (
         TRUE,
         TRUE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         25,
@@ -5575,7 +5601,8 @@ VALUES (
         FALSE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         26,
@@ -5590,7 +5617,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         27,
@@ -5605,7 +5633,8 @@ VALUES (
         FALSE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         28,
@@ -5620,7 +5649,8 @@ VALUES (
         TRUE,
         FALSE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         29,
@@ -5635,7 +5665,8 @@ VALUES (
         TRUE,
         FALSE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         30,
@@ -5650,7 +5681,8 @@ VALUES (
         TRUE,
         TRUE,
         'Orange',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         31,
@@ -5665,7 +5697,8 @@ VALUES (
         TRUE,
         TRUE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         32,
@@ -5680,7 +5713,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         33,
@@ -5695,7 +5729,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         34,
@@ -5710,7 +5745,8 @@ VALUES (
         TRUE,
         TRUE,
         'Argent',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         35,
@@ -5725,7 +5761,8 @@ VALUES (
         TRUE,
         FALSE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         36,
@@ -5740,7 +5777,8 @@ VALUES (
         TRUE,
         TRUE,
         'Vert',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         37,
@@ -5755,7 +5793,8 @@ VALUES (
         TRUE,
         FALSE,
         'Jaune',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         38,
@@ -5770,7 +5809,8 @@ VALUES (
         TRUE,
         TRUE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         39,
@@ -5785,7 +5825,8 @@ VALUES (
         TRUE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         40,
@@ -5800,7 +5841,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         41,
@@ -5815,7 +5857,8 @@ VALUES (
         TRUE,
         FALSE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         42,
@@ -5830,7 +5873,8 @@ VALUES (
         FALSE,
         FALSE,
         'Jaune',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         43,
@@ -5845,7 +5889,8 @@ VALUES (
         TRUE,
         TRUE,
         'Vert',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         44,
@@ -5860,7 +5905,8 @@ VALUES (
         TRUE,
         FALSE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         45,
@@ -5875,7 +5921,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         46,
@@ -5890,7 +5937,8 @@ VALUES (
         TRUE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         47,
@@ -5905,7 +5953,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         48,
@@ -5920,7 +5969,8 @@ VALUES (
         TRUE,
         TRUE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         49,
@@ -5935,7 +5985,8 @@ VALUES (
         TRUE,
         FALSE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         50,
@@ -5950,7 +6001,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         51,
@@ -5965,7 +6017,8 @@ VALUES (
         TRUE,
         TRUE,
         'Argent',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         52,
@@ -5980,7 +6033,8 @@ VALUES (
         TRUE,
         FALSE,
         'Vert',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         53,
@@ -5995,7 +6049,8 @@ VALUES (
         TRUE,
         TRUE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         54,
@@ -6010,7 +6065,8 @@ VALUES (
         TRUE,
         TRUE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         55,
@@ -6025,7 +6081,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         56,
@@ -6040,7 +6097,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         57,
@@ -6055,7 +6113,8 @@ VALUES (
         TRUE,
         FALSE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         58,
@@ -6070,7 +6129,8 @@ VALUES (
         TRUE,
         TRUE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         59,
@@ -6085,7 +6145,8 @@ VALUES (
         TRUE,
         FALSE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         60,
@@ -6100,7 +6161,8 @@ VALUES (
         FALSE,
         TRUE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         61,
@@ -6115,7 +6177,8 @@ VALUES (
         TRUE,
         TRUE,
         'Argent',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         62,
@@ -6130,7 +6193,8 @@ VALUES (
         TRUE,
         FALSE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         63,
@@ -6145,7 +6209,8 @@ VALUES (
         TRUE,
         TRUE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         64,
@@ -6160,7 +6225,8 @@ VALUES (
         TRUE,
         TRUE,
         'Rouge',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         65,
@@ -6175,7 +6241,8 @@ VALUES (
         FALSE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         66,
@@ -6190,7 +6257,8 @@ VALUES (
         TRUE,
         TRUE,
         'Gris',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         67,
@@ -6205,7 +6273,8 @@ VALUES (
         FALSE,
         FALSE,
         'Vert',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         68,
@@ -6220,7 +6289,8 @@ VALUES (
         TRUE,
         FALSE,
         'Bleu',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         69,
@@ -6235,7 +6305,8 @@ VALUES (
         TRUE,
         TRUE,
         'Blanc',
-        'En attente'
+        'En attente',
+        NULL
     ),
     (
         70,
@@ -6250,7 +6321,8 @@ VALUES (
         TRUE,
         TRUE,
         'Noir',
-        'En attente'
+        'En attente',
+        NULL
     );
 INSERT INTO A_COMME_TYPE (IDVEHICULE, IDPRESTATION)
 VALUES (1, 7),
