@@ -1,0 +1,151 @@
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.p-coursier {
+    color: #aaa;
+}
+
+.div-planifier {
+    max-width: 700px;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.div-logistique {
+    max-width: 800px;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+thead {
+    background-color: #111;
+    color: #fff;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    font-weight: 600;
+}
+
+td {
+    background-color: #fff;
+}
+
+.table-uber {
+    background-color: rgb(0, 0, 0);
+    color: #fff;
+}
+
+.btn-entretien {
+    font-size: 14px;
+    font-weight: 600;
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+}
+
+.btn-entretien:hover {
+    background: rgb(40, 40, 40);
+    color: rgb(255, 255, 255);
+}
+
+.btn-valider {
+    font-size: 14px;
+    font-weight: 600;
+    background: #7AA95C;
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+}
+
+.btn-valider:hover {
+    background: #7AA95A;
+    color: rgb(255, 255, 255);
+}
+
+.btn-refuser {
+    font-size: 14px;
+    font-weight: 600;
+    background: #ff3232;
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+}
+
+.btn-refuser:hover {
+    background: #ff3030;
+    color: rgb(255, 255, 255);
+}
+
+form {
+    display: inline;
+}
+
+select.form-select {
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    font-weight: 400;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+form button {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+}
+
+form button:hover {
+    opacity: 0.8;
+}
+
+.text-center {
+    text-align: center;
+}
+
+span {
+    font-weight: 400;
+}
+
+.d-inline-flex {
+    display: inline-flex;
+    align-items: center;
+}
+
+.me-2 {
+    margin-right: 8px;
+}
+
+.mb-4 {
+    margin-bottom: 30px;
+}

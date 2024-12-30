@@ -1,0 +1,156 @@
+body {
+  font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: rgb(255,255,255);
+  color: rgb(0,0,0);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+.account {
+  max-width: 1200px;
+  margin: auto;
+  background-color: rgb(255,255,255);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Header */
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgb(0,0,0);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Sidebar */
+.list-group {
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.list-group-item {
+  font-size: 1rem;
+  padding: 15px 20px;
+  background-color: #555;
+  color: rgb(255,255,255);
+  border: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.list-group-item:hover,
+.list-group-item.active {
+  background-color: #444;
+  color: rgb(255,255,255);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-compte {
+    font-size: 14px;
+    font-weight: 600;
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+}
+
+.btn-compte:hover {
+    background: rgb(40, 40, 40);
+    color: rgb(255, 255, 255);
+}
+/* Main Card */
+.card {
+  background-color: rgb(255,255,255);
+  border: none;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: rgb(0,0,0);
+}
+
+.card p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: rgb(0,0,0);
+}
+
+/* Profile Picture */
+.link-photo:hover {
+ text-decoration: underline;
+}
+
+.pdp_picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.pdp_picture:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pp_container .btn {
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 5px;
+  margin-left: 20px;
+  padding: 10px 15px;
+  color: rgb(0,0,0);
+  border: 2px solid rgb(0,0,0);
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+/* Input File (Hidden) */
+#fileInput {
+  display: none;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .col-md-3 {
+    margin-bottom: 20px;
+  }
+
+  .list-group-item {
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  .pp_picture {
+    width: 80px;
+    height: 80px;
+  }
+
+  .pp_container .btn {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+}
+.table-uber {
+    background-color: rgb(0, 0, 0);
+    color: #fff;
+}
