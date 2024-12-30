@@ -5564,8 +5564,7 @@ VALUES (
         FALSE
     );
 INSERT INTO A_COMME_TYPE (IDVEHICULE, IDPRESTATION)
-VALUES 
-    (1, 1),
+VALUES (1, 1),
     (1, 4),
     (1, 7),
     (2, 1),
