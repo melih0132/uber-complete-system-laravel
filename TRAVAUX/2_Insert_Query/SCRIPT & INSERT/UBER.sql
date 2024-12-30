@@ -493,6 +493,7 @@ CREATE TABLE VEHICULE (
         )
     ),
     DEMANDEMODIFICATION TEXT NULL,
+    DEMANDEMODIFICATIONEFFECTUE BOOL NOT NULL DEFAULT FALSE,
     CONSTRAINT PK_VEHICULE PRIMARY KEY (IDVEHICULE)
 );
 /*==============================================================*/
@@ -5202,7 +5203,8 @@ INSERT INTO VEHICULE (
         ESTLUXUEUX,
         COULEUR,
         STATUSPROCESSUSLOGISTIQUE,
-        DEMANDEMODIFICATION
+        DEMANDEMODIFICATION,
+        DEMANDEMODIFICATIONEFFECTUE
     )
 VALUES (
         1,
@@ -5218,7 +5220,8 @@ VALUES (
         TRUE,
         'Gris',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         2,
@@ -5234,7 +5237,8 @@ VALUES (
         TRUE,
         'Argent',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         3,
@@ -5250,7 +5254,8 @@ VALUES (
         TRUE,
         'Blanc',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         4,
@@ -5266,7 +5271,8 @@ VALUES (
         TRUE,
         'Rouge',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         5,
@@ -5282,7 +5288,8 @@ VALUES (
         FALSE,
         'Rose',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         6,
@@ -5298,7 +5305,8 @@ VALUES (
         TRUE,
         'Bleu',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         7,
@@ -5314,7 +5322,8 @@ VALUES (
         TRUE,
         'Gris',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         8,
@@ -5330,7 +5339,8 @@ VALUES (
         FALSE,
         'Rouge',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         9,
@@ -5346,7 +5356,8 @@ VALUES (
         FALSE,
         'Bleu',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         10,
@@ -5362,7 +5373,8 @@ VALUES (
         FALSE,
         'Bleu',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         11,
@@ -5378,7 +5390,8 @@ VALUES (
         TRUE,
         'Vert',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         12,
@@ -5394,7 +5407,8 @@ VALUES (
         FALSE,
         'Jaune',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         13,
@@ -5410,7 +5424,8 @@ VALUES (
         TRUE,
         'Noir',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         14,
@@ -5426,7 +5441,8 @@ VALUES (
         TRUE,
         'Gris',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         15,
@@ -5442,7 +5458,8 @@ VALUES (
         TRUE,
         'Bleu',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         16,
@@ -5458,7 +5475,8 @@ VALUES (
         FALSE,
         'Rouge',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         17,
@@ -5474,7 +5492,8 @@ VALUES (
         TRUE,
         'Gris',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         18,
@@ -5490,7 +5509,8 @@ VALUES (
         TRUE,
         'Bleu',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         19,
@@ -5506,7 +5526,8 @@ VALUES (
         TRUE,
         'Noir',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         20,
@@ -5522,7 +5543,8 @@ VALUES (
         FALSE,
         'Bleu',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     ),
     (
         21,
@@ -5538,7 +5560,8 @@ VALUES (
         TRUE,
         'Blanc',
         'En attente',
-        NULL
+        NULL,
+        FALSE
     );
 INSERT INTO A_COMME_TYPE (IDVEHICULE, IDPRESTATION)
 VALUES (1, 7),
