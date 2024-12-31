@@ -1,6 +1,7 @@
 /*==============================================================*/
 /* Nom de SGBD :  PostgreSQL 8                                  */
 /* Date de création :  01/01/2001                               */
+SET TIMEZONE = 'Europe/Paris';
 /*==============================================================*/
 DROP TABLE IF EXISTS ADRESSE CASCADE;
 DROP TABLE IF EXISTS APPARTIENT_2 CASCADE;
@@ -142,7 +143,7 @@ CREATE TABLE COMMANDE (
     TEMPSCOMMANDE INT4 NOT NULL,
     CONSTRAINT CK_TEMPS_COMMANDE CHECK (TEMPSCOMMANDE >= 0),
     HEURECOMMANDE TIMESTAMP NOT NULL,
-    CONSTRAINT CK_HEURECOMMANDE CHECK (HEURECOMMANDE <= CURRENT_TIMESTAMP),
+    /* CONSTRAINT CK_HEURECOMMANDE CHECK (HEURECOMMANDE <= CURRENT_TIMESTAMP), */
     ESTLIVRAISON BOOL NOT NULL,
     STATUTCOMMANDE VARCHAR(20) NOT NULL,
     CONSTRAINT CK_STATUT_COMMANDE CHECK (
@@ -4672,14 +4673,14 @@ INSERT INTO COMMANDE (
 VALUES (
         1,
         1,
-        1,
+        NULL,
         17,
         25,
         130.00,
         50,
         NOW() - INTERVAL '30 minutes',
         TRUE,
-        'En cours'
+        'En attente'
     ),
     (
         2,
@@ -4700,9 +4701,9 @@ VALUES (
         85,
         74,
         120.00,
-        20,
-        '2024-01-01 08:30:00',
-        FALSE,
+        40,
+        NOW() - INTERVAL '30 minutes',
+        TRUE,
         'En attente'
     ),
     (
