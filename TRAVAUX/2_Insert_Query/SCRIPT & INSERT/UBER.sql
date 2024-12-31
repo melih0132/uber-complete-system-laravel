@@ -30,6 +30,7 @@ DROP TABLE IF EXISTS PLANNING_RESERVATION CASCADE;
 DROP TABLE IF EXISTS PRODUIT CASCADE;
 DROP TABLE IF EXISTS REGLEMENT_SALAIRE CASCADE;
 DROP TABLE IF EXISTS RESERVATION CASCADE;
+DROP TABLE IF EXISTS RESPONSABLE_ENSEIGNE CASCADE;
 DROP TABLE IF EXISTS TYPE_PRESTATION CASCADE;
 DROP TABLE IF EXISTS VEHICULE CASCADE;
 DROP TABLE IF EXISTS VELO CASCADE;
@@ -298,6 +299,7 @@ CREATE TABLE EST_SITUE_A_2 (
 /*==============================================================*/
 CREATE TABLE ETABLISSEMENT (
     IDETABLISSEMENT INT4 NOT NULL,
+    IDRESPONSABLE INT4 NOT NULL,
     TYPEETABLISSEMENT VARCHAR(50) NOT NULL,
     CONSTRAINT CK_TYPEETABLISSEMENT CHECK (TYPEETABLISSEMENT IN ('Restaurant', 'Épicerie')),
     IDADRESSE INT4 NOT NULL,
@@ -435,6 +437,20 @@ CREATE TABLE RESERVATION (
     CONSTRAINT PK_RESERVATION PRIMARY KEY (IDRESERVATION)
 );
 /*==============================================================*/
+/* Table : RESPONSABLE_ENSEIGNE                                 */
+/*==============================================================*/
+CREATE TABLE RESPONSABLE_ENSEIGNE (
+    IDRESPONSABLE INT4 NOT NULL,
+    NOMUSER VARCHAR(50) NOT NULL,
+    PRENOMUSER VARCHAR(50) NOT NULL,
+    TELEPHONE VARCHAR(15) NOT NULL,
+    CONSTRAINT CK_RESPONSABLE_TEL CHECK (TELEPHONE ~ '^(06|07)[0-9]{8}$'),
+    EMAILUSER VARCHAR(200) NOT NULL,
+    CONSTRAINT UQ_RESPONSABLE_EMAIL UNIQUE (EMAILUSER),
+    MOTDEPASSEUSER VARCHAR(200) NOT NULL,
+    CONSTRAINT PK_RESPONSABLE_ENSEIGNE PRIMARY KEY (IDRESPONSABLE)
+);
+/*==============================================================*/
 /* Table : TYPE_PRESTATION                                      */
 /*==============================================================*/
 CREATE TABLE TYPE_PRESTATION (
@@ -564,6 +580,9 @@ ALTER TABLE COURSIER
 ADD CONSTRAINT FK_COURSIER_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE DEPARTEMENT
 ADD CONSTRAINT FK_DEPARTEMENT_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE ETABLISSEMENT
+ADD CONSTRAINT FK_ETABLISSEMENT_RESPONSABLE FOREIGN KEY (IDRESPONSABLE) REFERENCES RESPONSABLE_ENSEIGNE (IDRESPONSABLE) ON DELETE
+SET NULL ON UPDATE CASCADE;
 ALTER TABLE ENTREPRISE
 ADD CONSTRAINT FK_ENTREPRISE_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE ENTRETIEN
@@ -5700,8 +5719,297 @@ VALUES (1, 1, '12345', TRUE),
     (28, 67, '12372', TRUE),
     (29, 85, '12373', TRUE),
     (30, 93, '12374', FALSE);
+INSERT INTO RESPONSABLE_ENSEIGNE (
+        IDRESPONSABLE,
+        NOMUSER,
+        PRENOMUSER,
+        TELEPHONE,
+        EMAILUSER,
+        MOTDEPASSEUSER
+    )
+VALUES (
+        1,
+        'Yılmaz',
+        'Ahmet',
+        '0678901234',
+        'ahmet.yilmaz@example.com',
+        'password1'
+    ),
+    (
+        2,
+        'Demir',
+        'Fatma',
+        '0678901235',
+        'fatma.demir@example.com',
+        'password2'
+    ),
+    (
+        3,
+        'Şahin',
+        'Mehmet',
+        '0678901236',
+        'mehmet.sahin@example.com',
+        'password3'
+    ),
+    (
+        4,
+        'Çelik',
+        'Ayşe',
+        '0678901237',
+        'ayse.celik@example.com',
+        'password4'
+    ),
+    (
+        5,
+        'Kaya',
+        'Mustafa',
+        '0678901238',
+        'mustafa.kaya@example.com',
+        'password5'
+    ),
+    (
+        6,
+        'Yıldırım',
+        'Elif',
+        '0678901239',
+        'elif.yildirim@example.com',
+        'password6'
+    ),
+    (
+        7,
+        'Öztürk',
+        'Ali',
+        '0678901240',
+        'ali.ozturk@example.com',
+        'password7'
+    ),
+    (
+        8,
+        'Arslan',
+        'Zeynep',
+        '0678901241',
+        'zeynep.arslan@example.com',
+        'password8'
+    ),
+    (
+        9,
+        'Doğan',
+        'Hüseyin',
+        '0678901242',
+        'huseyin.dogan@example.com',
+        'password9'
+    ),
+    (
+        10,
+        'Kılıç',
+        'Emine',
+        '0678901243',
+        'emine.kilic@example.com',
+        'password10'
+    ),
+    (
+        11,
+        'Aydın',
+        'Halil',
+        '0678901244',
+        'halil.aydin@example.com',
+        'password11'
+    ),
+    (
+        12,
+        'Kara',
+        'Hatice',
+        '0678901245',
+        'hatice.kara@example.com',
+        'password12'
+    ),
+    (
+        13,
+        'Koç',
+        'Osman',
+        '0678901246',
+        'osman.koc@example.com',
+        'password13'
+    ),
+    (
+        14,
+        'Aksoy',
+        'Leyla',
+        '0678901247',
+        'leyla.aksoy@example.com',
+        'password14'
+    ),
+    (
+        15,
+        'Yiğit',
+        'Hasan',
+        '0678901248',
+        'hasan.yigit@example.com',
+        'password15'
+    ),
+    (
+        16,
+        'Çetin',
+        'Nur',
+        '0678901249',
+        'nur.cetin@example.com',
+        'password16'
+    ),
+    (
+        17,
+        'Özkan',
+        'Kemal',
+        '0678901250',
+        'kemal.ozkan@example.com',
+        'password17'
+    ),
+    (
+        18,
+        'Şimşek',
+        'Selin',
+        '0678901251',
+        'selin.simsek@example.com',
+        'password18'
+    ),
+    (
+        19,
+        'Polat',
+        'Eren',
+        '0678901252',
+        'eren.polat@example.com',
+        'password19'
+    ),
+    (
+        20,
+        'Güneş',
+        'Merve',
+        '0678901253',
+        'merve.gunes@example.com',
+        'password20'
+    ),
+    (
+        21,
+        'Bozkurt',
+        'Burak',
+        '0678901254',
+        'burak.bozkurt@example.com',
+        'password21'
+    ),
+    (
+        22,
+        'Bulut',
+        'Seda',
+        '0678901255',
+        'seda.bulut@example.com',
+        'password22'
+    ),
+    (
+        23,
+        'Erdem',
+        'Volkan',
+        '0678901256',
+        'volkan.erdem@example.com',
+        'password23'
+    ),
+    (
+        24,
+        'Uzun',
+        'Esra',
+        '0678901257',
+        'esra.uzun@example.com',
+        'password24'
+    ),
+    (
+        25,
+        'Acar',
+        'İsmail',
+        '0678901258',
+        'ismail.acar@example.com',
+        'password25'
+    ),
+    (
+        26,
+        'Korkmaz',
+        'Derya',
+        '0678901259',
+        'derya.korkmaz@example.com',
+        'password26'
+    ),
+    (
+        27,
+        'Turan',
+        'Serkan',
+        '0678901260',
+        'serkan.turan@example.com',
+        'password27'
+    ),
+    (
+        28,
+        'Taş',
+        'Gül',
+        '0678901261',
+        'gul.tas@example.com',
+        'password28'
+    ),
+    (
+        29,
+        'Avcı',
+        'Metin',
+        '0678901262',
+        'metin.avci@example.com',
+        'password29'
+    ),
+    (
+        30,
+        'Gök',
+        'Melike',
+        '0678901263',
+        'melike.gok@example.com',
+        'password30'
+    ),
+    (
+        31,
+        'Sezer',
+        'Tahir',
+        '0678901264',
+        'tahir.sezer@example.com',
+        'password31'
+    ),
+    (
+        32,
+        'Orhan',
+        'Ece',
+        '0678901265',
+        'ece.orhan@example.com',
+        'password32'
+    ),
+    (
+        33,
+        'Köse',
+        'Cem',
+        '0678901266',
+        'cem.kose@example.com',
+        'password33'
+    ),
+    (
+        34,
+        'Aslan',
+        'Berna',
+        '0678901267',
+        'berna.aslan@example.com',
+        'password34'
+    ),
+    (
+        35,
+        'Tekin',
+        'Onur',
+        '0678901268',
+        'onur.tekin@example.com',
+        'password35'
+    );
 INSERT INTO ETABLISSEMENT (
         IDETABLISSEMENT,
+        IDRESPONSABLE,
         TYPEETABLISSEMENT,
         IDADRESSE,
         NOMETABLISSEMENT,
@@ -5711,6 +6019,7 @@ INSERT INTO ETABLISSEMENT (
         AEMPORTER
     )
 VALUES (
+        1,
         1,
         'Restaurant',
         101,
@@ -5722,6 +6031,7 @@ VALUES (
     ),
     (
         2,
+        2,
         'Restaurant',
         102,
         'Waffle Factory',
@@ -5731,6 +6041,7 @@ VALUES (
         TRUE
     ),
     (
+        3,
         3,
         'Épicerie',
         103,
@@ -5742,6 +6053,7 @@ VALUES (
     ),
     (
         4,
+        4,
         'Restaurant',
         104,
         'El Chaltén',
@@ -5751,6 +6063,7 @@ VALUES (
         TRUE
     ),
     (
+        5,
         5,
         'Restaurant',
         105,
@@ -5762,6 +6075,7 @@ VALUES (
     ),
     (
         6,
+        6,
         'Restaurant',
         106,
         'Street Pasta',
@@ -5771,6 +6085,7 @@ VALUES (
         TRUE
     ),
     (
+        7,
         7,
         'Restaurant',
         107,
@@ -5782,6 +6097,7 @@ VALUES (
     ),
     (
         8,
+        8,
         'Restaurant',
         108,
         'Ben''s Food',
@@ -5791,6 +6107,7 @@ VALUES (
         TRUE
     ),
     (
+        9,
         9,
         'Épicerie',
         109,
@@ -5802,6 +6119,7 @@ VALUES (
     ),
     (
         10,
+        10,
         'Restaurant',
         110,
         'Fat Kebab',
@@ -5811,6 +6129,7 @@ VALUES (
         FALSE
     ),
     (
+        11,
         11,
         'Restaurant',
         111,
@@ -5822,6 +6141,7 @@ VALUES (
     ),
     (
         12,
+        12,
         'Restaurant',
         112,
         'Pitaya',
@@ -5831,6 +6151,7 @@ VALUES (
         FALSE
     ),
     (
+        13,
         13,
         'Épicerie',
         113,
@@ -5842,6 +6163,7 @@ VALUES (
     ),
     (
         14,
+        14,
         'Épicerie',
         114,
         'Brioche Dorée',
@@ -5851,6 +6173,7 @@ VALUES (
         FALSE
     ),
     (
+        15,
         15,
         'Épicerie',
         115,
@@ -5862,6 +6185,7 @@ VALUES (
     ),
     (
         16,
+        16,
         'Épicerie',
         116,
         'Picard',
@@ -5871,6 +6195,7 @@ VALUES (
         TRUE
     ),
     (
+        17,
         17,
         'Épicerie',
         117,
@@ -5882,6 +6207,7 @@ VALUES (
     ),
     (
         18,
+        18,
         'Restaurant',
         118,
         'Instant Rétro',
@@ -5891,6 +6217,7 @@ VALUES (
         FALSE
     ),
     (
+        19,
         19,
         'Restaurant',
         119,
@@ -5902,6 +6229,7 @@ VALUES (
     ),
     (
         20,
+        20,
         'Restaurant',
         120,
         'Subway',
@@ -5911,6 +6239,7 @@ VALUES (
         TRUE
     ),
     (
+        21,
         21,
         'Restaurant',
         130,
@@ -5922,6 +6251,7 @@ VALUES (
     ),
     (
         22,
+        22,
         'Épicerie',
         132,
         'Le Petit Casino',
@@ -5931,6 +6261,7 @@ VALUES (
         FALSE
     ),
     (
+        23,
         23,
         'Restaurant',
         132,
@@ -5942,6 +6273,7 @@ VALUES (
     ),
     (
         24,
+        24,
         'Restaurant',
         133,
         'Pepe Chicken',
@@ -5951,6 +6283,7 @@ VALUES (
         FALSE
     ),
     (
+        25,
         25,
         'Épicerie',
         134,
@@ -5962,6 +6295,7 @@ VALUES (
     ),
     (
         26,
+        26,
         'Épicerie',
         135,
         'Super U',
@@ -5971,6 +6305,7 @@ VALUES (
         TRUE
     ),
     (
+        27,
         27,
         'Restaurant',
         136,
@@ -5982,6 +6317,7 @@ VALUES (
     ),
     (
         28,
+        28,
         'Épicerie',
         137,
         'Monoprix',
@@ -5991,6 +6327,7 @@ VALUES (
         TRUE
     ),
     (
+        29,
         29,
         'Restaurant',
         138,
@@ -6002,6 +6339,7 @@ VALUES (
     ),
     (
         30,
+        30,
         'Épicerie',
         139,
         'Monop’',
@@ -6011,6 +6349,7 @@ VALUES (
         FALSE
     ),
     (
+        31,
         31,
         'Restaurant',
         140,
@@ -6022,6 +6361,7 @@ VALUES (
     ),
     (
         32,
+        32,
         'Épicerie',
         141,
         'Picard',
@@ -6031,6 +6371,7 @@ VALUES (
         TRUE
     ),
     (
+        33,
         33,
         'Restaurant',
         142,
@@ -6042,6 +6383,7 @@ VALUES (
     ),
     (
         34,
+        34,
         'Épicerie',
         143,
         'Carrefour',
@@ -6051,6 +6393,7 @@ VALUES (
         TRUE
     ),
     (
+        35,
         35,
         'Restaurant',
         175,
@@ -11876,6 +12219,13 @@ ALTER TABLE RESERVATION
 ALTER COLUMN IDRESERVATION
 SET DEFAULT NEXTVAL('RESERVATION_id_seq');
 SELECT SETVAL('RESERVATION_id_seq', 100);
+-- RESPONSABLE_ENSEIGNE
+DROP SEQUENCE IF EXISTS RESPONSABLE_ENSEIGNE_ID_SEQ CASCADE;
+CREATE SEQUENCE RESPONSABLE_ENSEIGNE_ID_SEQ START 1;
+ALTER TABLE RESPONSABLE_ENSEIGNE
+ALTER COLUMN IDRESPONSABLE
+SET DEFAULT NEXTVAL('RESPONSABLE_ENSEIGNE_ID_SEQ');
+SELECT SETVAL('RESPONSABLE_ENSEIGNE_ID_SEQ', 35);
 -- TYPE_PRESTATION
 DROP SEQUENCE IF EXISTS TYPE_PRESTATION_ID_SEQ CASCADE;
 CREATE SEQUENCE TYPE_PRESTATION_ID_SEQ START 1;
