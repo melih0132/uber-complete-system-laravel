@@ -1,0 +1,184 @@
+/* Global Styles */
+body {
+    font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.alert-message {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 0;
+    border-bottom: 1px solid;
+    color: #333;
+}
+
+.alert-message.success {
+    border-color: #4CAF50;
+    /* Vert pour succès */
+    color: #4CAF50;
+}
+
+.alert-message.error {
+    border-color: #F44336;
+    /* Rouge pour erreur */
+    color: #F44336;
+}
+
+h5 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #000;
+    margin-top: 20px;
+}
+
+/* Fieldset and Legend */
+fieldset {
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.card {
+    background-color: rgb(255, 255, 255);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    padding: 20px;
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.card p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: var(--secondary-color);
+}
+
+.form-login {
+    max-width: 360px;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.form-register {
+    max-width: 360px;
+    margin: auto;
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-selection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    width: auto;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #000;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.btn-login {
+    font-size: 14px;
+    font-weight: 600;
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+}
+
+.btn-login:hover {
+    background: rgb(40, 40, 40);
+    color: rgb(255, 255, 255);
+}
+
+.login-link {
+    color: rgb(0, 0, 0);
+}
+
+.login-link:hover {
+    text-decoration: underline;
+    color: rgb(0, 0, 0)
+}
+
+/* Password Strength Indicator */
+#password-strength {
+    font-size: 0.85rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    input,
+    select {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+}
+
+.link-login {
+    color: rgb;
+}
+
+.link-login:hover {
+    text-decoration: underline;
+}

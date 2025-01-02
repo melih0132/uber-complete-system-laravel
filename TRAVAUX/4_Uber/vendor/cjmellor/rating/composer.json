@@ -1,0 +1,64 @@
+{
+    "name": "cjmellor/rating",
+    "description": "A Laravel package that allows for ratings to be added to a Model",
+    "keywords": [
+        "cjmellor",
+        "laravel",
+        "rating"
+    ],
+    "homepage": "https://github.com/cjmellor/rating",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Chris Mellor",
+            "email": "cmellor@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/contracts": "^10.0|^11.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "livewire/livewire": "^2.12",
+        "nunomaduro/collision": "^7.0|^8.0",
+        "orchestra/testbench": "^7.0|^8.0|^9.0",
+        "pestphp/pest": "^2.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cjmellor\\Rating\\": "src",
+            "Cjmellor\\Rating\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cjmellor\\Rating\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cjmellor\\Rating\\RatingServiceProvider"
+            ],
+            "aliases": {
+                "Rating": "Cjmellor\\Rating\\Facades\\Rating"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

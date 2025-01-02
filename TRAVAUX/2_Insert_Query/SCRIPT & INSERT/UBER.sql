@@ -12362,3 +12362,13 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER bf_del_upd_departement BEFORE
 UPDATE
     OR DELETE ON departement EXECUTE PROCEDURE empecher_modif();
+-- empeche_doublons_adresse empêche l'insertion des adresses en doubles
+CREATE OR REPLACE FUNCTION soundex(text)
+RETURNS text AS $$
+DECLARE
+    txt text;
+BEGIN
+    SELECT INTO txt translate($1, 'aeiouyhw', 'aaaaaaww');
+    RETURN substring(txt FROM 1 FOR 4);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
