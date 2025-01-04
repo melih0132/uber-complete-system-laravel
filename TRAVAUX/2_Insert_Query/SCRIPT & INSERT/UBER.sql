@@ -4956,277 +4956,277 @@ VALUES (
         1,
         'Courses',
         'Livraison de courses et produits',
-        'courses.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Grocery_v2.png'
     ),
     (
         2,
         'Halal',
         'Restaurants et plats halal',
-        'halal.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Halal.png'
     ),
     (
         3,
         'Pizzas',
         'Livraison de pizzas',
-        'pizzas.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Pizza.png'
     ),
     (
         4,
         'Sushis',
         'Restaurants et livraison de sushis',
-        'sushis.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Sushi.png'
     ),
     (
         5,
         'Alcool',
         'Livraison de boissons alcoolisées',
-        'alcool.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Alcohol@3x.png'
     ),
     (
         6,
         'Épicerie',
         'Produits d épicerie',
-        'epicerie.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Convenience@3x.png'
     ),
     (
         7,
         'Fast food',
         'Restauration rapide',
-        'fastfood.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/FastFood.png'
     ),
     (
         8,
         'Burgers',
         'Restaurants de burgers',
-        'burgers.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Asian.png'
     ),
     (
         9,
         'Asiatique',
         'Cuisine asiatique',
-        'asiatique.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Asian.png'
     ),
     (
         10,
         'Cuisine saine',
         'Options de repas santé',
-        'cuisinesaine.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Healthy.png'
     ),
     (
         11,
         'Thaïlandaise',
         'Cuisine thaïlandaise',
-        'thailandaise.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Thai.png'
     ),
     (
         12,
         'Coréenne',
         'Cuisine coréenne',
-        'coreenne.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Korean.png'
     ),
     (
         13,
         'Indienne',
         'Cuisine indienne',
-        'indienne.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Indian.png'
     ),
     (
         14,
         'Thé aux perles',
         'Bubble tea',
-        'teauxperles.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/BubbleTea.png'
     ),
     (
         15,
         'Ailes de poulet',
         'Spécialités de poulet',
-        'ailespoule.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Wings.png'
     ),
     (
         16,
         'Boulangerie',
         'Produits de boulangerie',
-        'boulangerie.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Bakery.png'
     ),
     (
         17,
         'Casher',
         'Restaurants et plats casher',
-        'casher.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Kosher.png'
     ),
     (
         18,
         'Chinoise',
         'Cuisine chinoise',
-        'chinoise.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Chinese.png'
     ),
     (
         19,
         'Poke (poisson cru)',
         'Bols de poisson cru',
-        'poke.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Poke.png'
     ),
     (
         20,
         'Mexicaine',
         'Cuisine mexicaine',
-        'mexicaine.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Mexican.png'
     ),
     (
         21,
         'Sandwich',
         'Sandwichs et paninis',
-        'sandwich.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Sandwich.png'
     ),
     (
         22,
         'Italienne',
         'Cuisine italienne',
-        'italienne.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Italian.png'
     ),
     (
         23,
         'Barbecue',
         'Restaurants de barbecue',
-        'barbecue.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/BBQ.png'
     ),
     (
         24,
         'Spécialité',
         'Plats et cuisines spécialisés',
-        'specialite.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Specialty@3x.png'
     ),
     (
         25,
         'Petit-déjeuner',
         'Options de petit-déjeuner',
-        'petitdejeuner.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Breakfast.png'
     ),
     (
         26,
         'Vegan',
         'Options végétaliennes',
-        'vegan.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Vegan.png'
     ),
     (
         27,
         'Caribéenne',
         'Cuisine caribéenne',
-        'caribeenne.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Caribbean.png'
     ),
     (
         28,
         'Parapharmacie',
         'Produits paramédicaux',
-        'parapharmacie.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Pharmacy@3x.png'
     ),
     (
         29,
         'Fleurs',
         'Livraison de fleurs',
-        'fleurs.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Flowers@3x.png'
     ),
     (
         30,
         'Japonaise',
         'Cuisine japonaise',
-        'japonaise.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Japanese.png'
     ),
     (
         31,
         'Vietnamienne',
         'Cuisine vietnamienne',
-        'vietnamienne.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Vietnamese.png'
     ),
     (
         32,
         'Fruits de mer',
         'Restaurants de fruits de mer',
-        'fruitsmer.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Seafood.png'
     ),
     (
         33,
         'Soupes',
         'Restaurants de soupes',
-        'soupes.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Soup.png'
     ),
     (
         34,
         'Américaine',
         'Cuisine américaine',
-        'americaine.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/American.png'
     ),
     (
         35,
         'Café',
         'Cafés et boissons chaudes',
-        'cafe.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Coffee.png'
     ),
     (
         36,
         'Hygiène',
         'Produits d hygiène',
-        'hygiene.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/personalCare.png'
     ),
     (
         37,
         'Afro américaine',
         'Cuisine afro-américaine',
-        'afroamericaine.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/SoulFood.png'
     ),
     (
         38,
         'Boutique',
         'Produits de boutique',
-        'boutique.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Retail@3x.png'
     ),
     (
         39,
         'Glaces',
         'Crèmes glacées et desserts glacés',
-        'glaces.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/IceCream.png'
     ),
     (
         40,
         'Grecque',
         'Cuisine grecque',
-        'grecque.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Greek.png'
     ),
     (
         41,
         'Street food',
         'Cuisine de rue',
-        'streetfood.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/StreetFood.png'
     ),
     (
         42,
         'Repas détente',
         'Restaurants décontractés',
-        'repasdetente.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Comfort.png'
     ),
     (
         43,
         'Smoothies',
         'Boissons smoothies',
-        'smoothies.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Smoothie.png'
     ),
     (
         44,
         'Articles pour animaux',
         'Produits et accessoires pour animaux',
-        'animaux.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/Pets@3x.png'
     ),
     (
         45,
         'Hawaïenne',
         'Cuisine hawaïenne',
-        'hawaienne.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Hawaiian.png'
     ),
     (
         46,
         'Taïwanaise',
         'Cuisine taïwanaise',
-        'taiwanaise.jpg'
+        'https://cn-geo1.uber.com/static/mobile-content/eats/cuisine-filters/v1/Taiwanese.png'
     );
 INSERT INTO TYPE_PRESTATION (
         IDPRESTATION,
