@@ -829,11 +829,7 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (39, 4, '13 Rue de la Concorde'),
     (40, 4, '6 Rue Bossuet'),
     (41, 5, '58 Chemin du Vallon Sabatier'),
-    (
-        42,
-        5,
-        '203 Route de Saint-Pierre de Féric'
-    ),
+    (42, 5, '203 Route de Saint-Pierre de Féric'),
     (43, 5, '144 Chemin de la Costière'),
     (44, 5, '28 Chemin du Haut Magnan'),
     (45, 5, '32 Avenue du Dom. du Piol'),
@@ -841,11 +837,7 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (47, 5, '9 Rue Roger Martin du Gard'),
     (48, 5, '5 Avenue Suzanne Lenglen'),
     (49, 5, '40 Rue Trachel'),
-    (
-        50,
-        5,
-        '7 Chemin de la Colline de Magnan'
-    ),
+    (50, 5, '7 Chemin de la Colline de Magnan'),
     (51, 6, '4 Avenue de la Paix'),
     (52, 6, '34 Rue Massenet'),
     (53, 6, '8 Rue des Reinettes'),
@@ -858,11 +850,7 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (60, 6, '73 Rue de Coulmiers'),
     (61, 7, '701 Av. de Toulouse'),
     (62, 7, '6 Rue Jean Vachet'),
-    (
-        63,
-        7,
-        '380 Avenue du Maréchal Leclerc'
-    ),
+    (63, 7, '380 Avenue du Maréchal Leclerc'),
     (64, 7, '15 Rue Sainte-Catherine'),
     (65, 7, '125 Rue de Cante Gril'),
     (66, 7, '6 Rue de la Felouque'),
@@ -892,21 +880,9 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (90, 9, '28 Rue Gustave Flaubert'),
     (91, 10, '9 Rue de Condé'),
     (92, 10, '69 Rue Jean de la Fontaine'),
-    (
-        93,
-        10,
-        '50 Avenue Fourcault de Pavant'
-    ),
-    (
-        94,
-        10,
-        '6 Avenue du Général Mangin Bis'
-    ),
-    (
-        95,
-        10,
-        '28 Rue des Missionnaires Bis'
-    ),
+    (93, 10, '50 Avenue Fourcault de Pavant'),
+    (94, 10, '6 Avenue du Général Mangin Bis'),
+    (95, 10, '28 Rue des Missionnaires Bis'),
     (96, 10, '2 Rue de Beauvau'),
     (97, 10, '32 Rue Berthier'),
     (98, 10, '70 Rue de la Paroisse'),
@@ -921,18 +897,10 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (107, 4, '57 Rue Du Château DEau'),
     (108, 11, '5 Rue De L''Industrie'),
     (109, 3, '11 Avenue de St.''Antoine'),
-    (
-        110,
-        5,
-        '39 Avenue Georges Clemenceau'
-    ),
+    (110, 5, '39 Avenue Georges Clemenceau'),
     (111, 11, '3bis Avenue De Chevêne'),
     (112, 6, '3 Rue Léon Maître'),
-    (
-        113,
-        7,
-        '5 Boulevard De L''Observatoire'
-    ),
+    (113, 7, '5 Boulevard De L''Observatoire'),
     (114, 7, '7 Rue De La Loge'),
     (115, 9, '65 Rue du Bourg'),
     (116, 10, '76 Rue de la Paroisse'),
@@ -953,21 +921,13 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (131, 12, '10 Boulevard Lascrosses'),
     (132, 12, '74 Avenue Jules Julien'),
     (133, 13, '216 Avenue De Dunkerque'),
-    (
-        134,
-        13,
-        '8 Place Louise De Bettignies'
-    ),
+    (134, 13, '8 Place Louise De Bettignies'),
     (135, 14, 'Place Georges Bernanos'),
     (136, 14, '18 Rue De Bertrand'),
     (137, 15, '22 Rue Casimir Perrier'),
     (138, 15, '65 Avenue René Coty'),
     (139, 16, '7 Rue Du Dr Jacquin'),
-    (
-        140,
-        16,
-        '49 Boulevard Du Général Leclerc'
-    ),
+    (140, 16, '49 Boulevard Du Général Leclerc'),
     (141, 17, '5 Rue Du Grand Moulin'),
     (142, 17, '40 Rue Etienne Mimard'),
     (143, 18, '48 Rue Du Port'),
@@ -987,25 +947,13 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (157, 25, '5 Rue des Halles'),
     (158, 25, '28 Rue de la Préfecture'),
     (159, 26, '20 Place Saint-Sauveur'),
-    (
-        160,
-        26,
-        '12 Rue des Fossés Saint-Julien'
-    ),
+    (160, 26, '12 Rue des Fossés Saint-Julien'),
     (161, 27, '25 Rue Jean Jaurès'),
     (162, 27, '7 Rue de la République'),
-    (
-        163,
-        28,
-        '13 Boulevard Saint-Assiscle'
-    ),
+    (163, 28, '13 Boulevard Saint-Assiscle'),
     (164, 28, '20 Rue des Albères'),
     (165, 29, '4 Rue de la République'),
-    (
-        166,
-        29,
-        '12 Place du Palais de Justice'
-    ),
+    (166, 29, '12 Place du Palais de Justice'),
     (167, 30, '5 Rue des Marchands'),
     (168, 30, '9 Rue de la Poissonnerie'),
     (169, 31, '1 Rue des Halles'),
@@ -1013,11 +961,7 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (171, 32, '10 Rue des Cordeliers'),
     (172, 32, '22 Boulevard du Roi René'),
     (173, 33, '5 Rue de la Poste'),
-    (
-        174,
-        33,
-        '12 Place Georges Clémenceau'
-    ),
+    (174, 33, '12 Place Georges Clémenceau'),
     (175, 34, '2 Avenue Rhin Et Danube'),
     (176, 34, '25 Avenue de Verdun'),
     (177, 35, '17 Rue Jeanne d’Arc'),
@@ -1031,7 +975,17 @@ VALUES (1, 1, '1 Rue de l''Épée de Bois'),
     (185, 39, '3 Rue des Dames'),
     (186, 39, '9 Quai Valin'),
     (187, 40, '1 Place des Poissonniers'),
-    (188, 40, '14 Quai de la Résistance');
+    (188, 40, '14 Quai de la Résistance'),
+    (189, 15, '93 Rue D''Etretat'),
+    (190, 15, '65 Rue Bernardin de Saint-Pierre'),
+    (191, 34, '7 Place Gustave Rivet'),
+    (192, 34, '36 Avenue Alsace Lorraine'),
+    (193, 34, '25 Cours Jourdan'),
+    (194, 2, '17 Rue Neuve'),
+    (195, 2, '16 Rue Villeroy'),
+    (196, 2, '251 Route de Vienne'),
+    (197, 2, '25 Quai Victor Augagneur'),
+    (198, 2, '25 Rue Chevreul');
 INSERT INTO CATEGORIE_PRODUIT (IDCATEGORIE, NOMCATEGORIE)
 VALUES (1, 'Alimentation générale'),
     (2, 'Fruits, Légumes et Produits frais'),
@@ -1900,6 +1854,265 @@ VALUES (
         9.50,
         'https://tb-static.uber.com/prod/image-proc/processed_images/e9cf326a13b7f6dacdc29b0e71b0cf49/a19bb09692310dfd41e49a96c424b3a6.jpeg',
         'nous aussi on peut ouu c''est que pour les enfants'
+    ),
+    (
+        119,
+        'Menu tacos montagnard',
+        16.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/79c1f8ba11fc2e207c5e4339fed245b3/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Double steak 80 g, bacon, cheddar, frites et sauce gruyère.  Servi avec frites et boisson.'
+    ),
+    (
+        120,
+        'Menu chili thai',
+        16.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/45c0eac5773796394bb49b2318bb7221/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Escalope de poulet, poivrons grillés, cheddar, frites et sauce thai. Servi avec boisson au choix.'
+    ),
+    (
+        121,
+        'Menu burger Ben''s chiken',
+        13.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/7d0b58ac3cacaf90961cb240cbbaff1b/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Poulet, salade, tomate et sauce curry. Servi avec frites et boisson au choix.'
+    ),
+    (
+        122,
+        '6 CHICKEN McNUGGETS',
+        8.60,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/b97d23c2bb4870dc56a7406dbfc1ac7b/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+        '6 Spécialités panées au poulet'
+    ),
+    (
+        123,
+        'Tacos 3 viandes',
+        13.40,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/a2848394329d34182a337ef776b4f95a/4218ca1d09174218364162cd0b1a8cc1.jpeg',
+        'Garni de frites, sauce fromagère, 3 viandes et 1 sauce au choix. Servi avec 1 boisson 33 cl au choix.'
+    ),
+    (
+        124,
+        'Pizza orientale',
+        15.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/d1a56aadd730aff5aa1cfa04ab335bfa/4218ca1d09174218364162cd0b1a8cc1.jpeg',
+        'Pâte fraîche maison, Mozzarella, merguez, poivrons, oignons et œuf. Taille au choix.'
+    ),
+    (
+        125,
+        'Cheeseburger',
+        7.40,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/47593abaf5f24e1ca03653a1023236a7/4218ca1d09174218364162cd0b1a8cc1.jpeg',
+        'Steak 45,Cheddar, crudités et sauce au choix. Servi avec frites et 1 boisson 33 cl au choix.'
+    ),
+    (
+        126,
+        'Menu sandwich curry',
+        10.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/a4516dc87e725ea2ed1344f9e689915d/4218ca1d09174218364162cd0b1a8cc1.jpeg',
+        'Pain au choix, poulet curry, Cheddar, crudités et sauce au choix. Servi avec frites et 1 boisson 33 cl au choix.'
+    ),
+    (
+        127,
+        'Fajita',
+        13.30,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/79d725738b429ad0fc33fb211a0d0d0e/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+        'Fajita à composer'
+    ),
+    (
+        128,
+        'Quesadillas',
+        13.80,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/2cc96a53de190da8d9eea85ef56f141e/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+        'Le plat le plus cheeeeeeeesy de cette carte 🤤'
+    ),
+    (
+        129,
+        'Tacos mexicains',
+        14.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/98f1b724eacae3e912f17e96ce5362eb/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+        'Ici on parle des VRAIS tacos'
+    ),
+    (
+        130,
+        'Tiramisu',
+        4.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/d011606e1468ff3f444f4f494ae4fadd/5143f1e218c67c20fe5a4cd33d90b07b.jpeg',
+        'Fait par nous, avec amour !'
+    ),
+    (
+        131,
+        'Assiette Bœuf Loc Lak',
+        12.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/16503d47f835226132d72e16748fe087/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
+        'Ce plat est accompagné de riz sauce tomate, concombres, tomates et œuf au plat'
+    ),
+    (
+        132,
+        'Nouilles Crevette',
+        12.25,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/736a6f32eab31e97cafd3539cc34194e/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
+        'Nouilles à la crevette'
+    ),
+    (
+        133,
+        'Nem Poulet',
+        1.40,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/b07a85d2b86352dabec11b21b0ed2f15/7f4ae9ca0446cbc23e71d8d395a98428.jpeg',
+        '1 pièce'
+    ),
+    (
+        134,
+        'Bibimbap au porc sauté pimenté',
+        15.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/e68370e0385db8909744cbf1136db759/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Bol de riz mélangé aux légumes.'
+    ),
+    (
+        135,
+        'Doeuji boulkogi',
+        15.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/c8917635f34a556b25e8c60c3eeebc10/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Porc sauté pimenté aux oignons.'
+    ),
+    (
+        136,
+        'Kounmandou',
+        8.00,
+        'https://d1ralsognjng37.cloudfront.net/913acc55-ca81-4d2e-b741-2c4db818ed97.jpeg',
+        'raviolis frits au poulet et légumes.'
+    ),
+    (
+        137,
+        'Classic NY Burger',
+        12.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/13fd404291ad267c08d1e4d2b8ed6f0b/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        'Steak haché VBF, salade verte, tomates, oignons caramélisés, cheddar et ketchup maison.'
+    ),
+    (
+        138,
+        'Dow Jones Hot-dog',
+        5.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/5e920891d8d95a254c6de98441bf5fd5/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        'Pain brioché, saucisse de porc, oignons frits, bacon, cheddar et barbecue maison.'
+    ),
+    (
+        139,
+        'Super Brownie',
+        7.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/d60aefb5e733cd29407e2a54e4879a53/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        'Brownie aux noix de pécan.'
+    ),
+    (
+        140,
+        'Pita kotópoulo',
+        10.40,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/b7da6fcc6608e92b12d03d274af3900a/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Pita, souvlaki poulet halal marinée, garniture, frites et tzatziki.'
+    ),
+    (
+        141,
+        'Grande salade grecque',
+        9.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/20eaf96d9f92c683bf4a0c8047ee4f36/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Salade grecque maison.'
+    ),
+    (
+        142,
+        'Yaourt grec cerises confites et sirop',
+        5.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/9f4e914a798fa40e5dc84cce8c4bac36/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Dessert grec'
+    ),
+    (
+        143,
+        'Kazdal Poulet Avocat',
+        12.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/d6c634162c2256bfa53410ee5b79fcfc/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        'Msemen artisanal, poulet mariné maison, avocat, tomates cerises, oignons frits, mechouia, sauce fromagère citronnée maison et garni de frites fraîches aux épices.'
+    ),
+    (
+        144,
+        'Formule',
+        19.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/91d788491eaf52dc6118643377006d62/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        '1 Kazdal + 1 accompagnement + 1 boisson.'
+    ),
+    (
+        145,
+        'Kazdal Thon Harissa',
+        12.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/44d167eaee3003e045674c3d30b2620a/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        'Msemen artisanal, thon, œuf dur, tomates cerises, olives noires, huile d''olive, sauce mayo, harissa et garni de frites fraîches aux épices.'
+    ),
+    (
+        146,
+        'Msemen Spéculoos',
+        5.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/263d699fe3946d977d3e54e6eb28b8c3/58f691da9eaef86b0b51f9b2c483fe63.jpeg',
+        'Msemen artisanal et crème de Spéculoos'
+    ),
+    (
+        147,
+        'Menu DEMI-POULET',
+        14.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/40db93867eafa9a03921e56c48be5b24/4218ca1d09174218364162cd0b1a8cc1.jpeg',
+        'Demi-poulet, servi avec 1 barquette et 1 boisson 33 cl au choix.'
+    ),
+    (
+        148,
+        'Poulet entier',
+        13.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/7e3c37e5cf455e8f3aca2559f66c2191/a19bb09692310dfd41e49a96c424b3a6.jpeg',
+        'Poulet entier en crapaudine rôti avec notre épice rosti poulet.'
+    ),
+    (
+        149,
+        'Menu ROSTI 1',
+        11.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/3dcb928ce66493469702d05a79aa4125/4218ca1d09174218364162cd0b1a8cc1.jpeg',
+        '1 plat au choix (1 cuisse OU 2 pilons OU 4 ailes OU 1 escalope milanaise OU 2 saucisses), servi avec 1 barquette et 1 boisson 33 cl au choix'
+    ),
+    (
+        150,
+        'Formule Burger Midi et Soir',
+        17.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/16db6765d2c25acd49c6dbbac9fff4b3/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+        'Un burger, un accompagnement et une boisson au choix.'
+    ),
+    (
+        151,
+        'Steak Frites',
+        16.90,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/c53287156970828ba9ca6c805d0bb10c/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+        'Pavé de steak Label Rouge servi avec ses frites et sa sauce maison.'
+    ),
+    (
+        152,
+        'Le Marcel Jackson Veggie',
+        14.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/92cf82dc56adeef66b67af34dcb26482/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+        'Galette de légumes, Bacon végétal LAVIE, Cheddar, Oignons frits, Salade, & Sauce Barbecue KM (Steak végétal HAPPYVORE en option).'
+    ),
+    (
+        153,
+        'Menu - Tacos sur mesure',
+        13.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/e65a1f92628e397ed7d28fe966fbc937/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+        '1 Tacos servi avec Boisson ! Galette de farine de blé au four,  garni avec la recette de ton choix,  « à l’ancienne » Salade, tomate et oignon ou « Original Tw » avec chackchouka maison poêlé de légume à base de tomate poivron et oignon, d’une sauce fromagère maison, de frite, viande et sauces aux choix.'
+    ),
+    (
+        154,
+        'Tacos Gratiné sur mesure',
+        11.50,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/0b15385b5317553bdb63739901938219/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+        'Galette de farine de blé au four,  garni avec la recette de ton choix,  « à l’ancienne » Salade, tomate et oignon ou « Original Tw » avec chackchouka maison poêlé de légume à base de tomate poivron et oignon, d’une sauce fromagère maison, de frite, viande, gratinage et sauces aux choix'
+    ),
+    (
+        155,
+        'Onion rings',
+        5.00,
+        'https://tb-static.uber.com/prod/image-proc/processed_images/9f09f3d0ab6e69598f1fd5a8b4239f7d/5954bcb006b10dbfd0bc160f6370faf3.jpeg',
+        'Onion rings'
     );
 INSERT INTO CARTE_BANCAIRE (
         IDCB,
@@ -6074,6 +6287,86 @@ VALUES (
         '0678901268',
         'onur.tekin@example.com',
         'password35'
+    ),
+    (
+        36,
+        'Çınar',
+        'Yusuf',
+        '0678901269',
+        'yusuf.cinar@example.com',
+        'password36'
+    ),
+    (
+        37,
+        'Bilgin',
+        'Deniz',
+        '0678901270',
+        'deniz.bilgin@example.com',
+        'password37'
+    ),
+    (
+        38,
+        'Eren',
+        'Aylin',
+        '0678901271',
+        'aylin.eren@example.com',
+        'password38'
+    ),
+    (
+        39,
+        'Türkmen',
+        'Furkan',
+        '0678901272',
+        'furkan.turkmen@example.com',
+        'password39'
+    ),
+    (
+        40,
+        'Ersoy',
+        'Cansu',
+        '0678901273',
+        'cansu.ersoy@example.com',
+        'password40'
+    ),
+    (
+        41,
+        'Başar',
+        'Barış',
+        '0678901274',
+        'baris.basar@example.com',
+        'password41'
+    ),
+    (
+        42,
+        'Sağlam',
+        'Eda',
+        '0678901275',
+        'eda.saglam@example.com',
+        'password42'
+    ),
+    (
+        43,
+        'Özer',
+        'Tolga',
+        '0678901276',
+        'tolga.ozer@example.com',
+        'password43'
+    ),
+    (
+        44,
+        'Yücel',
+        'Sibel',
+        '0678901277',
+        'sibel.yucel@example.com',
+        'password44'
+    ),
+    (
+        45,
+        'Durmaz',
+        'Cihan',
+        '0678901278',
+        'cihan.durmaz@example.com',
+        'password45'
     );
 INSERT INTO ETABLISSEMENT (
         IDETABLISSEMENT,
@@ -6258,7 +6551,7 @@ VALUES (
         116,
         'Picard',
         'Spécialisé dans les produits surgelés de qualité pour des repas rapides et savoureux.',
-        'https://tb-static.uber.com/prod/image-proc/processed_images/a5b4df5effe99c1e6459b51137f07938/029e6f4e0c81c14572126109dfe867f3.png',
+        'https://cdn.worldvectorlogo.com/logos/logo-picard.svg',
         TRUE,
         TRUE
     ),
@@ -6434,7 +6727,7 @@ VALUES (
         141,
         'Picard',
         'Spécialisé dans les produits surgelés de qualité pour des repas rapides et savoureux.',
-        'https://tb-static.uber.com/prod/image-proc/processed_images/a5b4df5effe99c1e6459b51137f07938/029e6f4e0c81c14572126109dfe867f3.png',
+        'https://cdn.worldvectorlogo.com/logos/logo-picard.svg',
         FALSE,
         TRUE
     ),
@@ -6470,16 +6763,130 @@ VALUES (
         'https://tb-static.uber.com/prod/image-proc/processed_images/4fcd2c0217a719acc80ee4b9c2e6d2fd/fb86662148be855d931b37d6c1e5fcbe.jpeg',
         TRUE,
         FALSE
+    ),
+    (
+        36,
+        36,
+        'Restaurant',
+        189,
+        'Mister Food',
+        'Mister Food est un restaurant halal apprécié pour ses plats variés et savoureux, offrant une expérience culinaire authentique avec une note parfaite de 5.0 de la part des clients',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/87149bd676882bb98123ee70f79a1085/16bb0a3ab8ea98cfe8906135767f7bf4.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        37,
+        37,
+        'Restaurant',
+        190,
+        'NACHOS Mexican Grill',
+        'NACHOS - Mexican Food offre une expérience gastronomique mexicaine authentique.',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/5b659173226fd2ddd937bbc6f5a94914/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        38,
+        38,
+        'Restaurant',
+        191,
+        'Viet''miam',
+        'Viet''miam - Le classique viet tah tanguy',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/6733b8e361cc950cbb27b38efd950a21/fb86662148be855d931b37d6c1e5fcbe.webp',
+        TRUE,
+        TRUE
+    ),
+    (
+        39,
+        39,
+        'Restaurant',
+        192,
+        'Manna - Korean food',
+        'Manna - Korean food 🥢 offre une expérience culinaire authentiquement asiatique avec une spécialisation dans la cuisine coréenne.',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/be594d5478bbbe2a8bfc0826a0515e29/3ac2b39ad528f8c8c5dc77c59abb683d.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        40,
+        40,
+        'Restaurant',
+        193,
+        'Wall Str’eat',
+        'Wall Str’eat à Grenoble est un établissement de restauration rapide apprécié pour ses options de repas copieuses.',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/ee65bc299b54db78b0af0c3950481654/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        41,
+        41,
+        'Restaurant',
+        194,
+        'Kefi',
+        'Situé au cœur de Lyon, Kefi est un restaurant grec apprécié pour son ambiance chaleureuse et son authentique cuisine hellénique.',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/36a5cb781ca4fd0dd3130569ba816580/fb86662148be855d931b37d6c1e5fcbe.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        42,
+        42,
+        'Restaurant',
+        195,
+        'La Kazdalerie',
+        'La Kazdalerie par Zack Nani',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/4b9250c5cdccea730e4f3f23ad23b9b3/30be7d11a3ed6f6183354d1933fbb6c7.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        43,
+        43,
+        'Restaurant',
+        196,
+        'Rosti Poulet',
+        'Le restaurant excelle particulièrement avec ses plats populaires comme le Poulet Entier, la Barquette De Pâtes Au Poulet, et la Barquette d''ALOCO',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/a1c42b6f6c19804a3214aca6e7347290/fb86662148be855d931b37d6c1e5fcbe.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        44,
+        44,
+        'Restaurant',
+        197,
+        'King Marcel',
+        'King Marcel - Augagneur, situé à Lyon, est une adresse incontournable pour les amateurs de burgers. Ce restaurant est particulièrement célèbre pour ses options de burgers variées, y compris des options végétariennes riches et savoureuses.',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/fcd4f4a95ef8ba5d5a5c357a88c0e8a5/c9252e6c6cd289c588c3381bc77b1dfc.jpeg',
+        TRUE,
+        TRUE
+    ),
+    (
+        45,
+        45,
+        'Restaurant',
+        198,
+        'Tacos World',
+        'Situé dans la vibrante ville de Lyon, Tacos World - Chevreul est une destination idéale pour les amateurs de cuisine mexicaine avec une twist française.',
+        'https://tb-static.uber.com/prod/image-proc/processed_images/a5a1781d60187bc731532a2f4cbd6588/fb86662148be855d931b37d6c1e5fcbe.jpeg',
+        TRUE,
+        TRUE
     );
 INSERT INTO EST_SITUE_A_2 (IDPRODUIT, IDETABLISSEMENT)
 VALUES (1, 1),
     (2, 1),
     (3, 1),
     (4, 1),
+    (122, 1),
     (5, 2),
     (6, 2),
     (7, 6),
     (8, 8),
+    (119, 8),
+    (120, 8),
+    (121, 8),
     (9, 3),
     (10, 3),
     (11, 3),
@@ -6576,6 +6983,7 @@ VALUES (1, 1),
     (2, 21),
     (3, 21),
     (4, 21),
+    (122, 21),
     (62, 32),
     (63, 32),
     (68, 32),
@@ -6583,6 +6991,7 @@ VALUES (1, 1),
     (2, 29),
     (3, 29),
     (4, 29),
+    (122, 29),
     (101, 24),
     (102, 24),
     (103, 24),
@@ -6600,7 +7009,40 @@ VALUES (1, 1),
     (115, 33),
     (116, 35),
     (117, 35),
-    (118, 35);
+    (118, 35),
+    (123, 36),
+    (124, 36),
+    (125, 36),
+    (126, 36),
+    (127, 37),
+    (128, 37),
+    (129, 37),
+    (130, 37),
+    (131, 38),
+    (132, 38),
+    (133, 38),
+    (134, 39),
+    (135, 39),
+    (136, 39),
+    (137, 40),
+    (138, 40),
+    (139, 40),
+    (140, 41),
+    (141, 41),
+    (142, 41),
+    (143, 42),
+    (144, 42),
+    (145, 42),
+    (146, 42),
+    (147, 43),
+    (148, 43),
+    (149, 43),
+    (150, 44),
+    (151, 44),
+    (152, 44),
+    (153, 45),
+    (154, 45),
+    (155, 45);
 INSERT INTO A_COMME_CATEGORIE (IDETABLISSEMENT, IDCATEGORIEPRESTATION)
 VALUES (1, 8),
     (1, 34),
@@ -6811,7 +7253,32 @@ VALUES (1, 8),
     (35, 24),
     (35, 37),
     (35, 39),
-    (35, 38);
+    (35, 38),
+    (36, 2),
+    (36, 3),
+    (36, 8),
+    (36, 34),
+    (36, 22),
+    (37, 20),
+    (37, 10),
+    (38, 9),
+    (38, 31),
+    (39, 9),
+    (39, 12),
+    (40, 8),
+    (40, 10),
+    (40, 34),
+    (41, 40),
+    (41, 41),
+    (42, 2),
+    (42, 41),
+    (43, 2),
+    (43, 15),
+    (44, 8),
+    (44, 34),
+    (45, 7),
+    (45, 2),
+    (45, 21);
 INSERT INTO HORAIRES (
         IDHORAIRES,
         IDETABLISSEMENT,
@@ -8533,6 +9000,496 @@ VALUES (
         'Dimanche',
         '09:00:00+01',
         '14:00:00+01'
+    ),
+    (
+        246,
+        36,
+        'Lundi',
+        '18:00:00+01',
+        '23:00:00+01'
+    ),
+    (
+        247,
+        36,
+        'Mardi',
+        '11:00:00+01',
+        '23:00:00+01'
+    ),
+    (
+        248,
+        36,
+        'Mercredi',
+        '11:00:00+01',
+        '23:00:00+01'
+    ),
+    (
+        249,
+        36,
+        'Jeudi',
+        '11:00:00+01',
+        '23:00:00+01'
+    ),
+    (
+        250,
+        36,
+        'Vendredi',
+        '08:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        251,
+        36,
+        'Samedi',
+        '08:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        252,
+        36,
+        'Dimanche',
+        '11:00:00+01',
+        '23:00:00+01'
+    ),
+    (
+        253,
+        37,
+        'Lundi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        254,
+        37,
+        'Mardi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        255,
+        37,
+        'Mercredi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        256,
+        37,
+        'Jeudi',
+        '11:30:00+01',
+        '22:00:00+01'
+    ),
+    (
+        257,
+        37,
+        'Vendredi',
+        '11:30:00+01',
+        '22:00:00+01'
+    ),
+    (
+        258,
+        37,
+        'Samedi',
+        '11:30:00+01',
+        '22:00:00+01'
+    ),
+    (
+        259,
+        37,
+        'Dimanche',
+        '12:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        260,
+        38,
+        'Lundi',
+        '11:30:00+01',
+        '22:30:00+01'
+    ),
+    (
+        261,
+        38,
+        'Mardi',
+        '11:30:00+01',
+        '22:30:00+01'
+    ),
+    (
+        262,
+        38,
+        'Mercredi',
+        '11:30:00+01',
+        '22:30:00+01'
+    ),
+    (
+        263,
+        38,
+        'Jeudi',
+        '11:30:00+01',
+        '22:30:00+01'
+    ),
+    (
+        264,
+        38,
+        'Vendredi',
+        '11:30:00+01',
+        '22:30:00+01'
+    ),
+    (
+        265,
+        38,
+        'Samedi',
+        '11:30:00+01',
+        '22:30:00+01'
+    ),
+    (
+        266,
+        38,
+        'Dimanche',
+        NULL,
+        NULL
+    ),
+    (
+        267,
+        39,
+        'Lundi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        268,
+        39,
+        'Mardi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        269,
+        39,
+        'Mercredi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        270,
+        39,
+        'Jeudi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        271,
+        39,
+        'Vendredi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        272,
+        39,
+        'Samedi',
+        '11:30:00+01',
+        '21:30:00+01'
+    ),
+    (
+        273,
+        39,
+        'Dimanche',
+        NULL,
+        NULL
+    ),
+    (
+        274,
+        40,
+        'Lundi',
+        NULL,
+        NULL
+    ),
+    (
+        275,
+        40,
+        'Mardi',
+        '18:00:00+01',
+        '22:30:00+01'
+    ),
+    (
+        276,
+        40,
+        'Mercredi',
+        '18:00:00+01',
+        '22:30:00+01'
+    ),
+    (
+        277,
+        40,
+        'Jeudi',
+        '18:00:00+01',
+        '22:30:00+01'
+    ),
+    (
+        278,
+        40,
+        'Vendredi',
+        '18:00:00+01',
+        '22:30:00+01'
+    ),
+    (
+        279,
+        40,
+        'Samedi',
+        '18:00:00+01',
+        '22:30:00+01'
+    ),
+    (
+        280,
+        40,
+        'Dimanche',
+        NULL,
+        NULL
+    ),
+    (
+        281,
+        41,
+        'Lundi',
+        '11:00:00+01',
+        '14:30:00+01'
+    ),
+    (
+        282,
+        41,
+        'Mardi',
+        '11:00:00+01',
+        '21:30:00+01'
+    ),
+    (
+        283,
+        41,
+        'Mercredi',
+        '11:00:00+01',
+        '21:30:00+01'
+    ),
+    (
+        284,
+        41,
+        'Jeudi',
+        '11:00:00+01',
+        '21:30:00+01'
+    ),
+    (
+        285,
+        41,
+        'Vendredi',
+        '11:00:00+01',
+        '21:30:00+01'
+    ),
+    (
+        286,
+        41,
+        'Samedi',
+        '11:00:00+01',
+        '21:30:00+01'
+    ),
+    (
+        287,
+        41,
+        'Dimanche',
+        NULL,
+        NULL
+    ),
+    (
+        288,
+        42,
+        'Lundi',
+        NULL,
+        NULL
+    ),
+    (
+        289,
+        42,
+        'Mardi',
+        '11:30:00+01',
+        '23:00:00+01'
+    ),
+    (
+        290,
+        42,
+        'Mercredi',
+        '11:30:00+01',
+        '23:00:00+01'
+    ),
+    (
+        291,
+        42,
+        'Jeudi',
+        '11:30:00+01',
+        '23:00:00+01'
+    ),
+    (
+        292,
+        42,
+        'Vendredi',
+        '11:30:00+01',
+        '23:00:00+01'
+    ),
+    (
+        293,
+        42,
+        'Samedi',
+        '11:30:00+01',
+        '23:00:00+01'
+    ),
+    (
+        294,
+        42,
+        'Dimanche',
+        '11:30:00+01',
+        '23:00:00+01'
+    ),
+    (
+        295,
+        43,
+        'Lundi',
+        '11:30:00+01',
+        '23:59:00+01'
+    ),
+    (
+        296,
+        43,
+        'Mardi',
+        '11:30:00+01',
+        '23:59:00+01'
+    ),
+    (
+        297,
+        43,
+        'Mercredi',
+        '11:30:00+01',
+        '23:59:00+01'
+    ),
+    (
+        298,
+        43,
+        'Jeudi',
+        '11:30:00+01',
+        '23:59:00+01'
+    ),
+    (
+        299,
+        43,
+        'Vendredi',
+        '11:25:00+01',
+        '01:00:00+01'
+    ),
+    (
+        300,
+        43,
+        'Samedi',
+        '11:30:00+01',
+        '01:00:00+01'
+    ),
+    (
+        301,
+        43,
+        'Dimanche',
+        '11:30:00+01',
+        '23:59:00+01'
+    ),
+    (
+        302,
+        44,
+        'Lundi',
+        '11:00:00+01',
+        '01:00:00+01'
+    ),
+    (
+        303,
+        44,
+        'Mardi',
+        '11:00:00+01',
+        '01:00:00+01'
+    ),
+    (
+        305,
+        44,
+        'Mercredi',
+        '11:00:00+01',
+        '01:00:00+01'
+    ),
+    (
+        306,
+        44,
+        'Jeudi',
+        '11:00:00+01',
+        '01:00:00+01'
+    ),
+    (
+        307,
+        44,
+        'Vendredi',
+        '11:00:00+01',
+        '01:00:00+01'
+    ),
+    (
+        308,
+        44,
+        'Samedi',
+        '11:00:00+01',
+        '03:00:00+01'
+    ),
+    (
+        309,
+        44,
+        'Dimanche',
+        '11:00:00+01',
+        '01:00:00+01'
+    ),
+    (
+        310,
+        45,
+        'Lundi',
+        '11:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        311,
+        45,
+        'Mardi',
+        '11:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        312,
+        45,
+        'Mercredi',
+        '11:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        313,
+        45,
+        'Jeudi',
+        '11:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        314,
+        45,
+        'Vendredi',
+        '11:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        315,
+        45,
+        'Samedi',
+        '11:00:00+01',
+        '23:59:00+01'
+    ),
+    (
+        316,
+        45,
+        'Dimanche',
+        '11:00:00+01',
+        '23:59:00+01'
     );
 INSERT INTO HORAIRES_COURSIER (
         IDHORAIRES_COURSIER,
