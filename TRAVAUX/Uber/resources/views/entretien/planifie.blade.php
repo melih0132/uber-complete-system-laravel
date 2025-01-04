@@ -28,7 +28,7 @@
                     @csrf
                     <button type="submit" class="btn-entretien">Annuler le rendez-vous</button>
                 </form>
-                <a href="{{ route('mon-compte') }}" class="btn-entretien text-decoration-none mx-2">Retour à mon compte</a>
+                <a href="{{ route('myaccount') }}" class="btn-entretien text-decoration-none mx-2">Retour à mon compte</a>
             </div>
 
 

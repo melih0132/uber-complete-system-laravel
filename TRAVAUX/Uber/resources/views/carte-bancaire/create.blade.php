@@ -3,7 +3,7 @@
 @section('title', 'Ajouter une Carte Bancaire')
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/mon-compte.blade.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/myaccount.blade.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 @endsection
 
@@ -17,29 +17,15 @@
                 <!-- Sidebar -->
                 <div class="col-md-3">
                     <ul class="list-group shadow-sm">
-                        <a href="{{ url('/mon-compte') }}" class="text-decoration-none">
-                            <li class="list-group-item rounded-0">
-                                <i class="fas fa-user me-2"></i> Informations sur le compte
-                            </li>
-                        </a>
-                        <li class="list-group-item" data-target="content-courses">
-                            <i class="fas fa-taxi me-2" aria-hidden="true"></i>Courses
-                        </li>
-                        <a href="{{ url('/carte-bancaire') }}" class="text-decoration-none">
-                            <li class="list-group-item active rounded-0">
-                                <i class="fas fa-credit-card me-2"></i> Carte Bancaire
-                            </li>
-                        </a>
                         <li class="list-item-flex rounded-0">
-                            <a href="{{ url('/favoris') }}" class="text-decoration-none d-flex align-items-center">
-                                <i class="fas fa-star me-2" aria-hidden="true"></i> Lieux favoris
+                            <a href="{{ url('/myaccount') }}" class="text-decoration-none d-flex align-items-center">
+                                <i class="fas fa-user me-2"></i> Revenir sur le compte
                             </a>
                         </li>
-                        <li class="list-group-item" data-target="content-securite">
-                            <i class="fas fa-shield-alt me-2"></i>Sécurité
-                        </li>
-                        <li class="list-group-item" data-target="content-confidentialite">
-                            <i class="fas fa-user-shield me-2"></i>Confidentialité et données
+                        <li class="list-group-item active">
+                            <a href="{{ url('/carte-bancaire') }}" class="text-decoration-none d-flex align-items-center">
+                                <i class="fas fa-credit-card me-2" aria-hidden="true"></i> Carte Bancaire
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -65,6 +51,7 @@
                             <input type="text" id="numerocb" name="numerocb"
                                 class="form-control @error('numerocb') is-invalid @enderror" value="{{ old('numerocb') }}"
                                 placeholder="1234 5678 9012 3456" maxlength="16" required>
+                            <small>Ne mettez pas d'espaces</small>
                             @error('numerocb')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -76,6 +63,7 @@
                             <input type="month" id="dateexpirecb" name="dateexpirecb"
                                 class="form-control @error('dateexpirecb') is-invalid @enderror"
                                 value="{{ old('dateexpirecb') }}" required min="<?php echo date('Y-m'); ?>">
+                            <small>Format mm-aaaa</small>
                             @error('dateexpirecb')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -122,8 +110,8 @@
                         </div>
 
                         <div class="mt-4 text-center">
-                            <button class="btn btn-success" type="submit">Ajouter la carte</button>
-                            <a href="{{ route('carte-bancaire.index') }}" class="btn btn-secondary">Annuler</a>
+                            <button class="btn-cb" type="submit">Ajouter la carte</button>
+                            <a href="{{ route('carte-bancaire.index') }}" class="btn-cb text-decoration-none">Annuler</a>
                         </div>
                     </form>
                 </div>

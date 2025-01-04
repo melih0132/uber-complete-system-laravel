@@ -58,4 +58,10 @@ class CommandeController extends Controller
 
         return view('commande', compact('commandes', 'user'));
     }
+    public function choixLivraison(Request $request)
+    {
+        session(['mode' => $request->mode]);
+
+        return redirect()->back();
+    }
 }

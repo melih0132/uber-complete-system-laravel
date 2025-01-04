@@ -81,12 +81,13 @@
                     $user = session('user');
                 @endphp
                 @if ($user)
-                    <form action="{{ route('panier.commander') }}" method="POST" class="d-inline">
+                    {{-- <form action="{{ route('panier.commander') }}" method="POST" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn-panier mx-2">Passer une commande</button>
-                    </form>
+                        <button type="submit" class="btn-panier mx-2">Finaliser la commande</button>
+                    </form> --}}
+                    <a href="{{ url('/panier/livraison') }}" class="btn-panier mx-2 text-decoration-none">Finaliser la commande</a>
                 @else
-                    <a href="{{ url('/login') }}" class="btn-panier mx-2 text-decoration-none">Passer une commande</a>
+                    <a href="{{ url('/login') }}" class="btn-panier mx-2 text-decoration-none">Finaliser la commande</a>
                 @endif
             </div>
         </div>

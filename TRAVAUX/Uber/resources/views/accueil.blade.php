@@ -10,6 +10,7 @@
 @endsection
 
 @section('js')
+    {{-- MAP --}}
     <script src="{{ asset('js/leaflet.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/main.js') }}" defer></script>
@@ -20,7 +21,7 @@
         <div class="main-container">
             <div class="row p-4">
                 <div class="col-12 col-sm-6">
-                    <h1>Allez où vous voulez avec Uber</h1>
+                    <h1 class="pb-4">Allez où vous voulez avec Uber</h1>
                     <form action="{{ route('course.index') }}" method="POST">
                         @csrf
                         <!-- Adresse de départ -->

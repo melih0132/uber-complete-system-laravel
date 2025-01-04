@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Panier;
-use App\Models\Planning_reservation;
+use App\Models\PlanningReservation;
 
 use App\Models\Client;
 use App\Models\Coursier;
@@ -157,7 +157,7 @@ class RegisterController extends Controller
             'prix' => 0,
         ]);
 
-        Planning_reservation::create([
+        PlanningReservation::create([
             'idclient' => $client->idclient,
         ]);
     }

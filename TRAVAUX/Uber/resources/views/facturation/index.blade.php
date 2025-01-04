@@ -5,21 +5,17 @@
 @section('content')
     <div class="container py-5">
         <div class="card shadow-sm border-0">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Facturation</h2>
-                <i class="fas fa-file-invoice-dollar fa-2x"></i>
             </div>
             <div class="card-body">
 
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0 d-flex align-items-center">Filtrer les courses</h5>
-                    </div>
+                <div class="mb-2 border-0">
                     <div class="card-body">
                         <form method="POST" action="{{ route('facturation.filter') }}" class="row g-3">
                             @csrf
 
-                            <div class="col-12">
+                            <div class="col-12 mb-2">
                                 <label for="search-coursier" class="form-label text-secondary fw-bold">
                                     Rechercher un coursier
                                 </label>
@@ -47,8 +43,8 @@
                             </div>
 
                             <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-success mt-4">
-                                    <i class="fas fa-search me-2"></i> Rechercher
+                                <button type="submit" class="btn-uber mt-4">
+                                   Rechercher
                                 </button>
                             </div>
                         </form>
@@ -92,8 +88,8 @@
                             <input type="hidden" name="idcoursier" value="{{ $idcoursier }}">
                             <input type="hidden" name="start_date" value="{{ $start_date }}">
                             <input type="hidden" name="end_date" value="{{ $end_date }}">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-file-pdf me-2"></i> Télécharger la facture
+                            <button type="submit" class="btn-uber">
+                                <i class="fas fa-file-pdf mx-2"></i> Télécharger la facture
                             </button>
                         </form>
                     </div>

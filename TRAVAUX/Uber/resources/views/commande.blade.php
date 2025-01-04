@@ -31,7 +31,8 @@
                             <td>{{ $commande->idcommande }}</td>
                             <td>{{ $commande->tempscommande ? $commande->tempscommande->format('d/m/Y H:i') : '-' }}</td>
                             <td>
-                                <span class="badge
+                                <span
+                                    class="badge
                                     @if ($commande->statutcommande === 'En attente') badge-warning
                                     @elseif ($commande->statutcommande === 'Confirmée') badge-success
                                     @else badge-secondary @endif">
@@ -40,7 +41,8 @@
                             </td>
                             <td>{{ number_format($commande->prixcommande, 2, ',', ' ') }} €</td>
                             <td>
-                                <a href="{{ route('commande.show', ['idcommande' => $commande->idcommande]) }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('commande.show', ['idcommande' => $commande->idcommande]) }}"
+                                    class="btn btn-primary btn-sm">
                                     Voir détails
                                 </a>
                             </td>

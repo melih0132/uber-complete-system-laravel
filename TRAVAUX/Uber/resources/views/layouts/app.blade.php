@@ -52,7 +52,8 @@
                 @if ($user && $user['role'] === 'coursier')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Accéder aux courses"
-                            href="{{ route('coursier.courses.index') }}" target="_self" class="header-links">Courses</a>
+                            href="{{ route('coursier.courses.index') }}" target="_self" class="header-links">Courses en
+                            attente</a>
                     </li>
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Voir les détails d'entretien"
@@ -120,6 +121,19 @@
                     </li>
                 @endif
 
+                @if ($user && $user['role'] === 'course')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Voir les courses demandées"
+                            href="{{ route('service-course.index') }}" target="_self" class="header-links">Courses
+                            Demandées</a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Analyses et Performances"
+                            href="{{ route('service-course.analyse') }}" target="_self"
+                            class="header-links">Analayses et Performances</a>
+                    </li>
+                @endif
+
                 @if (!$user || $user['role'] === 'client')
                     <li class="pr-1">
                         <a href="{{ url('./') }}" class="header-links">Réserver un Uber</a>
@@ -144,7 +158,7 @@
             <ul class="d-flex align-items-center">
                 @if ($user)
                     <li class="pr-1">
-                        <a data-baseweb="button" aria-label="Accéder à votre compte" href="{{ url('/mon-compte') }}"
+                        <a data-baseweb="button" aria-label="Accéder à votre compte" href="{{ url('/myaccount') }}"
                             class="a-login">Mon Compte</a>
                     </li>
                     <li>

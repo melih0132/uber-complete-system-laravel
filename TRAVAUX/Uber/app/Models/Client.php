@@ -42,6 +42,11 @@ class Client extends Model
         return $this->belongsToMany(CarteBancaire::class, 'appartient_2', 'idclient', 'idcb');
     }
 
+    public function lieuFavoris()
+    {
+        return $this->hasMany(LieuFavori::class, 'idclient', 'idclient');
+    }
+
     public function courses()
     {
         return $this->hasManyThrough(

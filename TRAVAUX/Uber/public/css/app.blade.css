@@ -15,11 +15,10 @@ html {
 
 h1 {
     display: block;
-    font-size: 2em;
-    margin-block-start: 0.67em;
-    margin-block-end: 0.67em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    font-weight: bold;
+}
+h2 {
+    display: block;
     font-weight: bold;
 }
 
@@ -49,6 +48,27 @@ ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
+}
+
+::selection {
+    background-color: #333;
+    color: white;
+}
+
+.btn-uber {
+    font-size: 14px;
+    font-weight: 600;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-uber:hover {
+    background: #282828;
+    color: #fff;
 }
 
 .btn-annuler {
@@ -140,12 +160,6 @@ ul {
     z-index: 2002;
     overflow: hidden;
 }
-
-/*@media screen and (min-width: 1136px) {
-  .header-links {
-    font-size: 24px;
-  }
-}*/
 
 .liste {
     display: flex;
@@ -438,15 +452,6 @@ input {
 .card-body {
     line-height: 1.8;
     color: #495057;
-}
-
-a {
-    color: black;
-}
-
-a:hover {
-    text-decoration: none;
-    color: rgba(0, 0, 0, 0.5);
 }
 
 #toc {

@@ -31,6 +31,16 @@ class Course extends Model
         'temps',
     ];
 
+    public function startAddress()
+    {
+        return $this->belongsTo(Adresse::class, 'adr_idadresse', 'idadresse');
+    }
+
+    public function endAddress()
+    {
+        return $this->belongsTo(Adresse::class, 'idadresse', 'idadresse');
+    }
+
     public function reservation()
     {
         return $this->belongsTo(Reservation::class, 'idreservation');

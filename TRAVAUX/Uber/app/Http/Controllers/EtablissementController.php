@@ -10,7 +10,7 @@ use App\Models\Adresse;
 use App\Models\Code_postal;
 
 use App\Models\CategoriePrestation;
-use App\Models\Categorie_produit;
+use App\Models\CategorieProduit;
 use App\Models\Horaires;
 
 // use App\Models\Produit;
@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 
 class EtablissementController extends Controller
 {
+    // A revoir (séparer si possible)
     public function index(Request $request)
     {
         $searchVille = $request->input('recherche_ville');
@@ -142,10 +143,28 @@ class EtablissementController extends Controller
 
         $produits = $selectedTypeAffichage === 'etablissements' ? collect() : $produitsQuery->paginate(6);
 
-        $categoriesPrestation = CategoriePrestation::all();
-        $categoriesProduit = Categorie_produit::all();
 
-        return view('etablissement', [
+        // FAIRE 2 FONCTIONS :
+        // CHARGEMENT ETABLISSEMENTS (FORM ACCUEIL UBER EAT) ET FILTRAGE ETABLISSMENTS (FORM DANS ETABLISSEMENTS)
+        $filteredEtablissements = $etablissementsQuery->pluck('e.idetablissement');
+
+        $categoriesPrestation = DB::table('categorie_prestation as cp')
+            ->join('a_comme_categorie as acc', 'cp.idcategorieprestation', '=', 'acc.idcategorieprestation')
+            ->whereIn('acc.idetablissement', $filteredEtablissements)
+            ->distinct()
+            ->select('cp.idcategorieprestation', 'cp.libellecategorieprestation', 'cp.imagecategorieprestation')
+            ->get();
+
+        $categoriesProduit = DB::table('categorie_produit as cat_prod')
+            ->join('a_3 as a3', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
+            ->join('produit as p', 'p.idproduit', '=', 'a3.idproduit')
+            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
+            ->whereIn('es.idetablissement', $filteredEtablissements)
+            ->distinct()
+            ->select('cat_prod.idcategorie', 'cat_prod.nomcategorie')
+            ->get();
+
+        return view('etablissements.etablissement', [
             'etablissements' => $etablissements,
             'produits' => $produits,
 
@@ -221,21 +240,44 @@ class EtablissementController extends Controller
             )
             ->first();
 
-        $horaires = DB::table('horaires as h')
-            ->join('etablissement as e', 'e.idetablissement', '=', 'h.idetablissement')
-            ->where('e.idetablissement', $idetablissement)
+        if (!$etablissement) {
+            return abort(404, 'Établissement non trouvé');
+        }
+
+        $horaires = DB::table('horaires')
+            ->where('idetablissement', $idetablissement)
+            ->select('joursemaine', 'horairesouverture', 'horairesfermeture')
             ->get();
+
+        $groupedHoraires = [];
+        foreach ($horaires as $horaire) {
+            $ouverture = is_null($horaire->horairesouverture) ? 'Fermé' : \Carbon\Carbon::parse($horaire->horairesouverture)->format('H:i');
+            $fermeture = is_null($horaire->horairesfermeture) ? 'Fermé' : \Carbon\Carbon::parse($horaire->horairesfermeture)->format('H:i');
+            $horaireKey = $ouverture === 'Fermé' && $fermeture === 'Fermé' ? 'Fermé' : "$ouverture - $fermeture";
+
+            if (!isset($groupedHoraires[$horaireKey])) {
+                $groupedHoraires[$horaireKey] = [];
+            }
+            $groupedHoraires[$horaireKey][] = $horaire->joursemaine;
+        }
 
         $produits = DB::table('produit as p')
             ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
             ->where('es.idetablissement', $idetablissement)
-            ->select('p.*')
+            ->select('p.idproduit', 'p.nomproduit', 'p.prixproduit', 'p.imageproduit', 'p.description')
             ->get();
 
-        return view('detail-etablissement', [
+        $categoriesPrestations = DB::table('a_comme_categorie as acc')
+            ->join('categorie_prestation as cp', 'acc.idcategorieprestation', '=', 'cp.idcategorieprestation')
+            ->where('acc.idetablissement', $idetablissement)
+            ->select('cp.libellecategorieprestation', 'cp.descriptioncategorieprestation', 'cp.imagecategorieprestation')
+            ->get();
+
+        return view('etablissements.detail-etablissement', [
             'etablissement' => $etablissement,
             'produits' => $produits,
-            'horaires' => $horaires
+            'groupedHoraires' => $groupedHoraires,
+            'categoriesPrestations' => $categoriesPrestations,
         ]);
     }
 

@@ -23,7 +23,7 @@ class CarteBancaireController extends Controller
             $query->where('client.idclient', $userSession['id']);
         })->get();
 
-        return view('cartes.index', compact('cartes'));
+        return view('carte-bancaire.index', compact('cartes'));
     }
 
     public function create()

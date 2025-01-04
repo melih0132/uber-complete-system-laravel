@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+use App\Models\Course;
+
 // use App\Models\Coursier;
 use App\Models\Entretien;
 use App\Models\Vehicule;
@@ -22,7 +25,7 @@ class CoursierController extends Controller
             ->where('statusprocessuslogistique', 'Validé')
             ->exists();
 
-        // Le coursier est éligible si au moins un entretien est retenu et un véhicule validé
+        // Le coursier est éligible si il est retenue à l'entretien rh et a un véhicule validé par le service logistique
         return $entretienValid && $vehiculeValid;
     }
 
@@ -31,13 +34,13 @@ class CoursierController extends Controller
         $user = session('user');
 
         if (!$user) {
-            return redirect()->route('mon-compte')->with('error', 'Accès refusé.');
+            return redirect()->route('myaccount')->with('error', 'Accès refusé.');
         }
 
         $entretien = Entretien::where('idcoursier', $user['id'])->first();
 
         if (!$entretien) {
-            return redirect()->route('mon-compte')->with('error', 'Aucun entretien trouvé.');
+            return redirect()->route('myaccount')->with('error', 'Aucun entretien trouvé.');
         }
 
         switch ($entretien->status) {
@@ -58,7 +61,7 @@ class CoursierController extends Controller
                 break;
 
             default:
-                return redirect()->route('mon-compte')->with('error', 'Statut d\'entretien inconnu.');
+                return redirect()->route('myaccount')->with('error', 'Statut d\'entretien inconnu.');
         }
     }
 
@@ -87,7 +90,7 @@ class CoursierController extends Controller
         $user = session('user');
 
         if (!$user) {
-            return redirect()->route('mon-compte')->with('error', 'Accès refusé.');
+            return redirect()->route('myaccount')->with('error', 'Accès refusé.');
         }
 
         $entretien = Entretien::where('idcoursier', $user['id'])->where('status', 'Plannifié')->first();
@@ -104,7 +107,7 @@ class CoursierController extends Controller
         $user = session('user');
 
         if (!$user || !$this->isCoursierEligible($user['id'])) {
-            return redirect()->route('mon-compte')->with('error', 'Accès refusé.');
+            return redirect()->route('myaccount')->with('error', 'Accès refusé.');
         }
 
         $routeName = $request->route()->getName();
@@ -166,7 +169,7 @@ class CoursierController extends Controller
                 ->get();
         }
 
-        return view('coursier', [
+        return view('conducteurs.course-en-attente', [
             'tasks' => $tasks,
             'type' => $isCoursesRoute ? 'courses' : 'livraisons'
         ]);
@@ -230,7 +233,7 @@ class CoursierController extends Controller
             )
             ->first();
 
-        return view('detail-coursier', [
+        return view('conducteurs.detail-course', [
             'type' => $isCoursesRoute ? 'course' : 'delivery',
             'id' => $idreservation,
             'taskDetails' => $taskDetails

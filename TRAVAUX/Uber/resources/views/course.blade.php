@@ -86,7 +86,8 @@
     <section>
         <div class="container">
             @if ($prestations->isNotEmpty())
-                <h2>Pour une course le {{ $jourSemaine }} {{ $tripDate }} de {{ $startAddress }} à {{ $endAddress }} :
+                <h2>Pour une course le {{ $jourSemaine }} {{ $tripDate }} de {{ $startAddress }} à {{ $endAddress }}
+                    :
                 </h2>
                 <ul>
                     @foreach ($prestations as $prestation)
@@ -100,9 +101,9 @@
                                         <b>
                                             @php
                                                 $adjusted_time = $prestation->adjusted_time ?? 0; // Récupérer les minutes ou 0 si non défini
-                                                $hours = floor($adjusted_time / 60);             // Calcul des heures
-                                                $minutes = $adjusted_time % 60;                 // Calcul des minutes restantes
-                                                $formatted_time = sprintf("%2dh%02d minutes", $hours, $minutes); // Formatage en hh:mm
+                                                $hours = floor($adjusted_time / 60); // Calcul des heures
+                                                $minutes = $adjusted_time % 60; // Calcul des minutes restantes
+                                                $formatted_time = sprintf('%2dh%02d minutes', $hours, $minutes); // Formatage en hh:mm
                                             @endphp
                                             {{ $formatted_time }}
                                         </b>

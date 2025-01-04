@@ -15,48 +15,39 @@
 @section('content')
     <main class="main-content">
         <section class="section-container">
-            <!-- Section Header -->
             <header class="section-header">
                 <h1 class="header-title">Commandez vos plats favoris</h1>
                 <p class="header-description">Trouvez et faites-vous livrer les meilleurs plats des restaurants proches de
                     chez vous.</p>
             </header>
 
-            <!-- Form Section -->
             <div class="form-section">
                 <form action="{{ route('etablissement.index') }}" method="GET" class="form-container">
-                    <!-- Form Grid -->
                     <div class="form-grid">
-                        <!-- City Search -->
                         <div class="form-group">
                             <label for="recherche_ville" class="form-label">Ville</label>
                             <input type="text" name="recherche_ville" id="recherche_ville" class="form-input" required
                                 placeholder="Recherchez une ville" value="{{ request('recherche_ville') }}">
                         </div>
 
-                        <!-- Date Picker -->
                         <div class="form-group">
                             <label for="selected_jour" class="form-label">Date</label>
                             <input type="date" id="selected_jour" name="selected_jour" class="form-input"
                                 value="{{ request('selected_jour') ?: \Carbon\Carbon::now('Europe/Paris')->format('Y-m-d') }}">
                         </div>
 
-                        <!-- Time Slot Selector -->
                         <div class="form-group">
                             <label for="selected_horaires" class="form-label">Créneau horaire</label>
                             <select name="selected_horaires" id="selected_horaires" class="form-select">
-                                <option value="" {{ empty($selectedHoraire) ? 'selected' : '' }}>
-                                    Sélectionnez un créneau
-                                </option>
+                                <option value="" {{ empty($selectedHoraire) ? 'selected' : '' }}>Sélectionnez un
+                                    créneau</option>
                                 @foreach ($slots as $slot)
                                     <option value="{{ $slot }}" {{ $selectedHoraire === $slot ? 'selected' : '' }}>
-                                        {{ $slot }}
-                                    </option>
+                                        {{ $slot }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- Submit Button -->
                         <div class="form-row">
                             <button type="submit" class="form-button">Rechercher</button>
                         </div>

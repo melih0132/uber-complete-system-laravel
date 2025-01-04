@@ -60,7 +60,7 @@
                     @if ($user)
                         <!-- Mon Compte -->
                         <li class="li-links mx-2">
-                            <a class="a-login" href="{{ url('/mon-compte') }}">Mon Compte</a>
+                            <a class="a-login" href="{{ url('/myaccount') }}">Mon Compte</a>
                         </li>
                         <!-- Logout -->
                         <li class="css-fyrSIO mx-2">

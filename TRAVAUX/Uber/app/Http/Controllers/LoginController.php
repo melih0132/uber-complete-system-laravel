@@ -16,7 +16,9 @@ use App\Models\Entretien;
 use App\Models\ResponsableEnseigne;
 use App\Models\Etablissement;
 
+use App\Models\Adresse;
 use App\Models\Ville;
+use App\Models\Code_postal;
 
 // use Illuminate\Support\Facades\Auth;
 
@@ -39,6 +41,10 @@ class LoginController extends Controller
             'email' => 'rh@uber.com',
             'password' => 'ressourceh123',
         ],
+        'course' => [
+            'email' => 'course@uber.com',
+            'password' => 'course123',
+        ],
         'support' => [
             'email' => 'support@uber.com',
             'password' => 'support123',
@@ -50,7 +56,7 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:client,coursier,responsable,logistique,facturation,administratif,rh,support'],
+            'role' => ['required', 'in:client,coursier,responsable,logistique,facturation,course,administratif,rh,support'],
         ]);
 
         if (in_array($credentials['role'], ['client', 'coursier', 'responsable'])) {
@@ -80,7 +86,7 @@ class LoginController extends Controller
                 return redirect('/')->with('success', 'Connexion réussie.');
             }
 
-            return redirect()->route('mon-compte')->with('success', 'Connexion réussie.');
+            return redirect()->route('myaccount')->with('success', 'Connexion réussie.');
         }
 
         if (isset($this->serviceAccounts[$credentials['role']])) {
@@ -97,7 +103,7 @@ class LoginController extends Controller
                 'role' => $credentials['role'],
             ]);
 
-            return redirect()->route('mon-compte')->with('success', 'Connexion réussie.');
+            return redirect()->route('myaccount')->with('success', 'Connexion réussie.');
         }
 
         return back()->withErrors(['role' => 'Rôle invalide.']);
@@ -130,40 +136,45 @@ class LoginController extends Controller
                 }
                 break;
 
-                case 'client':
-                    $user = Client::find($sessionUser['id']);
-                    if ($user) {
-                        $courses = DB::table('course')
-                        ->leftJoin('reservation', 'course.idreservation', '=', 'reservation.idreservation')
-                        ->join('adresse as start_address', 'course.idadresse', '=', 'start_address.idadresse')
-                        ->join('adresse as end_address', 'course.adr_idadresse', '=', 'end_address.idadresse')
+            case 'client':
+                $user = Client::find($sessionUser['id']);
+                if ($user) {
+                    $courses = DB::table('course')
+                        ->join('reservation', 'course.idreservation', '=', 'reservation.idreservation')
+                        ->join('client', 'reservation.idclient', '=', 'client.idclient')
+                        ->join('adresse as start_address', 'course.adr_idadresse', '=', 'start_address.idadresse')
+                        ->join('adresse as end_address', 'course.idadresse', '=', 'end_address.idadresse')
                         ->select(
                             'course.idcourse',
+                            'client.idclient',
+                            'client.nomuser',
+                            'client.prenomuser',
                             'course.datecourse',
                             'course.heurecourse',
                             'course.prixcourse',
                             'course.statutcourse',
                             'course.notecourse',
+                            'course.commentairecourse',
+                            'course.distance',
+                            'course.temps',
                             'start_address.libelleadresse as start_address',
                             'end_address.libelleadresse as end_address'
                         )
+                        ->whereIn('course.statutcourse', ['Terminée', 'Annulée'])
                         ->where('reservation.idclient', $user->idclient)
                         ->orderBy('course.datecourse', 'desc')
+                        ->orderBy('course.heurecourse', 'desc')
                         ->get();
-                    
-                
-                        // Récupération des lieux favoris du client
-                        $favorites = DB::table('lieu_favori')
-                            ->join('adresse', 'lieu_favori.idadresse', '=', 'adresse.idadresse')
-                            ->select('lieu_favori.idlieufavori', 'lieu_favori.nomlieu', 'adresse.libelleadresse')
-                            ->where('lieu_favori.idclient', $user->idclient)
-                            ->get();
-                
-                        // Récupération de toutes les villes
-                        $villes = Ville::all();
-                    }
-                    break;
-                
+
+                    $favorites = DB::table('lieu_favori')
+                        ->join('adresse', 'lieu_favori.idadresse', '=', 'adresse.idadresse')
+                        ->select('lieu_favori.idlieufavori', 'lieu_favori.nomlieu', 'adresse.libelleadresse')
+                        ->where('lieu_favori.idclient', $user->idclient)
+                        ->get();
+
+                    $villes = Ville::orderBy('nomville', 'asc')->get();
+                }
+                break;
 
             case 'coursier':
                 $user = Coursier::find($sessionUser['id']);
@@ -172,6 +183,18 @@ class LoginController extends Controller
                     $vehicules = $user->vehicules;
                     $entretien = $user->entretien()->orderBy('dateentretien', 'desc')->first();
                 }
+                break;
+
+            case 'logistique':
+            case 'facturation':
+            case 'administratif':
+            case 'rh':
+            case 'course':
+            case 'support':
+                $user = [
+                    'email' => $sessionUser['email'],
+                    'role' => $sessionUser['role'],
+                ];
                 break;
 
             default:
@@ -183,13 +206,7 @@ class LoginController extends Controller
             return redirect()->route('login')->withErrors(['Utilisateur introuvable. Veuillez vous reconnecter.']);
         }
 
-        /* dd($favorites); */
-
-        /* dd($sessionUser['role']); */
-
-        /* dd($courses); */
-
-        return view('mon-compte', [
+        return view('myaccount', [
             'user' => $user,
             'role' => $sessionUser['role'],
             'etablissements' => $etablissements,
@@ -233,9 +250,9 @@ class LoginController extends Controller
 
     public function addFavoriteAddress(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'libelleadresse' => 'required|string|max:100',
-            'idville' => 'required|exists:ville,idville',
+            'idville' => 'required|integer|exists:ville,idville',
             'nomlieu' => 'required|string|max:100',
         ]);
 
@@ -246,23 +263,44 @@ class LoginController extends Controller
         }
 
         $client = Client::find($sessionUser['id']);
-
         if (!$client) {
             return redirect()->route('account')->withErrors(['Utilisateur introuvable.']);
         }
 
-        $adresseId = DB::table('adresse')->insertGetId([
-            'idville' => $request->idville,
-            'libelleadresse' => $request->libelleadresse,
-        ]);
+        $adresseExistante = DB::table('adresse')
+            ->whereRaw('soundex(libelleadresse) = soundex(?)', [$validatedData['libelleadresse']])
+            ->where('idville', $validatedData['idville'])
+            ->first();
+
+        $adresseId = $adresseExistante ? $adresseExistante->idadresse : null;
+
+        if (!$adresseId) {
+            $adresseId = DB::table('adresse')->insertGetId([
+                'idville' => $validatedData['idville'],
+                'libelleadresse' => $validatedData['libelleadresse'],
+            ], 'idadresse');
+        }
+
+        if (!$adresseId) {
+            return redirect()->back()->withErrors(['Erreur lors de l’ajout de l’adresse.']);
+        }
+
+        $lieuFavoriExist = DB::table('lieu_favori')
+            ->where('idclient', $client->idclient)
+            ->where('idadresse', $adresseId)
+            ->exists();
+
+        if ($lieuFavoriExist) {
+            return redirect()->back()->withErrors(['Cette adresse est déjà dans vos lieux favoris.']);
+        }
 
         DB::table('lieu_favori')->insert([
             'idclient' => $client->idclient,
             'idadresse' => $adresseId,
-            'nomlieu' => $request->nomlieu,
+            'nomlieu' => $validatedData['nomlieu'],
         ]);
 
-        return redirect()->route('account')->with('success', 'Lieu favori ajouté avec succès.');
+        return redirect()->route('myaccount')->with('success', 'Lieu favori ajouté avec succès.');
     }
 
     public function deleteFavoriteAddress($id, Request $request)
@@ -276,7 +314,7 @@ class LoginController extends Controller
         $client = Client::find($sessionUser['id']);
 
         if (!$client) {
-            return redirect()->route('account')->withErrors(['Utilisateur introuvable.']);
+            return redirect()->route('myaccount')->withErrors(['Utilisateur introuvable.']);
         }
 
         $favorite = DB::table('lieu_favori')
@@ -290,7 +328,7 @@ class LoginController extends Controller
 
         DB::table('lieu_favori')->where('idlieufavori', $id)->delete();
 
-        return redirect()->route('account')->with('success', 'Lieu favori supprimé avec succès.');
+        return redirect()->route('myaccount')->with('success', 'Lieu favori supprimé avec succès.');
     }
 
     public function logout(Request $request)

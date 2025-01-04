@@ -9,7 +9,7 @@
 @section('content')
 <div class="row p-4">
     <div class="col-12 col-sm-6">
-        <h1>Allez où vous voulez avec Uber</h1>
+        <h1 class="pb-4">Allez où vous voulez avec Uber</h1>
         <form action="{{ route('course.index') }}" method="POST">
             @csrf
             <!-- Adresse de départ -->

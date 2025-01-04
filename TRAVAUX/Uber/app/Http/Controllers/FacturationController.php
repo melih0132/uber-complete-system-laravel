@@ -7,7 +7,8 @@ use App\Models\Coursier;
 use App\Models\Course;
 use App\Models\Entretien;
 use App\Models\Vehicule;
-use Mpdf\Mpdf;
+use Mpdf\Mpdf as PDF;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class FacturationController extends Controller
@@ -38,8 +39,8 @@ class FacturationController extends Controller
 
         $coursiers = $this->getEligibleCoursiers()->filter(function ($coursier) use ($search) {
             return str_contains(strtolower($coursier->nomuser), strtolower($search)) ||
-                   str_contains(strtolower($coursier->prenomuser), strtolower($search)) ||
-                   str_contains((string) $coursier->idcoursier, $search);
+                str_contains(strtolower($coursier->prenomuser), strtolower($search)) ||
+                str_contains((string) $coursier->idcoursier, $search);
         });
 
         return response()->json($coursiers->values());
@@ -94,20 +95,119 @@ class FacturationController extends Controller
 
         $coursier = Coursier::findOrFail($idcoursier);
         $trips = $this->getTrips($idcoursier, $startDate, $endDate);
-        $totalAmount = $this->calculateTotalAmount($idcoursier, $startDate, $endDate);
 
-        $html = view('facturation.invoice', [
+        $totalGrossAmount = $this->calculateTotalAmount($idcoursier, $startDate, $endDate);
+        $totalGrossAmountTips = $this->calculateTotalAmountTips($idcoursier, $startDate, $endDate);
+
+        $uberFees = $totalGrossAmount * 0.20;
+        $totalNetAmount = $totalGrossAmount - $uberFees;
+
+        $html = view('facturation.reglement', [
             'coursier' => $coursier,
             'trips' => $trips,
-            'totalAmount' => $totalAmount,
+            'totalGrossAmount' => $totalGrossAmount,
+            'uberFees' => $uberFees,
+            'totalNetAmount' => $totalNetAmount,
+            'totalGrossAmountTips' => $totalGrossAmountTips,
             'start_date' => $startDate,
             'end_date' => $endDate,
         ])->render();
 
-        $pdf = new Mpdf();
+        $pdf = new PDF([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+        ]);
         $pdf->WriteHTML($html);
 
-        return $pdf->Output("facture_coursier_{$coursier->nomuser}_{$coursier->prenomuser}_{$startDate}_{$endDate}.pdf", 'D');
+        return response($pdf->Output("Reglement_salaire_{$coursier->nomuser}_{$coursier->prenomuser}_{$startDate}_{$endDate}.pdf", 'I'), 200)
+            ->header('Content-Type', 'application/pdf');
+    }
+
+    // je l'ai mis là AMIR BEKHOCUJEMNZNQC
+    public function generateInvoiceCourse(Request $request, $idreservation)
+    {
+        $validated = $request->validate([
+            'pourboire' => 'nullable|numeric|min:0|max:80',
+        ]);
+
+        // ceci fonctionne mais dès qu'on l'enlève, elle ne marche plus
+        $pourboire = $validated['pourboire'] ?? 0;
+
+        $locale = $request->input('locale', 'fr');
+        app()->setLocale($locale);
+
+        $course = DB::table('course as c')
+            ->join('coursier as cou', 'cou.idcoursier', '=', 'c.idcoursier')
+            ->join('reservation as r', 'c.idreservation', '=', 'r.idreservation')
+            ->join('client as cl', 'r.idclient', '=', 'cl.idclient')
+            ->join('adresse as a_start', 'c.idadresse', '=', 'a_start.idadresse')
+            ->join('adresse as a_end', 'c.adr_idadresse', '=', 'a_end.idadresse')
+            ->join('type_prestation as tp', 'c.idprestation', '=', 'tp.idprestation')
+            ->select(
+                'c.idcourse',
+                'cou.nomuser as chauffeur',
+                'c.prixcourse',
+                'c.pourboire',
+                'c.distance',
+                'c.temps',
+                'c.datecourse',
+                'c.heurecourse',
+                'a_start.libelleadresse as startAddress',
+                'a_end.libelleadresse as endAddress',
+                'tp.libelleprestation',
+                'r.datereservation',
+                'r.heurereservation',
+                'cl.*'
+            )
+            ->where('c.idreservation', $idreservation)
+            ->first();
+
+
+        $TVA = DB::table('pays')
+            ->select(
+                'pourcentagetva',
+            )
+            ->where('nompays', 'France')
+            ->first();
+
+        $datecourse = Carbon::parse($course->datecourse)
+            ->locale('fr')
+            ->isoFormat('D MMMM YYYY');
+
+
+        $duree_course = Carbon::parse($course->temps)->format('H:i:s');
+
+        $data = [
+            'company_name' => "Uber",
+            'idcourse' => $course->idcourse,
+            'chauffeur' => $course->chauffeur,
+            'startAddress' => $course->startAddress,
+            'endAddress' => $course->endAddress,
+            'prixcourse' => $course->prixcourse,
+            'pourboire' => $course->pourboire,
+            'datecourse' => $datecourse,
+            'duree_course' => $duree_course,
+            'pourboire' => $pourboire,
+            'datereservation' => $course->datereservation,
+            'heurereservation' => $course->heurereservation,
+            'datecourse' => $course->datecourse,
+            'heurecourse' => $course->heurecourse,
+            'libelleprestation' => $course->libelleprestation,
+            'pourcentagetva' => $TVA->pourcentagetva,
+            'monnaie' => '€'
+        ];
+
+        $html = view('facturation.facture', $data)->render();
+
+        $pdf = new PDF([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+        ]);
+
+        $pdf->WriteHTML($html);
+
+        return response($pdf->Output("Facture_" . $idreservation . "pdf", 'I'), 200)
+            ->header('Content-Type', 'application/pdf');
     }
 
     private function authorizeAccess(Request $request)
@@ -142,8 +242,8 @@ class FacturationController extends Controller
             ->exists()
             &&
             Vehicule::where('idcoursier', $coursierId)
-                ->where('statusprocessuslogistique', 'Validé')
-                ->exists();
+            ->where('statusprocessuslogistique', 'Validé')
+            ->exists();
     }
 
     private function getTrips($idcoursier, $startDate, $endDate)
@@ -160,6 +260,14 @@ class FacturationController extends Controller
         return Course::where('idcoursier', $idcoursier)
             ->whereBetween('datecourse', [$startDate, $endDate])
             ->whereIn('statutcourse', ['Terminée', 'Annulée'])
-            ->sum(DB::raw('prixcourse + COALESCE(pourboire, 0)'));
+            ->sum(DB::raw('prixcourse'));
+    }
+
+    private function calculateTotalAmountTips($idcoursier, $startDate, $endDate)
+    {
+        return Course::where('idcoursier', $idcoursier)
+            ->whereBetween('datecourse', [$startDate, $endDate])
+            ->whereIn('statutcourse', ['Terminée', 'Annulée'])
+            ->sum(DB::raw('COALESCE(pourboire, 0)'));
     }
 }

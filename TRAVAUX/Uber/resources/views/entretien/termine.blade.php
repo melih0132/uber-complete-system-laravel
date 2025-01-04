@@ -46,7 +46,7 @@
                 @endif
             </ul> --}}
             <div class="d-flex justify-content-center">
-                <a href="{{ route('mon-compte') }}" class="btn-entretien text-decoration-none">Retour à mon compte</a>
+                <a href="{{ route('myaccount') }}" class="btn-entretien text-decoration-none">Retour à mon compte</a>
             </div>
         </div>
     </div>

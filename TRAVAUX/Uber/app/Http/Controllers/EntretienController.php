@@ -25,7 +25,7 @@ class EntretienController extends Controller
 
         $entretiens = Entretien::where('status', 'En attente')->get();
 
-        return view('entretiens.index', compact('entretiens'));
+        return view('rh.index', compact('entretiens'));
     }
 
     public function listePlannifies(Request $request)
@@ -42,7 +42,7 @@ class EntretienController extends Controller
 
         $entretiens = Entretien::where('status', 'Planifié')->get();
 
-        return view('entretiens.index', compact('entretiens'));
+        return view('rh.index', compact('entretiens'));
     }
 
     public function listeTermines(Request $request)
@@ -61,7 +61,7 @@ class EntretienController extends Controller
             ->whereNull('resultat')
             ->get();
 
-        return view('entretiens.index', compact('entretiens'));
+        return view('rh.index', compact('entretiens'));
     }
 
     public function showPlanifierForm(Request $request, $id = null)
@@ -79,7 +79,7 @@ class EntretienController extends Controller
         $coursiers = Coursier::all();
         $entretien = $id ? Entretien::findOrFail($id) : null;
 
-        return view('entretiens.planifier', compact('coursiers', 'entretien'));
+        return view('rh.planifier', compact('coursiers', 'entretien'));
     }
 
     public function planifier(Request $request, $id = null)
@@ -113,9 +113,9 @@ class EntretienController extends Controller
                 ? 'Entretien mis à jour avec succès.'
                 : 'Entretien planifié avec succès.';
 
-            return redirect()->route('entretiens.index')->with('success', $message);
+            return redirect()->route('rh.index')->with('success', $message);
         } catch (\Exception $e) {
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('error', 'Une erreur est survenue lors de la planification de l\'entretien.');
         }
     }
@@ -148,17 +148,17 @@ class EntretienController extends Controller
             $entretien = Entretien::findOrFail($id);
 
             if ($entretien->status !== 'Planifié') {
-                return redirect()->route('entretiens.index')
+                return redirect()->route('rh.index')
                     ->with('error', 'Seuls les entretiens planifiés peuvent être terminés ou annulés.');
             }
 
             $entretien->status = $validated['status'];
             $entretien->save();
 
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('success', 'Résultat de l\'entretien enregistré avec succès.');
         } catch (\Exception $e) {
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('error', 'Une erreur est survenue lors de l\'enregistrement du résultat.');
         }
     }
@@ -169,7 +169,7 @@ class EntretienController extends Controller
             $entretien = Entretien::findOrFail($id);
 
             if ($entretien->status !== 'Terminée') {
-                return redirect()->route('entretiens.index')
+                return redirect()->route('rh.index')
                     ->with('error', 'Seuls les entretiens terminés peuvent être validés.');
             }
 
@@ -183,10 +183,10 @@ class EntretienController extends Controller
             $entretien->rdvlogistiquelieu = 'Centre Logistique Uber';
             $entretien->save();
 
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('success', 'Coursier validé avec succès. Un rendez-vous logistique a été programmé.');
         } catch (\Exception $e) {
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('error', 'Une erreur est survenue lors de la validation du coursier.');
         }
     }
@@ -197,7 +197,7 @@ class EntretienController extends Controller
             $entretien = Entretien::findOrFail($id);
 
             if ($entretien->status !== 'Terminée') {
-                return redirect()->route('entretiens.index')
+                return redirect()->route('rh.index')
                     ->with('error', 'Seuls les entretiens terminés peuvent être refusés.');
             }
 
@@ -207,10 +207,10 @@ class EntretienController extends Controller
             $entretien->resultat = 'Rejeté';
             $entretien->save();
 
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('success', 'Coursier refusé avec succès. Les données associées ont été supprimées.');
         } catch (\Exception $e) {
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('error', 'Une erreur est survenue lors du refus du coursier.');
         }
     }
@@ -221,10 +221,10 @@ class EntretienController extends Controller
             $entretien = Entretien::findOrFail($id);
             $entretien->delete();
 
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('success', 'Entretien supprimé avec succès.');
         } catch (\Exception $e) {
-            return redirect()->route('entretiens.index')
+            return redirect()->route('rh.index')
                 ->with('error', 'Une erreur est survenue lors de la suppression de l\'entretien.');
         }
     }
@@ -254,6 +254,6 @@ class EntretienController extends Controller
             ->orderBy('dateentretien', 'desc')
             ->paginate(10);
 
-        return view('entretiens.index', compact('entretiens'));
+        return view('rh.index', compact('entretiens'));
     }
 }
