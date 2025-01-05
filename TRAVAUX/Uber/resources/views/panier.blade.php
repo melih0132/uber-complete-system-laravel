@@ -7,93 +7,114 @@
 @endsection
 
 @section('content')
-    <h1 class="text-center mt-5">Votre Panier</h1>
+    <div class="container">
 
-    @if (count($produits) > 0)
-        <div class="panier-detail">
-            <div class="table-responsive">
-                <table class="table text-center align-middle">
-                    <thead>
-                        <tr style="background-color: #f8f8f8; color: #333;">
-                            <th>Produit</th>
-                            <th>Prix Unitaire</th>
-                            <th>Quantité</th>
-                            <th>Total</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $totalPanier = 0; @endphp
-                        @foreach ($produits as $produit)
-                            @php
-                                $totalProduit = $produit->prixproduit * $quantites[$produit->idproduit];
-                                $totalPanier += $totalProduit;
-                            @endphp
-                            <tr>
-                                <td>{{ $produit->nomproduit }}</td>
-
-                                <td>{{ number_format($produit->prixproduit, 2) }} €</td>
-
-                                <td>
-                                    <form action="{{ route('panier.mettreAJour', $produit->idproduit) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <select name="quantite" class="combobox" onchange="this.form.submit()">
-                                            @for ($i = 1; $i <= 99; $i++)
-                                                <option value="{{ $i }}"
-                                                    {{ $quantites[$produit->idproduit] == $i ? 'selected' : '' }}>
-                                                    {{ $i }}
-                                                </option>
-                                            @endfor
-                                        </select>
-                                    </form>
-                                </td>
-
-                                <td>{{ number_format($totalProduit, 2) }} €</td>
-
-                                <td>
-                                    <form action="{{ route('panier.supprimer', $produit->idproduit) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-panier">Supprimer</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-
-                        <tr style="background-color: #f8f8f8; font-weight: bold;">
-                            <td colspan="3">Total</td>
-                            <td colspan="2">{{ number_format($totalPanier, 2) }} €</td>
-                        </tr>
-                    </tbody>
-                </table>
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
             </div>
+        @endif
 
-            <div class="mx-3 mb-4 text-center">
-                <form action="{{ route('panier.vider') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn-panier mx-2">Vider le Panier</button>
-                </form>
-                <a href="{{ url()->previous() }}" class="btn-panier mx-2 text-decoration-none">Continuer vos achats</a>
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
 
+        <div class="cart">
+            @if (count($produits) > 0)
                 @php
-                    $user = session('user');
+                    $totalPrix = 0;
                 @endphp
-                @if ($user)
-                    {{-- <form action="{{ route('panier.commander') }}" method="POST" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn-panier mx-2">Finaliser la commande</button>
-                    </form> --}}
-                    <a href="{{ url('/panier/livraison') }}" class="btn-panier mx-2 text-decoration-none">Finaliser la commande</a>
-                @else
-                    <a href="{{ url('/login') }}" class="btn-panier mx-2 text-decoration-none">Finaliser la commande</a>
-                @endif
-            </div>
+
+                @foreach ($produits as $produit)
+                    @php
+                        $quantite = $quantites[$produit->idproduit] ?? 1;
+                        $totalPrix += $produit->prixproduit * $quantite;
+                    @endphp
+                    <div class="cart-item" data-id="{{ $produit->idproduit }}">
+                        <div class="item-info">
+                            <div class="item-img">
+                                <img src="{{ $produit->imageproduit }}" alt="{{ $produit->nomproduit }}" />
+                            </div>
+                            <div class="item-name">{{ $produit->nomproduit }}</div>
+                            <div class="item-price">
+                                {{ number_format($produit->prixproduit, 2) }}€ (x{{ $quantite }})
+                            </div>
+                        </div>
+                        <div class="item-controls">
+                            <form action="{{ route('panier.mettreAJour', $produit->idproduit) }}" method="POST"
+                                class="quantity-form">
+                                @csrf
+                                @method('PUT')
+                                <input type="number" name="quantite" value="{{ $quantite }}" min="1"
+                                    max="99" class="quantity-input" onchange="this.form.submit()" />
+                            </form>
+                            <form action="{{ route('panier.supprimer', $produit->idproduit) }}" method="POST"
+                                class="delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="delete-btn">
+                                    <svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+
+                <div class="cart-summary">
+                    <div class="summary-content">
+                        <div class="total">
+                            Total : <span id="total-amount">{{ number_format($totalPrix, 2) }}€</span>
+                        </div>
+                        <div class="actions">
+                            <form action="{{ route('panier.vider') }}" method="POST" class="clear-form">
+                                @csrf
+                                <button type="submit" class="btn btn-secondary">Vider le panier</button>
+                            </form>
+                            <form action="{{ route('commande.choixLivraison') }}" method="GET" class="order-form">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">
+                                    Passer la commande
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="empty-cart">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <p>Votre panier est vide</p>
+                </div>
+            @endif
         </div>
-    @else
-        <div class="text-center mt-5">
-            <p class="text-muted">Votre panier est vide.</p>
-        </div>
-    @endif
+    </div>
+@endsection
+
+@section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Confirmation avant de vider le panier
+            document.querySelectorAll('.clear-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    if (!confirm('Voulez-vous vraiment vider votre panier ?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            // Mise à jour automatique lors du changement de quantité
+            document.querySelectorAll('.quantity-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    this.closest('form').submit();
+                });
+            });
+        });
+    </script>
 @endsection

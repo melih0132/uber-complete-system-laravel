@@ -25,6 +25,8 @@ class Panier extends Model
 
     public function produits()
     {
-        return $this->belongsToMany(Produit::class, 'contient_2', 'idpanier', 'idproduit');
+        return $this->belongsToMany(Produit::class, 'contient_2', 'idpanier', 'idproduit')
+            ->withPivot('quantite')
+            ->as('pivot');
     }
 }

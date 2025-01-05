@@ -10,6 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/script.js') }}"></script>
     <script src="{{ asset('js/scriptCookie.js') }}"></script>
+
+    {{-- DATE PIECKER --}}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @endsection
 
 @section('content')
@@ -30,10 +33,14 @@
                                 placeholder="Recherchez une ville" value="{{ request('recherche_ville') }}">
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group date-picker-container">
                             <label for="selected_jour" class="form-label">Date</label>
-                            <input type="date" id="selected_jour" name="selected_jour" class="form-input"
-                                value="{{ request('selected_jour') ?: \Carbon\Carbon::now('Europe/Paris')->format('Y-m-d') }}">
+                            <div class="input-group">
+                                <input type="text" id="selected_jour" name="selected_jour"
+                                    class="form-input flatpickr-date"
+                                    value="{{ request('selected_jour') ?: \Carbon\Carbon::now('Europe/Paris')->format('d/m/Y') }}"
+                                    placeholder="jj/mm/aaaa">
+                            </div>
                         </div>
 
                         <div class="form-group">

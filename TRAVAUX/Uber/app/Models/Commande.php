@@ -17,7 +17,6 @@ class Commande extends Model
         'idpanier',
         'idcoursier',
         'idadresse',
-        'adr_idadresse',
         'prixcommande',
         'tempscommande',
         'heurecommande',
@@ -30,24 +29,19 @@ class Commande extends Model
         return $this->belongsTo(Panier::class, 'idpanier');
     }
 
-    public function adresseDepart()
+    public function client()
     {
-        return $this->belongsTo(Adresse::class, 'idadresse');
+        return $this->belongsTo(Client::class, 'idclient', 'idclient');
     }
 
     public function adresseDestination()
     {
-        return $this->belongsTo(Adresse::class, 'adr_idadresse');
+        return $this->belongsTo(Adresse::class, 'idadresse');
     }
 
     public function coursier()
     {
         return $this->belongsTo(Coursier::class, 'idcoursier');
-    }
-
-    public function client()
-    {
-        return $this->belongsTo(Client::class, 'idclient');
     }
 
     public function scopeLivraison($query)

@@ -13,28 +13,88 @@ use App\Models\CategoriePrestation;
 use App\Models\CategorieProduit;
 use App\Models\Horaires;
 
-// use App\Models\Produit;
-
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 
 class EtablissementController extends Controller
 {
-    // A revoir (séparer si possible)
-    public function index(Request $request)
+    public function accueilubereats(Request $request)
     {
+        $request->validate([
+            'selected_jour' => 'nullable|date_format:d/m/Y',
+            'selected_horaires' => 'nullable|string',
+        ]);
+
         $searchVille = $request->input('recherche_ville');
-        $selectedJour = $request->input('selected_jour');
+        $inputDate = $request->input('selected_jour');
+        $selectedJour = $inputDate
+            ? Carbon::createFromFormat('d/m/Y', $inputDate, 'Europe/Paris')->format('Y-m-d')
+            : Carbon::now('Europe/Paris')->format('Y-m-d');
+
+        $selectedJour = Carbon::parse($selectedJour, 'Europe/Paris')->isBefore(Carbon::today('Europe/Paris'))
+            ? Carbon::today('Europe/Paris')->format('Y-m-d')
+            : $selectedJour;
+
         $selectedHoraire = $request->input('selected_horaires');
 
-        $searchTexte = $request->input('recherche_produit');
-        $selectedTypeAffichage = $request->input('type_affichage', 'all');
-        $selectedTypeEtablissement = $request->input('type_etablissement');
-        $selectedTypeLivraison = $request->input('type_livraison');
+        $slots = [];
+        $period = CarbonPeriod::create('00:00', '30 minutes', '23:59');
+        foreach ($period as $time) {
+            $slotStart = $time->format('H:i');
+            $slotEnd = $time->copy()->addMinutes(30)->format('H:i');
+            if ($slotEnd !== '00:00') {
+                $slots[] = "$slotStart - $slotEnd";
+            }
+        }
 
+        if (empty($slots)) {
+            abort(500, 'Aucun créneau horaire disponible.');
+        }
+
+        $heureActuelle = Carbon::now('Europe/Paris')->format('H:i');
+        $defaultHoraire = collect($slots)->first(fn($slot) => $heureActuelle >= explode(' - ', $slot)[0] && $heureActuelle < explode(' - ', $slot)[1])
+            ?? $slots[0] ?? null;
+
+        $selectedHoraire = $selectedHoraire ?: $defaultHoraire;
+
+        return view('accueil-uber-eat', [
+            'slots' => $slots,
+            'searchVille' => $searchVille,
+            'selectedJour' => $selectedJour,
+            'selectedHoraire' => $selectedHoraire,
+            'defaultHoraire' => $defaultHoraire,
+        ]);
+    }
+
+    public function index(Request $request)
+    {
+        $searchVille       = $request->input('recherche_ville');
+        $selectedJour = $request->input('selected_jour');
+        $selectedJour = $selectedJour
+            ? \Carbon\Carbon::createFromFormat('d/m/Y', $selectedJour)->format('Y-m-d')
+            : \Carbon\Carbon::now('Europe/Paris')->format('Y-m-d');
+        $selectedHoraire   = $request->input('selected_horaires');
+
+        $selectedTypeAffichage       = $request->input('type_affichage', 'all'); // "etablissements" ou "produits" ou "all"
+
+        $selectedTypeEtablissement   = $request->input('type_etablissement');
+        $selectedTypeLivraison       = $request->input('type_livraison');
         $selectedCategoriePrestation = $request->input('categorie_restaurant');
-        $selectedCategorieProduit = $request->input('categorie_produit');
+        $selectedCategorieProduit    = $request->input('categorie_produit');
 
+        // Texte de recherche (nom de produit, etc.)
+        $searchTexte = $request->input('recherche_produit');
+
+        // Conversion du jour sélectionné en jour de semaine (lundi, mardi, etc.)
+        $jourSemaine = null;
+        if (!empty($selectedJour)) {
+            $jourSemaine = $this->getJourSemaine($selectedJour);
+        }
+
+        // ------------------------------------------------------------------
+        // 1. Préparation de la requête des établissements
+        // ------------------------------------------------------------------
         $etablissementsQuery = DB::table('etablissement as e')
             ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
             ->join('ville as v', 'a.idville', '=', 'v.idville')
@@ -43,19 +103,16 @@ class EtablissementController extends Controller
             ->select('e.*', 'a.libelleadresse as adresse', 'v.nomville as ville')
             ->distinct();
 
-        if (!empty($searchVille)) {
-            $etablissementsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
-        }
-
-        $jourSemaine = $this->getJourSemaine($selectedJour);
-
-        if (!empty($selectedJour) && !empty($selectedHoraire)) {
+        // Si on veut filtrer par créneau horaire/jour
+        if (!empty($jourSemaine) && !empty($selectedHoraire)) {
             try {
                 [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
 
+                // On reformate en H:i:s+01:00 pour coller aux formats en DB
                 $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s+01:00');
-                $heureFin = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
+                $heureFin   = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
 
+                // On recherche les établissements dont les horaires couvrent le créneau sélectionné
                 $horairesQuery = DB::table('horaires as h')
                     ->select('h.idetablissement')
                     ->where('h.joursemaine', '=', $jourSemaine)
@@ -71,6 +128,146 @@ class EtablissementController extends Controller
             }
         }
 
+        // Optionnel : si vous voulez filtrer par ville dans index()
+        if (!empty($searchVille)) {
+            $etablissementsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
+        }
+
+        // Vous pouvez mettre d'autres filtres basiques ici, selon vos besoins,
+        // par ex. type d’établissement, type de livraison, etc.
+
+        // Finalement, on récupère réellement les établissements (pagination par exemple)
+        $etablissements = $etablissementsQuery->paginate(6);
+
+        // ------------------------------------------------------------------
+        // 2. Préparation de la requête des produits
+        // ------------------------------------------------------------------
+        $produitsQuery = DB::table('produit as p')
+            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
+            ->join('etablissement as e', 'e.idetablissement', '=', 'es.idetablissement')
+            ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
+            ->join('ville as v', 'a.idville', '=', 'v.idville')
+            ->join('a_3 as a3', 'a3.idproduit', '=', 'p.idproduit')
+            ->join('categorie_produit as cat_prod', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
+            ->select('p.*', 'e.nometablissement', 'v.nomville', 'cat_prod.nomcategorie')
+            ->distinct();
+
+        // Filtrage horaires produits (mêmes conditions que pour les établissements)
+        if (!empty($jourSemaine) && !empty($selectedHoraire)) {
+            try {
+                [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
+                $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s+01:00');
+                $heureFin   = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
+
+                $horairesQuery = DB::table('horaires as h')
+                    ->select('h.idetablissement')
+                    ->where('h.joursemaine', '=', $jourSemaine)
+                    ->where(function ($query) use ($heureDebut, $heureFin) {
+                        $query->where('h.horairesouverture', '<=', $heureDebut)
+                            ->where('h.horairesfermeture', '>=', $heureFin);
+                    })
+                    ->pluck('h.idetablissement');
+
+                $produitsQuery->whereIn('e.idetablissement', $horairesQuery);
+            } catch (\Exception $e) {
+                return back()->withErrors(['selected_horaires' => 'Les horaires sélectionnés sont invalides.']);
+            }
+        }
+
+        // Filtrage par ville
+        if (!empty($searchVille)) {
+            $produitsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
+        }
+
+        // Filtrage par texte saisi (nom de produit par exemple)
+        if (!empty($searchTexte)) {
+            $produitsQuery->whereRaw("LOWER(p.nomproduit) LIKE LOWER(?)", ["%{$searchTexte}%"]);
+        }
+
+        // Récupération (pagination ou non)
+        $produits = $produitsQuery->paginate(6);
+
+        // ------------------------------------------------------------------
+        // 3. Récupération des catégories associées aux établissements filtrés
+        // ------------------------------------------------------------------
+        // Pour éviter de charger des catégories qui ne correspondent pas
+        // aux établissements réellement filtrés, on récupère la liste ID:
+        $filteredEtablissements = $etablissementsQuery->pluck('e.idetablissement');
+
+        $categoriesPrestation = DB::table('categorie_prestation as cp')
+            ->join('a_comme_categorie as acc', 'cp.idcategorieprestation', '=', 'acc.idcategorieprestation')
+            ->whereIn('acc.idetablissement', $filteredEtablissements)
+            ->distinct()
+            ->select('cp.idcategorieprestation', 'cp.libellecategorieprestation', 'cp.imagecategorieprestation')
+            ->get();
+
+        $categoriesProduit = DB::table('categorie_produit as cat_prod')
+            ->join('a_3 as a3', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
+            ->join('produit as p', 'p.idproduit', '=', 'a3.idproduit')
+            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
+            ->whereIn('es.idetablissement', $filteredEtablissements)
+            ->distinct()
+            ->select('cat_prod.idcategorie', 'cat_prod.nomcategorie')
+            ->get();
+
+        // ------------------------------------------------------------------
+        // 4. Retourner la vue avec toutes les variables nécessaires
+        // ------------------------------------------------------------------
+        return view('etablissements.etablissement', [
+            'etablissements'              => $etablissements,
+            'produits'                    => $produits,
+
+            'selectedTypeAffichage'       => $selectedTypeAffichage,
+
+            'selectedTypeEtablissement'   => $selectedTypeEtablissement,
+            'selectedTypeLivraison'       => $selectedTypeLivraison,
+            'selectedCategoriePrestation' => $selectedCategoriePrestation,
+            'selectedCategorieProduit'    => $selectedCategorieProduit,
+
+            'searchProduit'               => $searchTexte,
+
+            'categoriesPrestation'        => $categoriesPrestation,
+            'categoriesProduit'           => $categoriesProduit
+        ]);
+    }
+
+    public function filtrageEtablissements(Request $request)
+    {
+        // On récupére la ville et les créneaux horaires
+        $searchVille = $request->input('recherche_ville');
+        $selectedJour    = $request->input('selected_jour');
+        $selectedHoraire = $request->input('selected_horaires');
+        $jourSemaine     = (!empty($selectedJour)) ? $this->getJourSemaine($selectedJour) : null;
+
+        $categoriePrestationFiltrees = $request->input('prestations_filtrees', []);
+        $categoriesProduitFiltrees = $request->input('categories_produit_filtrees', []);
+
+        // Récupération des champs du formulaire (recherche produit, types, etc.)
+        $searchTexte = $request->input('recherche_produit');
+
+        $selectedTypeAffichage       = $request->input('type_affichage', 'all');
+        $selectedTypeEtablissement   = $request->input('type_etablissement');
+        $selectedTypeLivraison       = $request->input('type_livraison');
+        $selectedCategoriePrestation = $request->input('categorie_restaurant');
+        $selectedCategorieProduit    = $request->input('categorie_produit');
+
+        // ------------------------------------------------------------------
+        // 1. Préparation de la requête "établissements"
+        // ------------------------------------------------------------------
+        $etablissementsQuery = DB::table('etablissement as e')
+            ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
+            ->join('ville as v', 'a.idville', '=', 'v.idville')
+            ->leftJoin('a_comme_categorie as acc', 'e.idetablissement', '=', 'acc.idetablissement')
+            ->leftJoin('categorie_prestation as cp', 'acc.idcategorieprestation', '=', 'cp.idcategorieprestation')
+            ->select('e.*', 'a.libelleadresse as adresse', 'v.nomville as ville')
+            ->distinct();
+
+        // Filtrage par ville
+        if (!empty($searchVille)) {
+            $etablissementsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
+        }
+
+        // Filtrage basique (recherche sur le nom établissement) ou ce que vous souhaitez
         $etablissementsQuery
             ->when(!empty($searchTexte), function ($query) use ($searchTexte) {
                 return $query->whereRaw("LOWER(e.nometablissement) LIKE LOWER(?)", ["%{$searchTexte}%"]);
@@ -91,12 +288,24 @@ class EtablissementController extends Controller
                 }
                 return $query;
             })
+            // Si aucun type de livraison n'est sélectionné,
+            // on applique par exemple la livraison en "true" par défaut
+            ->when(empty($selectedTypeLivraison), function ($query) {
+                return $query->where('e.livraison', true);
+            })
             ->when($selectedCategoriePrestation, function ($query) use ($selectedCategoriePrestation) {
                 return $query->where('cp.idcategorieprestation', $selectedCategoriePrestation);
             });
 
-        $etablissements = $selectedTypeAffichage === 'produits' ? collect() : $etablissementsQuery->paginate(6);
+        // Ici, selon le type d'affichage, on charge ou pas les établissements
+        // (exemple : si "produits", on met un tableau vide pour `$etablissements`)
+        $etablissements = ($selectedTypeAffichage === 'produits')
+            ? collect()
+            : $etablissementsQuery->paginate(6);
 
+        // ------------------------------------------------------------------
+        // 2. Requête "produits"
+        // ------------------------------------------------------------------
         $produitsQuery = DB::table('produit as p')
             ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
             ->join('etablissement as e', 'e.idetablissement', '=', 'es.idetablissement')
@@ -107,16 +316,17 @@ class EtablissementController extends Controller
             ->select('p.*', 'e.nometablissement', 'v.nomville', 'cat_prod.nomcategorie')
             ->distinct();
 
+        // Filtre par ville si besoin
         if (!empty($searchVille)) {
             $produitsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
         }
 
+        // Filtrage horaires
         if (!empty($jourSemaine) && !empty($selectedHoraire)) {
             try {
                 [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
-
                 $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s+01:00');
-                $heureFin = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
+                $heureFin   = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
 
                 $horairesQuery = DB::table('horaires as h')
                     ->select('h.idetablissement')
@@ -133,95 +343,54 @@ class EtablissementController extends Controller
             }
         }
 
-        $produitsQuery
-            ->when(!empty($searchTexte), function ($query) use ($searchTexte) {
-                return $query->whereRaw("LOWER(p.nomproduit) LIKE LOWER(?)", ["%{$searchTexte}%"]);
-            })
-            ->when($selectedCategorieProduit, function ($query) use ($selectedCategorieProduit) {
-                return $query->where('cat_prod.idcategorie', $selectedCategorieProduit);
-            });
+        // Filtre par nom de produit
+        $produitsQuery->when(!empty($searchTexte), function ($query) use ($searchTexte) {
+            return $query->whereRaw("LOWER(p.nomproduit) LIKE LOWER(?)", ["%{$searchTexte}%"]);
+        });
 
-        $produits = $selectedTypeAffichage === 'etablissements' ? collect() : $produitsQuery->paginate(6);
+        // Filtre par catégorie
+        $produitsQuery->when($selectedCategorieProduit, function ($query) use ($selectedCategorieProduit) {
+            return $query->where('cat_prod.idcategorie', $selectedCategorieProduit);
+        });
 
+        // Ici, selon type d'affichage, on charge ou pas les produits
+        $produits = ($selectedTypeAffichage === 'etablissements')
+            ? collect()
+            : $produitsQuery->paginate(6);
 
-        // FAIRE 2 FONCTIONS :
-        // CHARGEMENT ETABLISSEMENTS (FORM ACCUEIL UBER EAT) ET FILTRAGE ETABLISSMENTS (FORM DANS ETABLISSEMENTS)
-        $filteredEtablissements = $etablissementsQuery->pluck('e.idetablissement');
-
+        // ------------------------------------------------------------------
+        // 3. Catégories prestation et produit (pour les filtres)
+        // ------------------------------------------------------------------
         $categoriesPrestation = DB::table('categorie_prestation as cp')
-            ->join('a_comme_categorie as acc', 'cp.idcategorieprestation', '=', 'acc.idcategorieprestation')
-            ->whereIn('acc.idetablissement', $filteredEtablissements)
+            ->whereIn('cp.idcategorieprestation', $categoriePrestationFiltrees)
             ->distinct()
             ->select('cp.idcategorieprestation', 'cp.libellecategorieprestation', 'cp.imagecategorieprestation')
             ->get();
 
         $categoriesProduit = DB::table('categorie_produit as cat_prod')
-            ->join('a_3 as a3', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
-            ->join('produit as p', 'p.idproduit', '=', 'a3.idproduit')
-            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
-            ->whereIn('es.idetablissement', $filteredEtablissements)
+            ->whereIn('cat_prod.idcategorie', $categoriesProduitFiltrees)
             ->distinct()
             ->select('cat_prod.idcategorie', 'cat_prod.nomcategorie')
             ->get();
 
+
+        // ------------------------------------------------------------------
+        // 4. Retour de la vue filtrée
+        // ------------------------------------------------------------------
         return view('etablissements.etablissement', [
-            'etablissements' => $etablissements,
-            'produits' => $produits,
+            'etablissements'              => $etablissements,
+            'produits'                    => $produits,
 
-            'selectedTypeEtablissement' => $selectedTypeEtablissement,
-            'selectedTypeAffichage' => $selectedTypeAffichage,
-            'selectedTypeLivraison' => $selectedTypeLivraison,
+            'selectedTypeEtablissement'   => $selectedTypeEtablissement,
+            'selectedTypeAffichage'       => $selectedTypeAffichage,
+            'selectedTypeLivraison'       => $selectedTypeLivraison,
             'selectedCategoriePrestation' => $selectedCategoriePrestation,
-            'selectedCategorieProduit' => $selectedCategorieProduit,
+            'selectedCategorieProduit'    => $selectedCategorieProduit,
 
-            'searchProduit' => $searchTexte,
+            'searchProduit'               => $searchTexte,
 
-            'categoriesPrestation' => $categoriesPrestation,
-            'categoriesProduit' => $categoriesProduit
-        ]);
-    }
-
-    public function accueilubereats(Request $request)
-    {
-        $searchVille = $request->input('recherche_ville');
-        $selectedJour = $request->input('selected_jour') ?: Carbon::now('Europe/Paris')->format('Y-m-d');
-        $selectedHoraire = $request->input('selected_horaires');
-
-        $slots = [];
-        $start = Carbon::createFromTime(0, 0, 0);
-        $end = Carbon::createFromTime(23, 59, 59);
-
-        while ($start->lessThan($end)) {
-            $slotStart = $start->format('H:i');
-            $start->addMinutes(30);
-            $slotEnd = $start->format('H:i');
-            $slots[] = "$slotStart - $slotEnd";
-        }
-
-        $heureActuelle = Carbon::now('Europe/Paris')->format('H:i');
-        $defaultHoraire = null;
-        foreach ($slots as $slot) {
-            [$slotStart, $slotEnd] = explode(' - ', $slot);
-            if ($heureActuelle >= $slotStart && $heureActuelle < $slotEnd) {
-                $defaultHoraire = $slot;
-                break;
-            }
-        }
-
-        if (empty($defaultHoraire)) {
-            $defaultHoraire = $slots[0] ?? null;
-        }
-
-        if (empty($selectedHoraire)) {
-            $selectedHoraire = $defaultHoraire;
-        }
-
-        return view('accueil-uber-eat', [
-            'slots' => $slots,
-            'searchVille' => $searchVille,
-            'selectedJour' => $selectedJour,
-            'selectedHoraire' => $selectedHoraire,
-            'defaultHoraire' => $defaultHoraire,
+            'categoriesPrestation'        => $categoriesPrestation,
+            'categoriesProduit'           => $categoriesProduit
         ]);
     }
 
@@ -249,11 +418,19 @@ class EtablissementController extends Controller
             ->select('joursemaine', 'horairesouverture', 'horairesfermeture')
             ->get();
 
+        // Regroupement des horaires jour par jour
         $groupedHoraires = [];
         foreach ($horaires as $horaire) {
-            $ouverture = is_null($horaire->horairesouverture) ? 'Fermé' : \Carbon\Carbon::parse($horaire->horairesouverture)->format('H:i');
-            $fermeture = is_null($horaire->horairesfermeture) ? 'Fermé' : \Carbon\Carbon::parse($horaire->horairesfermeture)->format('H:i');
-            $horaireKey = $ouverture === 'Fermé' && $fermeture === 'Fermé' ? 'Fermé' : "$ouverture - $fermeture";
+            $ouverture = is_null($horaire->horairesouverture)
+                ? 'Fermé'
+                : \Carbon\Carbon::parse($horaire->horairesouverture)->format('H:i');
+            $fermeture = is_null($horaire->horairesfermeture)
+                ? 'Fermé'
+                : \Carbon\Carbon::parse($horaire->horairesfermeture)->format('H:i');
+
+            $horaireKey = ($ouverture === 'Fermé' && $fermeture === 'Fermé')
+                ? 'Fermé'
+                : "$ouverture - $fermeture";
 
             if (!isset($groupedHoraires[$horaireKey])) {
                 $groupedHoraires[$horaireKey] = [];
@@ -261,12 +438,14 @@ class EtablissementController extends Controller
             $groupedHoraires[$horaireKey][] = $horaire->joursemaine;
         }
 
+        // Récupération des produits de l’établissement
         $produits = DB::table('produit as p')
             ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
             ->where('es.idetablissement', $idetablissement)
             ->select('p.idproduit', 'p.nomproduit', 'p.prixproduit', 'p.imageproduit', 'p.description')
             ->get();
 
+        // Récupération des catégories de prestation
         $categoriesPrestations = DB::table('a_comme_categorie as acc')
             ->join('categorie_prestation as cp', 'acc.idcategorieprestation', '=', 'cp.idcategorieprestation')
             ->where('acc.idetablissement', $idetablissement)
@@ -274,132 +453,15 @@ class EtablissementController extends Controller
             ->get();
 
         return view('etablissements.detail-etablissement', [
-            'etablissement' => $etablissement,
-            'produits' => $produits,
-            'groupedHoraires' => $groupedHoraires,
+            'etablissement'       => $etablissement,
+            'produits'            => $produits,
+            'groupedHoraires'     => $groupedHoraires,
             'categoriesPrestations' => $categoriesPrestations,
         ]);
     }
 
-    /*     public function add()
+    private function getJourSemaine($dateString)
     {
-        return view('add-etablissement');
-    } */
-
-    /*     public function store(Request $request)
-    {
-        try {
-            $adresse = $this->getOrCreateAdresse($request);
-
-            $etablissement = Etablissement::create([
-                'idadresse' => $adresse->idadresse,
-                'typeetablissement' => $request->typeetablissement,
-                'nometablissement' => $request->nometablissement,
-                'description' => $request->description,
-                'livraison' => $request->livraison,
-                'aemporter' => $request->aemporter,
-            ]);
-
-            foreach (['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'] as $jour) {
-                $ferme = $request->input("ferme.$jour", false);
-
-                $horairesOuverture = $request->input("horairesouverture.$jour");
-                $horairesFermeture = $request->input("horairesfermeture.$jour");
-
-                if ($ferme) {
-                    $horairesOuverture = null;
-                    $horairesFermeture = null;
-                }
-
-                Horaires::create([
-                    'idetablissement' => $etablissement->idetablissement,
-                    'joursemaine' => $jour,
-                    'horairesouverture' => $horairesOuverture ? $horairesOuverture . '+01' : null,
-                    'horairesfermeture' => $horairesFermeture ? $horairesFermeture . '+01' : null,
-                ]);
-            }
-
-            return redirect()->route('etablissement.addBanner', $etablissement->idetablissement)
-                ->with('success', 'Établissement créé avec succès. Vous pouvez maintenant ajouter une bannière.');
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la création de l’établissement : ' . $e->getMessage()]);
-        }
-    } */
-
-    /*     public function addBanner($id)
-    {
-        $etablissement = Etablissement::findOrFail($id);
-        return view('add-banner', ['etablissement' => $etablissement]);
-    } */
-
-    /*     public function storeBanner(Request $request)
-    {
-        $request->validate([
-            'banner_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'etablissement_id' => 'required|exists:etablissement,idetablissement',
-        ]);
-
-        try {
-            $etablissement = Etablissement::findOrFail($request->input('etablissement_id'));
-
-            if ($request->hasFile('banner_image')) {
-                $path = $request->file('banner_image')->store('etablissements/banners', 'public');
-
-                $etablissement->imageetablissement = $path;
-                $etablissement->save();
-
-                return redirect()->route('etablissement.index', $etablissement->idetablissement)
-                    ->with('success', 'Bannière ajoutée avec succès.');
-            } else {
-                return back()->withErrors(['error' => 'Aucun fichier n’a été téléchargé.']);
-            }
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la mise à jour de la bannière : ' . $e->getMessage()]);
-        }
-    } */
-
-    /*     private function getOrCreateAdresse(Request $request)
-    {
-        $codePostal = Code_postal::where('codepostal', $request->codepostal)
-            ->where('idpays', 1)
-            ->first();
-
-        if (!$codePostal) {
-            $codePostal = Code_postal::create([
-                'idpays' => 1,
-                'codepostal' => $request->codepostal
-            ]);
-        }
-
-        $ville = Ville::where('nomville', $request->nomville)
-            ->where('idcodepostal', $codePostal->idcodepostal)
-            ->where('idpays', 1)
-            ->first();
-
-        if (!$ville) {
-            $ville = Ville::create([
-                'nomville' => $request->nomville
-            ]);
-        }
-
-        $adresse = Adresse::where('idville', $ville->idville)
-            ->where('libelleadresse', $request->libelleadresse)
-            ->first();
-
-        if (!$adresse) {
-            $adresse = Adresse::create([
-                'libelleadresse' => $request->libelleadresse,
-                'idville' => $ville->idville
-            ]);
-        }
-
-        return $adresse;
-    } */
-
-    public function getJourSemaine($dateString)
-    {
-        $date = new \DateTime($dateString);
-        $jourSemaine = $date->format('w');
         $jours = [
             0 => 'Dimanche',
             1 => 'Lundi',
@@ -407,9 +469,9 @@ class EtablissementController extends Controller
             3 => 'Mercredi',
             4 => 'Jeudi',
             5 => 'Vendredi',
-            6 => 'Samedi'
+            6 => 'Samedi',
         ];
 
-        return $jours[$jourSemaine];
+        return $jours[Carbon::parse($dateString)->dayOfWeek];
     }
 }

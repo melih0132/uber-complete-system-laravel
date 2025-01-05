@@ -7,6 +7,19 @@
 @endsection
 
 @section('content')
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <section class="etablissement-detail">
         <div class="etablissement-banner">
             @if ($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
@@ -89,4 +102,34 @@
             </div>
         @endforeach
     </div>
+@endsection
+
+@section('js')
+    <script>
+        $(document).on('click', '.ajouter-au-panier', function(e) {
+            e.preventDefault();
+
+            let productId = $(this).data('product-id');
+
+            $.ajax({
+                url: '/panier/ajouter',
+                type: 'POST',
+                data: {
+                    product: productId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.href = document.referrer; // Redirige vers la page précédente
+                    } else {
+                        alert('Erreur: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Une erreur est survenue.');
+                }
+            });
+        });
+    </script>
 @endsection

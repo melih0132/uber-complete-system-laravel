@@ -55,8 +55,7 @@
                                                 {{ \Carbon\Carbon::parse($carte->dateexpirecb)->format('m/Y') }}
                                             </p>
                                             <p class="card-text">
-                                                <span class="badge bg-light text-dark px-2 py-1"
-                                                    style="font-size: 0.85rem;">
+                                                <span class="badge bg-light text-dark px-2 py-1" style="font-size: 0.85rem;">
                                                     {{ ucfirst($carte->typecarte) }}
                                                 </span>
                                                 <span class="badge bg-dark text-white px-2 py-1"

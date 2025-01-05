@@ -342,86 +342,95 @@ h3 {
 
 .minimal-carousel-track {
     display: flex;
-    justify-content: center;
     transition: transform 0.4s ease-in-out;
+    will-change: transform;
 }
 
 .minimal-carousel-card {
     flex: 0 0 10%;
-    /* 10 cards visible at a time */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 2px;
+    padding: 10px;
     box-sizing: border-box;
     cursor: pointer;
+    margin: 0 5px;
 }
 
 .minimal-carousel-card.selected {
-    border-radius: 5px;
+    border-radius: 8px;
 }
 
 .minimal-carousel-card img {
-    width: 60px;
-    height: 60px;
-    padding: 3%;
+    width: 70px;
+    height: 70px;
+    padding: 5%;
     object-fit: cover;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     border-radius: 50%;
-    transition: background-color 0.2s transform 0.2s;
+    transition: background-color 0.3s, transform 0.2s ease;
 }
 
 .minimal-carousel-card.selected img {
-    transform: rotate(10deg);
+    transform: rotate(5deg);
     background-color: #c9ffc7;
 }
 
 .minimal-carousel-card p {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: #555;
     margin: 0;
-
     white-space: normal;
     word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .minimal-carousel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.15);
     border: none;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
-    transition: background-color 0.3s, transform 0.1s;
+    transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.minimal-carousel-btn:hover {
+    background-color: rgba(0, 0, 0, 0.25);
 }
 
 .minimal-carousel-btn-left {
-    left: 10px;
+    left: 15px;
 }
 
 .minimal-carousel-btn-right {
-    right: 10px;
+    right: 15px;
 }
 
 @media (max-width: 768px) {
     .minimal-carousel-card {
         flex: 0 0 20%;
-        /* Augmente la taille des cartes */
+        padding: 5px;
+    }
+
+    .minimal-carousel-card img {
+        width: 50px;
+        height: 50px;
     }
 
     .minimal-carousel-btn {
-        width: 25px;
-        height: 25px;
+        width: 30px;
+        height: 30px;
     }
 }
 

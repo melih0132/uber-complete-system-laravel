@@ -3,53 +3,67 @@
 @section('title', 'Commandez votre repas en ligne')
 
 @section('css')
+    <!-- Exemple d'intégration d'icônes FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Votre fichier CSS spécifique -->
     <link rel="stylesheet" href="{{ asset('css/etablissement.blade.css') }}">
 @endsection
 
 @section('content')
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <section>
         <div class="container">
-            @if ($etablissements->count() > 0)
-                <!-- Affichage si le nombre d'établissements est supérieur à 0 -->
-                <form action="{{ route('etablissement.index') }}" method="GET" class="filter-form">
+            @if ($etablissements->count() > 0 || $produits->count() > 0)
+                <form action="{{ route('etablissement.filtrage') }}" method="GET" class="filter-form">
                     <div class="filter">
-                        <!-- Champs cachés pour conserver les paramètres existants -->
+                        <!-- Conserver les paramètres existants (si vous le souhaitez) -->
                         <input type="hidden" name="recherche_ville" value="{{ request('recherche_ville') }}">
                         <input type="hidden" name="selected_jour" value="{{ request('selected_jour') }}">
                         <input type="hidden" name="selected_horaires" value="{{ request('selected_horaires') }}">
 
-                        <!-- Recherche -->
+                        <!-- Champ de recherche : nom de produit / établissement -->
                         <input type="text" name="recherche_produit" id="recherche_produit" class="search-input"
                             placeholder="Recherchez un produit ou un établissement..."
                             value="{{ request('recherche_produit') }}">
 
                         <div class="filters-grid">
+                            <!-- Type de livraison -->
+                            <select name="type_livraison" id="type_livraison" class="filter-select">
+                                <option value="livraison" {{ $selectedTypeLivraison == 'livraison' ? 'selected' : '' }}>
+                                    Livraison
+                                </option>
+                                <option value="retrait" {{ $selectedTypeLivraison == 'retrait' ? 'selected' : '' }}>
+                                    Retrait
+                                </option>
+                            </select>
+
                             <!-- Type d'affichage -->
                             <select name="type_affichage" id="type_affichage" class="filter-select">
                                 <option value="all" {{ $selectedTypeAffichage == 'all' ? 'selected' : '' }}>
-                                    Etablissements et Produits
+                                    Établissements et Produits
                                 </option>
                                 <option value="etablissements"
                                     {{ $selectedTypeAffichage == 'etablissements' ? 'selected' : '' }}>
-                                    Etablissements
+                                    Établissements
                                 </option>
                                 <option value="produits" {{ $selectedTypeAffichage == 'produits' ? 'selected' : '' }}>
                                     Produits
                                 </option>
                             </select>
 
-                            <!-- Type de livraison -->
-                            <select name="type_livraison" id="type_livraison" class="filter-select">
-                                <option value="">Mode de livraison</option>
-                                <option value="retrait" {{ $selectedTypeLivraison == 'retrait' ? 'selected' : '' }}>Retrait
-                                </option>
-                                <option value="livraison" {{ $selectedTypeLivraison == 'livraison' ? 'selected' : '' }}>
-                                    Livraison
-                                </option>
-                            </select>
-
-                            <!-- Filtres conditionnels -->
+                            <!-- Filtre "Type d'établissement" (uniquement si on affiche des établissements) -->
                             @if ($selectedTypeAffichage !== 'produits')
                                 <select name="type_etablissement" id="type_etablissement" class="filter-select">
                                     <option value="">Tous les types</option>
@@ -64,6 +78,13 @@
                                 </select>
                             @endif
 
+                            <!-- Champs cachés pour conserver les catégories de produits filtrées -->
+                            @foreach ($categoriesProduit as $categorie)
+                                <input type="hidden" name="categories_produit_filtrees[]"
+                                    value="{{ $categorie->idcategorie }}">
+                            @endforeach
+
+                            <!-- Filtre "Catégorie de produit" (uniquement si on affiche des produits) -->
                             @if ($selectedTypeAffichage !== 'etablissements')
                                 <select name="categorie_produit" id="categorie_produit" class="filter-select">
                                     <option value="">Catégorie de produit</option>
@@ -75,9 +96,20 @@
                                     @endforeach
                                 </select>
                             @endif
+
+                            <!-- Bouton de soumission du formulaire -->
+                            <button type="submit" class="btn-panier">Rechercher</button>
                         </div>
 
+                        <!-- Carrousel des catégories de prestation (si on affiche des établissements) -->
                         @if ($selectedTypeAffichage !== 'produits' && $categoriesPrestation->isNotEmpty())
+
+                            <!-- Champs cachés pour conserver les prestations filtrées -->
+                            @foreach ($categoriesPrestation as $categorie)
+                                <input type="hidden" name="prestations_filtrees[]"
+                                    value="{{ $categorie->idcategorieprestation }}">
+                            @endforeach
+
                             <div class="minimal-carousel-container">
                                 <!-- Bouton gauche -->
                                 <button class="minimal-carousel-btn minimal-carousel-btn-left" id="btn-left" type="button"
@@ -105,28 +137,26 @@
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
 
-                                <!-- Champ caché -->
+                                <!-- Champ caché (pour transmettre la catégorie de prestation au submit) -->
                                 <input type="hidden" name="categorie_restaurant" id="categorie_restaurant"
                                     value="{{ $selectedCategoriePrestation }}">
                             </div>
                         @endif
-
-                        <!-- Bouton de recherche -->
-                        <button type="submit" class="search-button">Rechercher</button>
                     </div>
                 </form>
             @endif
 
             <div class="main-item-grid">
-                <!-- Résultats des établissements -->
+                <!-- Bloc Établissements -->
                 @if ($selectedTypeAffichage == 'etablissements' || $selectedTypeAffichage == 'all')
                     <div class="etablissements my-4">
-                        <h1 class="div-title">Etablissements</h1>
+                        <h1 class="div-title">Établissements</h1>
                         @if ($etablissements->isEmpty() && empty(request('recherche_produit')))
                             <p class="div-paragraph">Aucun établissement.</p>
                         @elseif ($etablissements->isEmpty())
-                            <p class="div-paragraph">Aucun établissement trouvé pour
-                                "{{ request('recherche_produit') }}".</p>
+                            <p class="div-paragraph">
+                                Aucun établissement trouvé pour "{{ request('recherche_produit') }}".
+                            </p>
                         @else
                             <div class="etablissements-grid">
                                 @foreach ($etablissements as $etablissement)
@@ -138,9 +168,11 @@
                                                 <div class="etablissement-card">
                                                     <div class="etablissement-image">
                                                         @if ($etablissement->imageetablissement && file_exists(public_path('storage/' . $etablissement->imageetablissement)))
+                                                            {{-- Cas où l’image est stockée dans "storage/app/public" --}}
                                                             <img src="{{ asset('storage/' . $etablissement->imageetablissement) }}"
                                                                 alt="{{ $etablissement->nometablissement }}">
                                                         @else
+                                                            {{-- Sinon on affiche l’URL brute (externe, ou pas trouvée) --}}
                                                             <img src="{{ $etablissement->imageetablissement }}"
                                                                 alt="{{ $etablissement->nometablissement }}">
                                                         @endif
@@ -148,7 +180,8 @@
 
                                                     <div class="etablissement-details pt-4">
                                                         <h5 class="etablissement-name">
-                                                            {{ $etablissement->nometablissement }}</h5>
+                                                            {{ $etablissement->nometablissement }}
+                                                        </h5>
                                                         <h6 class="etablissement-type">
                                                             {{ $etablissement->typeetablissement }}
                                                         </h6>
@@ -159,6 +192,7 @@
                                     </div>
                                 @endforeach
                             </div>
+
                             <!-- Pagination des établissements -->
                             <div class="d-flex justify-content-center mt-4">
                                 {{ $etablissements->appends(request()->except('page'))->onEachSide(1)->links('pagination::bootstrap-4') }}
@@ -167,15 +201,16 @@
                     </div>
                 @endif
 
-                <!-- Résultats des produits -->
+                <!-- Bloc Produits -->
                 @if ($selectedTypeAffichage == 'produits' || $selectedTypeAffichage == 'all')
                     <div class="produits">
                         <h1 class="div-title">Produits</h1>
                         @if ($produits->isEmpty() && empty(request('recherche_produit')))
                             <p class="div-paragraph">Aucun produit.</p>
                         @elseif ($produits->isEmpty())
-                            <p class="div-paragraph">Aucun produit trouvé pour
-                                "{{ request('recherche_produit') }}".</p>
+                            <p class="div-paragraph">
+                                Aucun produit trouvé pour "{{ request('recherche_produit') }}".
+                            </p>
                         @else
                             <div class="produits-grid">
                                 @foreach ($produits as $produit)
@@ -183,13 +218,17 @@
                                         <img src="{{ $produit->imageproduit }}" alt="{{ $produit->nomproduit }}"
                                             class="produit-img">
                                         <h5 class="produit-name">{{ $produit->nomproduit }}</h5>
-                                        <h6 class="produit-etablissement">Établi à : {{ $produit->nometablissement }}
+                                        <h6 class="produit-etablissement">
+                                            Établi à : {{ $produit->nometablissement }}
                                         </h6>
                                         <p class="produit-price">{{ $produit->prixproduit }} €</p>
+
+                                        {{-- Exemple de formulaire d’ajout au panier --}}
                                         <form method="POST" action="{{ route('panier.ajouter') }}">
                                             @csrf
-                                            <input name="product" value="{{ $produit->idproduit }}" type="hidden">
-                                            <button type="submit" class="btn-panier">Ajouter au panier</button>
+                                            <input type="hidden" name="product" value="{{ $produit->idproduit }}">
+                                            <button class="btn-panier">Ajouter au
+                                                panier</button>
                                         </form>
                                     </div>
                                 @endforeach
@@ -209,72 +248,65 @@
 
 @section('js')
     <script>
+        // Carrousel minimal pour sélectionner la catégorie de prestation
         document.addEventListener('DOMContentLoaded', () => {
-            // Sélection des éléments du carrousel
             const track = document.querySelector('.minimal-carousel-track');
             const leftButton = document.getElementById('btn-left');
             const rightButton = document.getElementById('btn-right');
             const cards = document.querySelectorAll('.minimal-carousel-card');
             const inputHidden = document.getElementById('categorie_restaurant');
 
-            // Si l'un des éléments nécessaires n'existe pas, on arrête le script
+            // Si des éléments du carrousel n’existent pas, on n’applique pas la logique
             if (!track || !leftButton || !rightButton || cards.length === 0 || !inputHidden) {
-                // Pas de console.error nécessaire si on veut juste ignorer l'erreur silencieusement
                 return;
             }
 
-            // --- Début de la logique du carrousel ---
+            let cardWidth = cards[0].offsetWidth; // Largeur d'une carte
+            let totalCards = cards.length; // Nombre total de cartes
+            let currentPosition = 0; // Position de défilement (en pixels)
 
-            // Largeur d'une carte
-            let cardWidth = cards[0].offsetWidth;
-            // Nombre total de cartes
-            let totalCards = cards.length;
-            // Position courante (en pixels) du défilement horizontal
-            let currentPosition = 0;
-
-            // Fonction : calcul du nombre de cartes visibles
+            // Calcule le nombre de cartes visibles
             function calculateVisibleCards() {
-                // On se base sur la largeur "visible" du wrapper (ou du track) plutôt que du document
-                // Si votre container est .minimal-carousel-wrapper, n'hésitez pas à le cibler à la place :
-                const trackWidth = track.offsetWidth;
-                return Math.floor(trackWidth / cardWidth);
+                const trackWrapper = track.parentElement; // Conteneur parent du track
+                const trackWidth = trackWrapper.offsetWidth; // Largeur "visible" du conteneur
+                return Math.floor(trackWidth / cardWidth); // Nombre de cartes visibles
             }
 
-            // Fonction : calcul du défilement maximal
+            // Calcule la valeur max du défilement horizontal
             function calculateMaxScroll(visibleCount) {
-                // On défile du nombre de cartes total moins celles qui sont visibles
-                return cardWidth * Math.max(0, totalCards - visibleCount);
+                const trackWrapper = track.parentElement;
+                const remainingWidth = cardWidth * (totalCards - visibleCount);
+                const maxOffset = remainingWidth - (trackWrapper.offsetWidth % cardWidth);
+                return Math.max(0, maxOffset); // Empêche un décalage négatif
             }
 
-            // On récupère le nombre de cartes visibles et le scroll max
             let visibleCards = calculateVisibleCards();
             let maxScroll = calculateMaxScroll(visibleCards);
 
-            // Gestion du redimensionnement de la fenêtre
+            // À chaque redimensionnement, recalculer les dimensions et ajuster l'affichage
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(handleResize, 200);
             });
 
-            // Boutons de navigation
             leftButton.addEventListener('click', (e) => handleNavigation(e, -1));
             rightButton.addEventListener('click', (e) => handleNavigation(e, 1));
 
-            // Gestion du clic sur les cartes (sélection de la catégorie)
+            // Clic sur une carte => sélection de la catégorie
             track.addEventListener('click', (event) => {
                 const card = event.target.closest('.minimal-carousel-card');
                 if (!card) return;
 
-                // Retire la classe 'selected' de toutes les cartes
+                // Désélectionne toutes les cartes
                 cards.forEach(c => c.classList.remove('selected'));
-                // Ajoute la classe 'selected' sur la carte cliquée
+                // Sélectionne la carte cliquée
                 card.classList.add('selected');
-                // Met à jour la valeur de l'input hidden
+                // Met à jour l’input hidden
                 inputHidden.value = card.dataset.id;
             });
 
-            // Support clavier (flèches gauche/droite)
+            // Support des flèches clavier
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowLeft') leftButton.click();
                 if (e.key === 'ArrowRight') rightButton.click();
@@ -284,11 +316,9 @@
             updateSlide();
             updateButtons();
 
-            // ------------------
-            // FONCTIONS INTERNES
-            // ------------------
+            // ------------ FONCTIONS INTERNES ------------
 
-            // Fonction : Navigation (défilement du carrousel)
+            // Gérer la navigation gauche/droite
             function handleNavigation(event, direction) {
                 event.preventDefault();
                 const step = direction * cardWidth;
@@ -300,27 +330,53 @@
                 }
             }
 
-            // Fonction : Mise à jour de la position du carrousel
+            // Met à jour le défilement et ajuste l'affichage
             function updateSlide() {
                 track.style.transform = `translateX(-${currentPosition}px)`;
                 updateButtons();
             }
 
-            // Fonction : Mise à jour de l'état des boutons (désactivation si limites atteintes)
+            // Met à jour l'état des boutons de navigation
             function updateButtons() {
                 leftButton.setAttribute('aria-disabled', currentPosition === 0);
                 rightButton.setAttribute('aria-disabled', currentPosition >= maxScroll);
             }
 
-            // Fonction : Gère le redimensionnement
+            // Gérer les changements de taille de fenêtre
             function handleResize() {
                 cardWidth = cards[0].offsetWidth;
                 visibleCards = calculateVisibleCards();
                 maxScroll = calculateMaxScroll(visibleCards);
-                // On s'assure de ne pas dépasser la nouvelle limite
                 currentPosition = Math.min(currentPosition, maxScroll);
                 updateSlide();
             }
+        });
+    </script>
+    <script>
+        $(document).on('click', '.ajouter-au-panier', function(e) {
+            e.preventDefault();
+
+            let productId = $(this).data('product-id');
+
+            $.ajax({
+                url: '/panier/ajouter',
+                type: 'POST',
+                data: {
+                    product: productId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.href = document.referrer; // Redirige vers la page précédente
+                    } else {
+                        alert('Erreur: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Une erreur est survenue.');
+                }
+            });
         });
     </script>
 @endsection

@@ -148,6 +148,14 @@ Route::post('/course/scheduled/invoice/{idreservation}', [FacturationController:
 
 
 
+
+
+
+
+
+
+
+
 // * POV COURSIER
 // Entretien RH
 Route::get('/coursier/entretien', [CoursierController::class, 'entretien'])->name('coursier.entretien');
@@ -168,9 +176,20 @@ Route::post('/coursier/courses/finish/{idreservation}', [CoursierController::cla
 
 
 
+
+
+
+
+
+
+
+
+
 // ! Uber Eats
 Route::get('/UberEats', [EtablissementController::class, 'accueilubereats'])->name('etablissement.accueilubereats');
 Route::get('/UberEats/etablissements', [EtablissementController::class, 'index'])->name('etablissement.index');
+
+Route::get('/UberEats/etablissements/filtrer', [EtablissementController::class, 'filtrageEtablissements'])->name('etablissement.filtrage');
 Route::get('/UberEats/etablissements/details/{idetablissement}', [EtablissementController::class, 'detail'])->name('etablissement.detail');
 
 // Gestion du panier
@@ -181,13 +200,29 @@ Route::delete('/panier/supprimer/{idProduit}', [PanierController::class, 'suppri
 Route::post('/panier/vider', [PanierController::class, 'viderPanier'])->name('panier.vider');
 
 // Commander -> nécessite la connexion
-Route::get('/panier/livraison', function () {
-    return view('livraison');
-});
+Route::get('/panier/commander/choix-livraison', [CommandeController::class, 'choisirModeLivraison'])->name('commande.choixLivraison');
+Route::post('/panier/commander/choix-livraison', [CommandeController::class, 'choisirModeLivraisonStore'])->name('commande.choixLivraisonStore');
 
-/* Route::post('/panier/commander', [PanierController::class, 'passerCommande'])->name('panier.commander'); */
-Route::post('/choix-livraison', [CommandeController::class, 'choixLivraison'])->name('mode.livraison');
-Route::get('/commande/{idcommande}', [CommandeController::class, 'show'])->name('commande.show');
+Route::get('/panier/commander/choix-carte', [CommandeController::class, 'choisirCarteBancaire'])->name('commande.choisirCarteBancaire');
+Route::post('/panier/commander/choix-carte', [CommandeController::class, 'paiementCarte'])->name('commande.paiementCarte');
+
+Route::get('/panier/commander/enregistrer-commande', [CommandeController::class, 'enregistrerCommande'])->name('commande.enregistrer');
+Route::get('/commande/confirmation/{id}', [CommandeController::class, 'confirmation'])->name('commande.confirmation');
+
+
+
+/* Route::get('/panier/livraison', function () {
+    return view('livraison');
+}); */
+
+// Route::post('/panier/commander', [PanierController::class, 'passerCommande'])->name('panier.commander');
+// Route::post('/choix-livraison', [CommandeController::class, 'choixLivraison'])->name('mode.livraison');
+// Route::get('/commande/{idcommande}', [CommandeController::class, 'show'])->name('commande.show');
+
+
+
+
+
 
 
 // * POV LIVREUR
@@ -201,10 +236,30 @@ Route::post('/coursier/livraisons/finish/{idreservation}', [CoursierController::
 
 
 
+
+
+
+
+
+
+
+
 // ! Uber Velo
 Route::get('/UberVelo', function () {
     return view('uber-velo');
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -222,6 +277,17 @@ Route::get('/UberEats/etablissements/{id}/commandes/prochaine-heure', [Responsab
 
 Route::get('/commandes/search-coursiers', [ResponsableEnseigneController::class, 'searchCoursiers'])->name('manager.search-coursiers');
 Route::post('/commandes/{idcommande}/assigner-livreur', [ResponsableEnseigneController::class, 'assignerLivreur'])->name('assignerLivreur');
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -258,6 +324,11 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/carte-bancaire', [CarteBancaireController::class, 'index'])->name('carte-bancaire.index');
 Route::get('/carte-bancaire/create', [CarteBancaireController::class, 'create'])->name('carte-bancaire.create');
 Route::post('/carte-bancaire', [CarteBancaireController::class, 'store'])->name('carte-bancaire.store');
+
+
+
+
+
 
 
 

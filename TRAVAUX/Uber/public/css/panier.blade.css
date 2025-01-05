@@ -1,45 +1,349 @@
-body {
-  background-color: rgb(244, 244, 244);
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.panier-detail {
-    max-width: 1200px;
-    margin: 20px auto;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.cart {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 24px;
     overflow: hidden;
 }
 
-.btn-panier {
-  font-size: 14px;
-  font-weight: 600;
-  background: rgb(0, 0, 0);
-  color: rgb(255, 255, 255);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  border: none;
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.btn-panier:hover {
-  background: rgb(40, 40, 40);
-  color: rgb(255, 255, 255);
+.item-info {
+    flex: 1;
 }
-.btn-livraison {
-    font-size: 18px;
-    font-weight: 600;
-    background: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-    border-radius: 50px;
-    padding: 0.5rem 2rem;
+
+.item-img {
+    flex: 0 0 80px;
+    height: 80px;
+    margin-right: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.item-img img {
+    max-width: 100%;
+    max-height: 100%;
+    margin-left: 0.5rem;
+    object-fit: cover;
+    display: block;
+}
+
+.item-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.item-price {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.quantity-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.quantity-input {
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 80px;
+    text-align: center;
+    background-color: white;
+    cursor: text;
+}
+
+.quantity-input:focus {
+    outline: none;
+    border-color: black;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.delete-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.delete-btn {
+    background: none;
     border: none;
+    cursor: pointer;
+    padding: 6px 8px 8px 8px;
+    border-radius: 12px;
+    transition: all 0.2s;
 }
 
-.btn-livraison:hover {
-    background: rgb(40, 40, 40);
-    color: rgb(255, 255, 255);
+.delete-btn:hover {
+    background-color: #fee2e2;
 }
-.btn-livraison:active {
-    color: rgb(0, 0, 0);
-    background: rgb(255, 255, 255);
+
+.delete-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #ef4444;
+    stroke-width: 2;
+}
+
+.cart-summary {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px;
+    backdrop-filter: blur(8px);
+}
+
+.summary-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: black;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #333;
+}
+
+.btn-secondary {
+    background: #e5e5e5;
+    color: #666;
+}
+
+.btn-secondary:hover {
+    background: #d4d4d4;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 48px 20px;
+    color: #666;
+}
+
+.empty-cart svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: #ccc;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .item-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .summary-content {
+        flex-direction: column;
+        gap: 16px;
+    }
+}
+
+/* CHOIX LIVRAISON  */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 15px 0;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: #555;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.radio-group input {
+    margin-right: 15px;
+    accent-color: #28a745;
+}
+
+.radio-group label:hover {
+    background: #f1f1f1;
+}
+
+/* CHOIX CB */
+.card-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card-selection label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1rem;
+    color: #555;
+    cursor: pointer;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.card-selection label:hover {
+    background: #f1f1f1;
+}
+
+.card-selection input[type="radio"] {
+    accent-color: #28a745;
+    transform: scale(1.2);
+}
+
+
+/* POST COMMANDE */
+.card {
+    background: #fff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.list-group {
+    list-style: none;
+    padding: 0;
+}
+
+.list-group-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.table th {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.table td {
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.text-muted {
+    color: #999;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
 }

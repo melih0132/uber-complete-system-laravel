@@ -25,4 +25,9 @@ class Produit extends Model
     {
         return $this->belongsToMany(Etablissement::class, 'est_situe_a_2', 'idproduit', 'idetablissement');
     }
+
+    public function produits()
+    {
+        return $this->belongsToMany(Produit::class, 'contient_2', 'idpanier', 'idproduit');
+    }
 }

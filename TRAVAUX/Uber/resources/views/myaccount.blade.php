@@ -147,7 +147,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-1">
-                                            <button type="submit" class="btn-compte">
+                                            <button type="submit" class="btn-compte rounded-circle">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -161,8 +161,8 @@
                                         @foreach ($favorites as $favorite)
                                             <div class="list-group-item d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <strong>{{ $favorite->nomlieu }}</strong>
-                                                    <span class="text-muted ms-2">{{ $favorite->libelleadresse }}</span>
+                                                    <span class="fw-bold pr-5">{{ $favorite->nomlieu }}</span>
+                                                    <span class="text-muted">{{ $favorite->libelleadresse }}</span>
                                                 </div>
                                                 <form
                                                     action="{{ route('account.favorites.delete', $favorite->idlieufavori) }}"
