@@ -6965,7 +6965,7 @@ VALUES (
     ),
     (
         21,
-        21,
+        1,
         'Restaurant',
         130,
         'McDonald''s Annecy',
@@ -7053,7 +7053,7 @@ VALUES (
     ),
     (
         29,
-        29,
+        1,
         'Restaurant',
         138,
         'McDonald''s Le Havre',
@@ -7086,7 +7086,7 @@ VALUES (
     ),
     (
         32,
-        32,
+        16,
         'Épicerie',
         141,
         'Picard',
@@ -7108,7 +7108,7 @@ VALUES (
     ),
     (
         34,
-        34,
+        9,
         'Épicerie',
         143,
         'Carrefour',
@@ -7863,241 +7863,415 @@ VALUES -- Établissement 1
     (154, 45),
     (155, 45);
 INSERT INTO A_COMME_CATEGORIE (IDETABLISSEMENT, IDCATEGORIEPRESTATION)
-VALUES (1, 8),
-    (1, 34),
+VALUES -- McDonald's Paris
     (1, 7),
-    (1, 22),
-    (1, 26),
-    (1, 30),
+    -- Fast food
+    (1, 8),
+    -- Burgers
+    (1, 34),
+    -- Américaine
+    (1, 42),
+    -- Repas détente
+    (1, 25),
+    -- Petit-déjeuner
+    (1, 15),
+    -- Ailes de poulet
+    -- Waffle Factory
     (2, 7),
-    (2, 34),
-    (2, 21),
-    (2, 25),
-    (2, 6),
+    -- Fast food
     (2, 16),
+    -- Boulangerie
+    (2, 42),
+    -- Repas détente
+    (2, 25),
+    -- Petit-déjeuner
+    (2, 10),
+    -- Cuisine saine
+    -- PAUL
     (3, 16),
-    (3, 21),
+    -- Boulangerie
     (3, 35),
-    (3, 36),
-    (3, 28),
-    (3, 29),
-    (4, 41),
-    (4, 21),
-    (4, 7),
+    -- Café
+    (3, 25),
+    -- Petit-déjeuner
+    (3, 42),
+    -- Repas détente
+    (3, 1),
+    -- Courses
+    -- El Chaltén
+    (4, 10),
+    -- Cuisine saine
     (4, 24),
-    (4, 40),
+    -- Spécialité
+    (4, 34),
+    -- Américaine
+    (4, 20),
+    -- Mexicaine
     (4, 42),
-    (5, 8),
+    -- Repas détente
+    -- Burger King
     (5, 7),
-    (5, 33),
-    (5, 32),
-    (5, 20),
-    (5, 11),
+    -- Fast food
+    (5, 8),
+    -- Burgers
+    (5, 42),
+    -- Repas détente
+    (5, 34),
+    -- Américaine
+    (5, 25),
+    -- Petit-déjeuner
+    -- Street Pasta
     (6, 22),
-    (6, 25),
-    (6, 30),
-    (6, 6),
-    (6, 12),
-    (6, 9),
+    -- Italienne
+    (6, 10),
+    -- Cuisine saine
+    (6, 42),
+    -- Repas détente
+    (6, 21),
+    -- Sandwich
+    -- Black And White Burger
     (7, 8),
+    -- Burgers
     (7, 7),
-    (7, 26),
-    (7, 35),
-    (7, 19),
+    -- Fast food
+    (7, 42),
+    -- Repas détente
     (7, 15),
-    (8, 41),
-    (8, 21),
+    -- Ailes de poulet
+    (7, 34),
+    -- Américaine
+    -- Ben's Food
+    (8, 7),
+    -- Fast food
+    (8, 10),
+    -- Cuisine saine
+    (8, 42),
+    -- Repas détente
     (8, 24),
-    (8, 14),
-    (8, 37),
-    (8, 23),
+    -- Spécialité
+    (8, 34),
+    -- Américaine
+    -- Carrefour
     (9, 6),
+    -- Épicerie
+    (9, 1),
+    -- Courses
     (9, 36),
-    (9, 38),
-    (9, 27),
-    (9, 2),
-    (9, 3),
-    (10, 7),
-    (10, 21),
-    (10, 4),
+    -- Hygiène
+    (9, 28),
+    -- Parapharmacie
+    (9, 16),
+    -- Boulangerie
+    -- Fat Kebab
+    (10, 2),
+    -- Halal
+    (10, 15),
+    -- Ailes de poulet
     (10, 42),
-    (10, 5),
-    (10, 18),
-    (11, 41),
-    (11, 7),
-    (11, 8),
-    (11, 25),
-    (11, 30),
-    (11, 13),
-    (12, 7),
+    -- Repas détente
+    (10, 34),
+    -- Américaine
+    -- Island Bowls
+    (11, 19),
+    -- Poke
+    (11, 10),
+    -- Cuisine saine
+    (11, 45),
+    -- Hawaïenne
+    (11, 24),
+    -- Spécialité
+    (11, 9),
+    -- Asiatique
+    -- Pitaya
     (12, 11),
-    (12, 26),
-    (12, 35),
-    (12, 32),
-    (12, 40),
-    (13, 6),
+    -- Thaïlandaise
+    (12, 9),
+    -- Asiatique
+    (12, 10),
+    -- Cuisine saine
+    (12, 24),
+    -- Spécialité
+    (12, 31),
+    -- Vietnamienne
+    -- La Mie Câline
     (13, 16),
-    (13, 29),
-    (13, 9),
-    (13, 20),
-    (13, 17),
-    (14, 6),
-    (14, 36),
-    (14, 28),
-    (14, 31),
-    (14, 10),
-    (14, 39),
+    -- Boulangerie
+    (13, 7),
+    -- Fast food
+    (13, 25),
+    -- Petit-déjeuner
+    (13, 42),
+    -- Repas détente
+    -- Brioche Dorée
+    (14, 16),
+    -- Boulangerie
+    (14, 25),
+    -- Petit-déjeuner
+    (14, 42),
+    -- Repas détente
+    (14, 7),
+    -- Fast food
+    -- Franprix
     (15, 6),
+    -- Épicerie
+    (15, 1),
+    -- Courses
     (15, 36),
-    (15, 28),
-    (15, 19),
-    (15, 3),
-    (15, 38),
+    -- Hygiène
+    (15, 16),
+    -- Boulangerie
+    -- Picard
     (16, 6),
+    -- Épicerie
+    (16, 1),
+    -- Courses
+    (16, 10),
+    -- Cuisine saine
     (16, 36),
-    (16, 27),
-    (16, 44),
-    (16, 23),
+    -- Hygiène
     (16, 42),
-    (17, 16),
+    -- Repas détente
+    -- Vival
+    (17, 6),
+    -- Épicerie
+    (17, 1),
+    -- Courses
     (17, 36),
-    (17, 31),
-    (17, 9),
-    (17, 18),
-    (17, 12),
-    (18, 41),
-    (18, 40),
-    (18, 24),
+    -- Hygiène
+    (17, 28),
+    -- Parapharmacie
+    -- Instant Rétro
     (18, 42),
-    (18, 38),
-    (18, 14),
-    (19, 41),
+    -- Repas détente
+    (18, 41),
+    -- Street food
+    (18, 34),
+    -- Américaine
+    (18, 24),
+    -- Spécialité
+    -- Chicken HOT
+    (19, 15),
+    -- Ailes de poulet
     (19, 7),
-    (19, 24),
-    (19, 29),
-    (19, 35),
-    (19, 30),
-    (20, 7),
+    -- Fast food
+    (19, 42),
+    -- Repas détente
+    (19, 34),
+    -- Américaine
+    -- Subway
     (20, 21),
-    (20, 6),
-    (20, 27),
-    (20, 12),
-    (20, 22),
+    -- Sandwich
+    (20, 7),
+    -- Fast food
+    (20, 42),
+    -- Repas détente
+    (20, 10),
+    -- Cuisine saine
+    -- McDonald's Annecy
     (21, 7),
+    -- Fast food
     (21, 8),
-    (21, 24),
-    (21, 31),
-    (21, 10),
-    (21, 39),
+    -- Burgers
+    (21, 34),
+    -- Américaine
+    (21, 15),
+    -- Ailes de poulet
+    -- Le Petit Casino
     (22, 6),
+    -- Épicerie
+    (22, 1),
+    -- Courses
+    (22, 36),
+    -- Hygiène
     (22, 16),
-    (22, 25),
-    (22, 42),
-    (22, 14),
-    (22, 40),
+    -- Boulangerie
+    -- Eat Sushi - Compans
     (23, 4),
-    (23, 7),
+    -- Sushis
     (23, 30),
-    (23, 11),
-    (23, 35),
-    (23, 32),
+    -- Japonaise
+    (23, 9),
+    -- Asiatique
+    (23, 42),
+    -- Repas détente
+    -- Pepe Chicken
     (24, 2),
-    (24, 7),
-    (24, 40),
-    (24, 9),
-    (24, 23),
-    (24, 27),
+    -- Halal
+    (24, 15),
+    -- Ailes de poulet
+    (24, 42),
+    -- Repas détente
+    (24, 34),
+    -- Américaine
+    -- Intermarché
     (25, 6),
+    -- Épicerie
+    (25, 1),
+    -- Courses
     (25, 36),
-    (25, 20),
-    (25, 5),
-    (25, 37),
-    (25, 10),
+    -- Hygiène
+    (25, 16),
+    -- Boulangerie
+    -- Super U
     (26, 6),
-    (26, 7),
-    (26, 24),
-    (26, 18),
-    (26, 41),
-    (26, 15),
+    -- Épicerie
+    (26, 1),
+    -- Courses
+    (26, 36),
+    -- Hygiène
+    (26, 16),
+    -- Boulangerie
+    -- Les Burgers de Colette
     (27, 8),
+    -- Burgers
     (27, 7),
-    (27, 23),
-    (27, 26),
-    (27, 4),
-    (27, 11),
+    -- Fast food
+    (27, 42),
+    -- Repas détente
+    (27, 34),
+    -- Américaine
+    -- Monoprix
     (28, 6),
+    -- Épicerie
+    (28, 1),
+    -- Courses
     (28, 36),
-    (28, 24),
-    (28, 30),
-    (28, 29),
-    (28, 32),
+    -- Hygiène
+    (28, 16),
+    -- Boulangerie
+    -- McDonald's Le Havre
     (29, 7),
+    -- Fast food
     (29, 8),
-    (29, 24),
-    (29, 38),
-    (29, 12),
-    (29, 20),
+    -- Burgers
+    (29, 34),
+    -- Américaine
+    (29, 15),
+    -- Ailes de poulet
+    -- Monop’
     (30, 6),
-    (30, 25),
-    (30, 24),
-    (30, 9),
-    (30, 40),
-    (30, 26),
+    -- Épicerie
+    (30, 1),
+    -- Courses
+    (30, 36),
+    -- Hygiène
+    (30, 16),
+    -- Boulangerie
+    -- L’Istanbul
     (31, 2),
-    (31, 7),
-    (31, 24),
-    (31, 39),
-    (31, 13),
-    (31, 22),
+    -- Halal
+    (31, 40),
+    -- Grecque
+    (31, 42),
+    -- Repas détente
+    (31, 41),
+    -- Street food
+    -- Picard (second instance)
     (32, 6),
-    (32, 36),
-    (32, 30),
-    (32, 3),
-    (32, 44),
-    (32, 38),
+    -- Épicerie
+    (32, 1),
+    -- Courses
+    (32, 10),
+    -- Cuisine saine
+    (32, 42),
+    -- Repas détente
+    -- O’Tacos
+    (33, 2),
+    -- Halal
     (33, 7),
-    (33, 21),
-    (33, 20),
-    (33, 15),
-    (33, 10),
-    (33, 14),
+    -- Fast food
+    (33, 41),
+    -- Street food
+    (33, 24),
+    -- Spécialité
+    -- Carrefour (second instance)
     (34, 6),
+    -- Épicerie
+    (34, 1),
+    -- Courses
     (34, 36),
-    (34, 23),
-    (34, 13),
-    (34, 9),
-    (34, 11),
+    -- Hygiène
+    (34, 16),
+    -- Boulangerie
+    -- Chicken Alpes
     (35, 15),
-    (35, 7),
-    (35, 24),
-    (35, 37),
-    (35, 39),
-    (35, 38),
+    -- Ailes de poulet
+    (35, 2),
+    -- Halal
+    (35, 42),
+    -- Repas détente
+    -- Mister Food
     (36, 2),
-    (36, 3),
-    (36, 8),
-    (36, 34),
-    (36, 22),
+    -- Halal
+    (36, 24),
+    -- Spécialité
+    (36, 42),
+    -- Repas détente
+    -- NACHOS Mexican Grill
     (37, 20),
-    (37, 10),
-    (38, 9),
+    -- Mexicaine
+    (37, 24),
+    -- Spécialité
+    (37, 42),
+    -- Repas détente
+    (37, 9),
+    -- Asiatique
+    -- Viet'miam
     (38, 31),
-    (39, 9),
+    -- Vietnamienne
+    (38, 9),
+    -- Asiatique
+    (38, 42),
+    -- Repas détente
+    -- Manna - Korean Food
     (39, 12),
-    (40, 8),
-    (40, 10),
-    (40, 34),
+    -- Coréenne
+    (39, 9),
+    -- Asiatique
+    (39, 42),
+    -- Repas détente
+    -- Wall Str’eat
+    (40, 41),
+    -- Street food
+    (40, 7),
+    -- Fast food
+    (40, 42),
+    -- Repas détente
+    -- Kefi
     (41, 40),
-    (41, 41),
-    (42, 2),
+    -- Grecque
+    (41, 24),
+    -- Spécialité
+    (41, 42),
+    -- Repas détente
+    -- La Kazdalerie
+    (42, 8),
+    -- Burgers
     (42, 41),
-    (43, 2),
+    -- Street food
+    (42, 42),
+    -- Repas détente
+    -- Rosti Poulet
     (43, 15),
+    -- Ailes de poulet
+    (43, 24),
+    -- Spécialité
+    (43, 42),
+    -- Repas détente
+    -- King Marcel
     (44, 8),
-    (44, 34),
-    (45, 7),
+    -- Burgers
+    (44, 24),
+    -- Spécialité
+    (44, 42),
+    -- Repas détente
+    -- Tacos World
+    (45, 20),
+    -- Mexicaine
     (45, 2),
-    (45, 21);
+    -- Halal
+    (45, 42);
+-- Repas détente
 INSERT INTO HORAIRES (
         IDHORAIRES,
         IDETABLISSEMENT,
@@ -13811,7 +13985,44 @@ VALUES (1, 7),
     (114, 7),
     (115, 7),
     (105, 7),
-    (104, 11);
+    (104, 11),
+        (119, 7),
+    (120, 7),
+    (121, 8),
+    (122, 8),
+    (123, 7),
+    (124, 7),
+    (125, 7),
+    (126, 7),
+    (127, 7),
+    (128, 8),
+    (129, 8),
+    (130, 5),
+    (131, 7),
+    (132, 7),
+    (133, 7),
+    (134, 7),
+    (135, 7),
+    (136, 8),
+    (137, 8),
+    (138, 8),
+    (139, 5),
+    (140, 7),
+    (141, 2),
+    (142, 5),
+    (143, 7),
+    (144, 7),
+    (145, 7),
+    (146, 5),
+    (147, 7),
+    (148, 7),
+    (149, 7),
+    (150, 7),
+    (151, 7),
+    (152, 19),
+    (153, 7),
+    (154, 7),
+    (155, 8);
 INSERT INTO REGLEMENT_SALAIRE (
         IDREGLEMENT,
         IDCOURSIER,
