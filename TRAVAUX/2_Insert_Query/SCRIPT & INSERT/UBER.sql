@@ -25,7 +25,9 @@ DROP TABLE IF EXISTS ETABLISSEMENT CASCADE;
 DROP TABLE IF EXISTS FACTURE CASCADE;
 DROP TABLE IF EXISTS HORAIRES CASCADE;
 DROP TABLE IF EXISTS HORAIRES_COURSIER CASCADE;
+DROP TABLE IF EXISTS HORAIRES_LIVREUR CASCADE;
 DROP TABLE IF EXISTS LIEU_FAVORI CASCADE;
+DROP TABLE IF EXISTS LIVREUR CASCADE;
 DROP TABLE IF EXISTS OTP CASCADE;
 DROP TABLE IF EXISTS PANIER CASCADE;
 DROP TABLE IF EXISTS PAYS CASCADE;
@@ -34,6 +36,7 @@ DROP TABLE IF EXISTS PRODUIT CASCADE;
 DROP TABLE IF EXISTS REGLEMENT_SALAIRE CASCADE;
 DROP TABLE IF EXISTS RESERVATION CASCADE;
 DROP TABLE IF EXISTS RESPONSABLE_ENSEIGNE CASCADE;
+DROP TABLE IF EXISTS RESTAURATEUR CASCADE;
 DROP TABLE IF EXISTS TYPE_PRESTATION CASCADE;
 DROP TABLE IF EXISTS VEHICULE CASCADE;
 DROP TABLE IF EXISTS VELO CASCADE;
@@ -122,6 +125,8 @@ CREATE TABLE CLIENT (
     PHOTOPROFILE VARCHAR(300) NULL,
     SOUHAITERECEVOIRBONPLAN BOOL NULL,
     MFA_ACTIVEE BOOL DEFAULT FALSE,
+    TYPECLIENT VARCHAR(20) NOT NULL,
+    CONSTRAINT CK_TYPECLIENT CHECK (TYPECLIENT IN ('Uber', 'Uber Eats')),
     CONSTRAINT PK_CLIENT PRIMARY KEY (IDCLIENT)
 );
 /*==============================================================*/
@@ -152,19 +157,25 @@ CREATE TABLE CODE_POSTAL (
 CREATE TABLE COMMANDE (
     IDCOMMANDE INT4 NOT NULL,
     IDPANIER INT4 NOT NULL,
-    IDCOURSIER INT4 NULL,
-    IDCB INT4 NOT NULL,
+    IDLIVREUR INT4 NULL,
+    IDCB INT4 NULL,
     IDADRESSE INT4 NOT NULL,
     PRIXCOMMANDE DECIMAL(5, 2) NOT NULL,
     CONSTRAINT CK_COMMANDE_PRIX CHECK (PRIXCOMMANDE >= 0),
     TEMPSCOMMANDE INT4 NOT NULL,
     CONSTRAINT CK_TEMPS_COMMANDE CHECK (TEMPSCOMMANDE >= 0),
+    HEURECREATION TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     HEURECOMMANDE TIMESTAMP NOT NULL,
-    /* CONSTRAINT CK_HEURECOMMANDE CHECK (HEURECOMMANDE <= CURRENT_TIMESTAMP), */
-    ESTLIVRAISON BOOL NOT NULL,
-    STATUTCOMMANDE VARCHAR(20) NOT NULL,
+    ESTLIVRAISON BOOL NOT NULL DEFAULT FALSE,
+    STATUTCOMMANDE VARCHAR(40) NOT NULL,
     CONSTRAINT CK_STATUT_COMMANDE CHECK (
-        STATUTCOMMANDE IN ('En attente', 'En cours', 'Livrée', 'Annulée')
+        STATUTCOMMANDE IN (
+            'En attente de paiement',
+            'Paiement validé',
+            'En cours',
+            'Livrée',
+            'Annulée'
+        )
     ),
     CONSTRAINT PK_COMMANDE PRIMARY KEY (IDCOMMANDE)
 );
@@ -383,6 +394,28 @@ CREATE TABLE HORAIRES_COURSIER (
     )
 );
 /*==============================================================*/
+/* Table : HORAIRES_LIVREUR                                     */
+/*==============================================================*/
+CREATE TABLE HORAIRES_LIVREUR (
+    IDHORAIRES_LIVREUR INT4 NOT NULL,
+    IDLIVREUR INT4 NOT NULL,
+    JOURSEMAINE VARCHAR(9) NOT NULL,
+    HEUREDEBUT TIME WITH TIME ZONE NULL,
+    HEUREFIN TIME WITH TIME ZONE NULL,
+    CONSTRAINT PK_HORAIRES_LIVREUR PRIMARY KEY (IDHORAIRES_LIVREUR),
+    CONSTRAINT CK_JOURSEMAINE CHECK (
+        JOURSEMAINE IN (
+            'Lundi',
+            'Mardi',
+            'Mercredi',
+            'Jeudi',
+            'Vendredi',
+            'Samedi',
+            'Dimanche'
+        )
+    )
+);
+/*==============================================================*/
 /* Table : FACTURE                                              */
 /*==============================================================*/
 CREATE TABLE FACTURE (
@@ -407,6 +440,41 @@ CREATE TABLE LIEU_FAVORI (
     IDADRESSE INT4 NOT NULL,
     NOMLIEU VARCHAR(100) NOT NULL,
     CONSTRAINT PK_LIEU_FAVORI PRIMARY KEY (IDLIEUFAVORI)
+);
+/*==============================================================*/
+/* Table : LIVREUR                                              */
+/*==============================================================*/
+CREATE TABLE LIVREUR (
+    IDLIVREUR INT4 NOT NULL,
+    IDENTREPRISE INT4 NOT NULL,
+    IDADRESSE INT4 NULL,
+    GENREUSER VARCHAR(20) NOT NULL,
+    CONSTRAINT CK_LIVREUR_GENRE CHECK (GENREUSER IN ('Monsieur', 'Madame')),
+    NOMUSER VARCHAR(50) NOT NULL,
+    PRENOMUSER VARCHAR(50) NOT NULL,
+    DATENAISSANCE DATE NOT NULL,
+    CONSTRAINT CK_LIVREUR_DATE CHECK (
+        DATENAISSANCE <= CURRENT_DATE
+        AND DATENAISSANCE <= CURRENT_DATE - INTERVAL '18 years'
+    ),
+    TELEPHONE VARCHAR(20) NOT NULL,
+    CONSTRAINT CK_LIVREUR_TEL CHECK (
+        TELEPHONE ~ '^(06|07)[0-9]{8}$'
+        OR TELEPHONE ~ '^\+?[1-9][0-9]{1,14}$'
+    ),
+    EMAILUSER VARCHAR(200) NOT NULL,
+    CONSTRAINT UQ_LIVREUR_MAIL UNIQUE (EMAILUSER),
+    MOTDEPASSEUSER VARCHAR(200) NOT NULL,
+    IBAN VARCHAR(30) NULL,
+    CONSTRAINT UQ_LIVREUR_IBAN UNIQUE (IBAN),
+    DATEDEBUTACTIVITE DATE NULL,
+    NOTEMOYENNE NUMERIC(2, 1) NULL,
+    CONSTRAINT CK_LIVREUR_NOTE CHECK (
+        NOTEMOYENNE >= 1
+        AND NOTEMOYENNE <= 5
+        OR NOTEMOYENNE IS NULL
+    ),
+    CONSTRAINT PK_LIVREUR PRIMARY KEY (IDLIVREUR)
 );
 /*==============================================================*/
 /* Table : PANIER                                               */
@@ -492,6 +560,24 @@ CREATE TABLE RESPONSABLE_ENSEIGNE (
     CONSTRAINT UQ_RESPONSABLE_EMAIL UNIQUE (EMAILUSER),
     MOTDEPASSEUSER VARCHAR(200) NOT NULL,
     CONSTRAINT PK_RESPONSABLE_ENSEIGNE PRIMARY KEY (IDRESPONSABLE)
+);
+/*==============================================================*/
+/* Table : RESTAURATEUR                                         */
+/*==============================================================*/
+CREATE TABLE RESTAURATEUR (
+    IDRESTAURATEUR INT4 NOT NULL,
+    IDETABLISSEMENT INT4 NOT NULL,
+    NOMUSER VARCHAR(50) NOT NULL,
+    PRENOMUSER VARCHAR(50) NOT NULL,
+    TELEPHONE VARCHAR(20) NOT NULL,
+    CONSTRAINT CK_RESTAURATEUR_TEL CHECK (
+        TELEPHONE ~ '^(06|07)[0-9]{8}$'
+        OR TELEPHONE ~ '^\+?[1-9][0-9]{1,14}$'
+    ),
+    EMAILUSER VARCHAR(200) NOT NULL,
+    CONSTRAINT UQ_RESTAURATEUR_MAIL UNIQUE (EMAILUSER),
+    MOTDEPASSEUSER VARCHAR(200) NOT NULL,
+    CONSTRAINT PK_RESTAURATEUR PRIMARY KEY (IDRESTAURATEUR)
 );
 /*==============================================================*/
 /* Table : TYPE_PRESTATION                                      */
@@ -598,7 +684,7 @@ ADD CONSTRAINT FK_CLIENT_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDA
 ALTER TABLE CODE_POSTAL
 ADD CONSTRAINT FK_CODE_POSTAL_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE COMMANDE
-ADD CONSTRAINT FK_COMMANDE_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_COMMANDE_LIVREUR FOREIGN KEY (IDLIVREUR) REFERENCES LIVREUR (IDLIVREUR) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE COMMANDE
 ADD CONSTRAINT FK_COMMANDE_PANIER FOREIGN KEY (IDPANIER) REFERENCES PANIER (IDPANIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE CONTIENT_2
@@ -645,12 +731,17 @@ ALTER TABLE HORAIRES
 ADD CONSTRAINT FK_ETABLISSEMENT_HORAIRES FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE HORAIRES_COURSIER
 ADD CONSTRAINT FK_COURSIER_HORAIRES FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE HORAIRES_LIVREUR
+ADD CONSTRAINT FK_HORAIRES_LIVREUR FOREIGN KEY (IDLIVREUR) REFERENCES LIVREUR (IDLIVREUR) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE FACTURE
-ADD CONSTRAINT FK_FACTURE_COURSE FOREIGN KEY (IDCOURSE) REFERENCES COURSE (IDCOURSE) ON DELETE SET NULL ON UPDATE CASCADE;
+ADD CONSTRAINT FK_FACTURE_COURSE FOREIGN KEY (IDCOURSE) REFERENCES COURSE (IDCOURSE) ON DELETE
+SET NULL ON UPDATE CASCADE;
 ALTER TABLE FACTURE
-ADD CONSTRAINT FK_FACTURE_VELO FOREIGN KEY (IDVELO) REFERENCES VELO (IDVELO) ON DELETE SET NULL ON UPDATE CASCADE;
+ADD CONSTRAINT FK_FACTURE_VELO FOREIGN KEY (IDVELO) REFERENCES VELO (IDVELO) ON DELETE
+SET NULL ON UPDATE CASCADE;
 ALTER TABLE FACTURE
-ADD CONSTRAINT FK_FACTURE_COMMANDE FOREIGN KEY (IDCOMMANDE) REFERENCES COMMANDE (IDCOMMANDE) ON DELETE SET NULL ON UPDATE CASCADE;
+ADD CONSTRAINT FK_FACTURE_COMMANDE FOREIGN KEY (IDCOMMANDE) REFERENCES COMMANDE (IDCOMMANDE) ON DELETE
+SET NULL ON UPDATE CASCADE;
 ALTER TABLE FACTURE
 ADD CONSTRAINT FK_FACTURE_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE CASCADE;
 ALTER TABLE FACTURE
@@ -671,6 +762,8 @@ ALTER TABLE RESERVATION
 ADD CONSTRAINT FK_RESERVATION_VELO FOREIGN KEY (IDVELO) REFERENCES VELO (IDVELO) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE RESERVATION
 ADD CONSTRAINT FK_RESERVATION_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE RESTAURATEUR
+ADD CONSTRAINT FK_RESTAURATEUR_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE OTP
 ADD CONSTRAINT FK_OTP_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE VEHICULE
@@ -2511,7 +2604,8 @@ INSERT INTO CLIENT (
         EMAILUSER,
         MOTDEPASSEUSER,
         PHOTOPROFILE,
-        SOUHAITERECEVOIRBONPLAN
+        SOUHAITERECEVOIRBONPLAN,
+        TYPECLIENT
     )
 VALUES (
         1,
@@ -2525,7 +2619,8 @@ VALUES (
         'jean.dupont@example.com',
         'password123',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         2,
@@ -2539,7 +2634,8 @@ VALUES (
         'claire.martin@example.com',
         'password456',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         3,
@@ -2553,7 +2649,8 @@ VALUES (
         'paul.durand@example.com',
         'password789',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         4,
@@ -2567,7 +2664,8 @@ VALUES (
         'sophie.bernard1@example.com',
         'password101',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         5,
@@ -2581,7 +2679,8 @@ VALUES (
         'alexandre.lemoine@example.com',
         'password202',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         6,
@@ -2595,7 +2694,8 @@ VALUES (
         'lucie.petit@example.com',
         'password303',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         7,
@@ -2609,7 +2709,8 @@ VALUES (
         'thomas.lemoine@example.com',
         'password404',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         8,
@@ -2623,7 +2724,8 @@ VALUES (
         'marie.lemoine@example.com',
         'password505',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         9,
@@ -2637,7 +2739,8 @@ VALUES (
         'philippe.benoit@example.com',
         'password606',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         10,
@@ -2651,7 +2754,8 @@ VALUES (
         'sophie.lemoine@example.com',
         'password707',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         11,
@@ -2665,7 +2769,8 @@ VALUES (
         'carlos.garcia@example.com',
         'password808',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         12,
@@ -2679,7 +2784,8 @@ VALUES (
         'anna.lemoine@example.com',
         'password909',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         13,
@@ -2693,7 +2799,8 @@ VALUES (
         'diego.garcia@example.com',
         'password010',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         14,
@@ -2707,7 +2814,8 @@ VALUES (
         'helene.bernard@example.com',
         'password121',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         15,
@@ -2721,7 +2829,8 @@ VALUES (
         'pierre.dupont@example.com',
         'password232',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         16,
@@ -2735,7 +2844,8 @@ VALUES (
         'julie.durand@example.com',
         'password343',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         17,
@@ -2749,7 +2859,8 @@ VALUES (
         'benjamin.lemoine@example.com',
         'password454',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         18,
@@ -2763,21 +2874,23 @@ VALUES (
         'claire.lemoine@example.com',
         'password565',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         19,
         19,
         19,
         'Monsieur',
-        'Lemoine',
+        'Lemainne',
         'Julien',
         '1987-12-11',
         '0612345696',
-        'julien.leoine@example.com',
+        'julien.lemaine@example.com',
         'password676',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         20,
@@ -2791,7 +2904,8 @@ VALUES (
         'sophie.bernard@example.com',
         'password787',
         '',
-        TRUE
+        FALSE,
+        'Uber Eats'
     ),
     (
         21,
@@ -2805,7 +2919,8 @@ VALUES (
         'antoine.gomez@example.com',
         'password898',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         22,
@@ -2819,7 +2934,8 @@ VALUES (
         'isabelle.lemoine@example.com',
         'password009',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         23,
@@ -2833,7 +2949,8 @@ VALUES (
         'frederic.dupont@example.com',
         'password110',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         24,
@@ -2847,7 +2964,8 @@ VALUES (
         'laura.garcia@example.com',
         'password221',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         25,
@@ -2861,7 +2979,8 @@ VALUES (
         'eric.benoit@example.com',
         'password332',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         26,
@@ -2875,7 +2994,8 @@ VALUES (
         'margaux.lemoine@example.com',
         'password443',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         27,
@@ -2889,7 +3009,8 @@ VALUES (
         'jacques.dupont@example.com',
         'password554',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         28,
@@ -2903,7 +3024,8 @@ VALUES (
         'marion.bernard@example.com',
         'password665',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         29,
@@ -2917,7 +3039,8 @@ VALUES (
         'victor.durand@example.com',
         'password776',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         30,
@@ -2931,7 +3054,8 @@ VALUES (
         'audrey.lemoine@example.com',
         'password887',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         31,
@@ -2945,7 +3069,8 @@ VALUES (
         'maxime.gomez@example.com',
         'password998',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         32,
@@ -2956,10 +3081,11 @@ VALUES (
         'Sophie',
         '1990-06-28',
         '0612345709',
-        'sophie.m0artin@example.com',
+        'sophie.martin@example.com',
         'password009',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         33,
@@ -2973,7 +3099,8 @@ VALUES (
         'julien.lemoine@example.com',
         'password110',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         34,
@@ -2987,7 +3114,8 @@ VALUES (
         'amelie.petit@example.com',
         'password221',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         35,
@@ -3001,7 +3129,8 @@ VALUES (
         'laurent.lemoine@example.com',
         'password332',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         36,
@@ -3015,7 +3144,8 @@ VALUES (
         'catherine.durand@example.com',
         'password443',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         37,
@@ -3029,7 +3159,8 @@ VALUES (
         'lucas.gomez@example.com',
         'password554',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         38,
@@ -3043,7 +3174,8 @@ VALUES (
         'amandine.benoit@example.com',
         'password665',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         39,
@@ -3057,7 +3189,8 @@ VALUES (
         'julien.garcia@example.com',
         'password776',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         40,
@@ -3071,7 +3204,8 @@ VALUES (
         'estelle.lemoine@example.com',
         'password887',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         41,
@@ -3085,7 +3219,8 @@ VALUES (
         'frederic.lemoine@example.com',
         'password998',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         42,
@@ -3099,7 +3234,8 @@ VALUES (
         'celine.garcia@example.com',
         'password009',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         43,
@@ -3113,7 +3249,8 @@ VALUES (
         'victor.dupont@example.com',
         'password110',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         44,
@@ -3127,7 +3264,8 @@ VALUES (
         'valerie.lemoine@example.com',
         'password221',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         45,
@@ -3141,21 +3279,23 @@ VALUES (
         'louis.benoit@example.com',
         'password332',
         '',
-        FALSE
+        FALSE,
+        'Uber'
     ),
     (
         46,
         NULL,
         6,
         'Madame',
-        'Martin',
+        'Martine',
         'Sophie',
         '1984-08-21',
         '0612345723',
-        'sophie.martin@example.com',
+        'sophie.martine@example.com',
         'password443',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     ),
     (
         47,
@@ -3169,7 +3309,8 @@ VALUES (
         'pierre.lemoine@example.com',
         'password554',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         48,
@@ -3183,7 +3324,8 @@ VALUES (
         'laure.bernard@example.com',
         'password665',
         '',
-        FALSE
+        FALSE,
+        'Uber Eats'
     ),
     (
         49,
@@ -3197,7 +3339,8 @@ VALUES (
         'rafael.garcia@example.com',
         'password776',
         '',
-        TRUE
+        FALSE,
+        'Uber'
     ),
     (
         50,
@@ -3211,7 +3354,8 @@ VALUES (
         'solene.lemoine@example.com',
         'password887',
         '',
-        TRUE
+        TRUE,
+        'Uber Eats'
     );
 INSERT INTO APPARTIENT_2 (IDCB, IDCLIENT)
 VALUES (1, 1),
@@ -4884,6 +5028,385 @@ VALUES (1, 1, NULL, 'En attente', NULL, NULL, NULL),
         NULL,
         NULL
     );
+INSERT INTO LIVREUR (
+        IDLIVREUR,
+        IDENTREPRISE,
+        IDADRESSE,
+        GENREUSER,
+        NOMUSER,
+        PRENOMUSER,
+        DATENAISSANCE,
+        TELEPHONE,
+        EMAILUSER,
+        MOTDEPASSEUSER,
+        IBAN,
+        DATEDEBUTACTIVITE,
+        NOTEMOYENNE
+    )
+VALUES (
+        1,
+        20,
+        160,
+        'Monsieur',
+        'Dupont',
+        'Jean',
+        '1990-05-15',
+        '0612345678',
+        'jean.dupont@example.com',
+        'password123',
+        'FR7630004000031234567890143',
+        '2022-01-15',
+        4.5
+    ),
+    (
+        2,
+        21,
+        160,
+        'Madame',
+        'Martin',
+        'Sophie',
+        '1985-07-20',
+        '0623456789',
+        'sophie.martin@example.com',
+        'sophie2022',
+        'FR7630004000039876543210987',
+        '2023-03-01',
+        4.8
+    ),
+    (
+        3,
+        22,
+        165,
+        'Monsieur',
+        'Durand',
+        'Pierre',
+        '1992-09-10',
+        '0676543210',
+        'pierre.durand@example.com',
+        'securePassword1',
+        'FR7630004000031654567890143',
+        '2022-05-10',
+        4.2
+    ),
+    (
+        4,
+        23,
+        106,
+        'Madame',
+        'Morel',
+        'Julie',
+        '1995-11-30',
+        '0611223344',
+        'julie.morel@example.com',
+        'julie1234',
+        'FR7630004000035675901234567',
+        '2023-06-01',
+        NULL
+    ),
+    (
+        5,
+        24,
+        120,
+        'Monsieur',
+        'Blanc',
+        'Paul',
+        '1990-03-25',
+        '0698765432',
+        'paul.blanc@example.com',
+        'paulsecure987',
+        'FR7630004000035675901844567',
+        '2021-11-20',
+        4.9
+    ),
+    (
+        6,
+        25,
+        175,
+        'Madame',
+        'Chevalier',
+        'Alice',
+        '1993-08-18',
+        '0678112233',
+        'alice.chevalier@example.com',
+        'alice1234',
+        'FR7630004000036789012345678',
+        '2022-10-01',
+        4.7
+    ),
+    (
+        7,
+        26,
+        46,
+        'Monsieur',
+        'Garnier',
+        'Lucas',
+        '1991-01-12',
+        '0611987654',
+        'lucas.garnier@example.com',
+        'lucaspass2023',
+        'FR7630004000035675901484567',
+        '2023-02-01',
+        4.1
+    ),
+    (
+        8,
+        27,
+        65,
+        'Madame',
+        'Perrot',
+        'Camille',
+        '1989-04-08',
+        '0665432101',
+        'camille.perrot@example.com',
+        'camillepw',
+        'FR7630004000035675901234487',
+        '2022-03-15',
+        4.4
+    ),
+    (
+        9,
+        28,
+        12,
+        'Monsieur',
+        'Girard',
+        'Thomas',
+        '1988-12-25',
+        '0611225566',
+        'thomas.girard@example.com',
+        'secureThomas88',
+        'FR7630004000039876543212345',
+        '2023-01-01',
+        4.6
+    ),
+    (
+        10,
+        29,
+        15,
+        'Madame',
+        'Lemoine',
+        'Charlotte',
+        '1994-06-05',
+        '0699988776',
+        'charlotte.lemoine@example.com',
+        'charlottepw',
+        'FR7630004000035675901984567',
+        '2022-06-20',
+        4.3
+    ),
+    (
+        11,
+        30,
+        25,
+        'Monsieur',
+        'Noel',
+        'Antoine',
+        '1992-03-30',
+        '0623345566',
+        'antoine.noel@example.com',
+        'secureNoel1992',
+        'FR7630004000035675901234787',
+        '2021-12-15',
+        4.2
+    ),
+    (
+        12,
+        31,
+        18,
+        'Madame',
+        'Rey',
+        'Marie',
+        '1987-07-07',
+        '0644445556',
+        'marie.rey@example.com',
+        'secureMarie87',
+        'FR7630004000034321098765432',
+        '2022-08-05',
+        4.9
+    ),
+    (
+        13,
+        32,
+        115,
+        'Monsieur',
+        'Fontaine',
+        'Hugo',
+        '1995-10-19',
+        '0611228899',
+        'hugo.fontaine@example.com',
+        'hugoPass2023',
+        'FR7630004000035125901234567',
+        '2023-05-25',
+        4.8
+    ),
+    (
+        14,
+        33,
+        56,
+        'Madame',
+        'Masson',
+        'Elise',
+        '1990-12-12',
+        '0622113344',
+        'elise.masson@example.com',
+        'secureElise90',
+        'FR7630004000035675901284567',
+        '2023-04-01',
+        4.4
+    ),
+    (
+        15,
+        34,
+        111,
+        'Monsieur',
+        'Renaud',
+        'Benjamin',
+        '1989-08-28',
+        '0677112233',
+        'benjamin.renaud@example.com',
+        'benjaminSecure89',
+        'FR7630004000035678984654321',
+        '2023-03-10',
+        NULL
+    ),
+    (
+        16,
+        35,
+        48,
+        'Madame',
+        'Dubois',
+        'Lucie',
+        '1992-11-11',
+        '0655112233',
+        'lucie.dubois@example.com',
+        'lucieSecure92',
+        'FR7630004000035685901234567',
+        '2021-11-05',
+        4.5
+    ),
+    (
+        17,
+        36,
+        48,
+        'Monsieur',
+        'Morin',
+        'Julien',
+        '1990-05-15',
+        '0611998877',
+        'julien.morin@example.com',
+        'julienpw90',
+        'FR7630004000036159098765432',
+        '2022-07-01',
+        4.2
+    ),
+    (
+        18,
+        37,
+        26,
+        'Madame',
+        'Marchand',
+        'Laura',
+        '1993-02-25',
+        '0688997766',
+        'laura.marchand@example.com',
+        'lauraSecure93',
+        'FR7630004000036789098765432',
+        '2022-09-10',
+        4.7
+    ),
+    (
+        19,
+        38,
+        62,
+        'Monsieur',
+        'Robert',
+        'Alexandre',
+        '1991-01-01',
+        '0622334455',
+        'alexandre.robert@example.com',
+        'alexandreSecure91',
+        'FR7630004000036789098795432',
+        '2023-01-15',
+        4.8
+    ),
+    (
+        20,
+        39,
+        95,
+        'Madame',
+        'Petit',
+        'Amelie',
+        '1994-03-03',
+        '0677889900',
+        'amelie.petit@example.com',
+        'amelieSecure94',
+        'FR7630004000036789094265432',
+        '2023-06-05',
+        4.6
+    ),
+    (
+        21,
+        40,
+        99,
+        'Monsieur',
+        'Bernard',
+        'Leo',
+        '1993-12-12',
+        '0611223344',
+        'leo.bernard@example.com',
+        'leoSecure93',
+        'FR7630004000039876543211234',
+        '2022-11-01',
+        4.1
+    );
+INSERT INTO HORAIRES_LIVREUR (
+        IDHORAIRES_LIVREUR,
+        IDLIVREUR,
+        JOURSEMAINE,
+        HEUREDEBUT,
+        HEUREFIN
+    )
+VALUES (1, 1, 'Lundi', '08:00:00', '12:00:00'),
+    (2, 1, 'Mardi', '14:00:00', '18:00:00'),
+    (3, 2, 'Mercredi', '09:00:00', '13:00:00'),
+    (4, 2, 'Jeudi', '15:00:00', '19:00:00'),
+    (5, 3, 'Vendredi', '08:30:00', '12:30:00'),
+    (6, 3, 'Samedi', '14:30:00', '18:30:00'),
+    (7, 4, 'Dimanche', '10:00:00', '14:00:00'),
+    (8, 4, 'Lundi', '16:00:00', '20:00:00'),
+    (9, 5, 'Mardi', '08:00:00', '12:00:00'),
+    (10, 5, 'Mercredi', '13:00:00', '17:00:00'),
+    (11, 6, 'Jeudi', '09:00:00', '13:00:00'),
+    (12, 6, 'Vendredi', '14:00:00', '18:00:00'),
+    (13, 7, 'Samedi', '08:00:00', '12:00:00'),
+    (14, 7, 'Dimanche', '14:00:00', '18:00:00'),
+    (15, 8, 'Lundi', '07:00:00', '11:00:00'),
+    (16, 8, 'Mardi', '12:00:00', '16:00:00'),
+    (17, 9, 'Mercredi', '08:30:00', '12:30:00'),
+    (18, 9, 'Jeudi', '14:30:00', '18:30:00'),
+    (19, 10, 'Vendredi', '09:00:00', '13:00:00'),
+    (20, 10, 'Samedi', '15:00:00', '19:00:00'),
+    (21, 11, 'Dimanche', '10:00:00', '14:00:00'),
+    (22, 11, 'Lundi', '16:00:00', '20:00:00'),
+    (23, 12, 'Mardi', '08:00:00', '12:00:00'),
+    (24, 12, 'Mercredi', '13:00:00', '17:00:00'),
+    (25, 13, 'Jeudi', '09:00:00', '13:00:00'),
+    (26, 13, 'Vendredi', '14:00:00', '18:00:00'),
+    (27, 14, 'Samedi', '08:00:00', '12:00:00'),
+    (28, 14, 'Dimanche', '14:00:00', '18:00:00'),
+    (29, 15, 'Lundi', '07:00:00', '11:00:00'),
+    (30, 15, 'Mardi', '12:00:00', '16:00:00'),
+    (31, 16, 'Mercredi', '08:30:00', '12:30:00'),
+    (32, 16, 'Jeudi', '14:30:00', '18:30:00'),
+    (33, 17, 'Vendredi', '09:00:00', '13:00:00'),
+    (34, 17, 'Samedi', '15:00:00', '19:00:00'),
+    (35, 18, 'Dimanche', '10:00:00', '14:00:00'),
+    (36, 18, 'Lundi', '16:00:00', '20:00:00'),
+    (37, 19, 'Mardi', '08:00:00', '12:00:00'),
+    (38, 19, 'Mercredi', '13:00:00', '17:00:00'),
+    (39, 20, 'Jeudi', '09:00:00', '13:00:00'),
+    (40, 20, 'Vendredi', '14:00:00', '18:00:00'),
+    (41, 21, 'Samedi', '08:00:00', '12:00:00'),
+    (42, 21, 'Dimanche', '14:00:00', '18:00:00');
 INSERT INTO CATEGORIE_PRESTATION (
         IDCATEGORIEPRESTATION,
         LIBELLECATEGORIEPRESTATION,
@@ -6718,6 +7241,420 @@ VALUES (
         'https://tb-static.uber.com/prod/image-proc/processed_images/a5a1781d60187bc731532a2f4cbd6588/fb86662148be855d931b37d6c1e5fcbe.jpeg',
         TRUE,
         TRUE
+    );
+INSERT INTO RESTAURATEUR (
+        IDRESTAURATEUR,
+        IDETABLISSEMENT,
+        NOMUSER,
+        PRENOMUSER,
+        TELEPHONE,
+        EMAILUSER,
+        MOTDEPASSEUSER
+    )
+VALUES (
+        1,
+        1,
+        'Durand',
+        'Michel',
+        '0612345678',
+        'michel.durand@example.com',
+        'password123'
+    ),
+    (
+        2,
+        2,
+        'Lemoine',
+        'Sophie',
+        '0623456789',
+        'sophie.lemoine@example.com',
+        'sophie2023'
+    ),
+    (
+        3,
+        3,
+        'Petit',
+        'Jean',
+        '0634567890',
+        'jean.petit@example.com',
+        'jeanpassword'
+    ),
+    (
+        4,
+        4,
+        'Martin',
+        'Amelie',
+        '0645678901',
+        'amelie.martin@example.com',
+        'amelie2023'
+    ),
+    (
+        5,
+        5,
+        'Morel',
+        'Julien',
+        '0656789012',
+        'julien.morel@example.com',
+        'juliensecure'
+    ),
+    (
+        6,
+        6,
+        'Blanc',
+        'Alice',
+        '0667890123',
+        'alice.blanc@example.com',
+        'alicepw2023'
+    ),
+    (
+        7,
+        7,
+        'Noel',
+        'Thomas',
+        '0678901234',
+        'thomas.noel@example.com',
+        'thomassecure'
+    ),
+    (
+        8,
+        8,
+        'Fontaine',
+        'Marie',
+        '0689012345',
+        'marie.fontaine@example.com',
+        'mariepw2023'
+    ),
+    (
+        9,
+        9,
+        'Garnier',
+        'Leo',
+        '0690123456',
+        'leo.garnier@example.com',
+        'leosecure2023'
+    ),
+    (
+        10,
+        10,
+        'Robert',
+        'Hugo',
+        '0611234567',
+        'hugo.robert@example.com',
+        'hugopassword'
+    ),
+    (
+        11,
+        11,
+        'Chevalier',
+        'Camille',
+        '0622345678',
+        'camille.chevalier@example.com',
+        'camille2023'
+    ),
+    (
+        12,
+        12,
+        'Bernard',
+        'Lucas',
+        '0633456789',
+        'lucas.bernard@example.com',
+        'lucassecure'
+    ),
+    (
+        13,
+        13,
+        'Simon',
+        'Paul',
+        '0644567890',
+        'paul.simon@example.com',
+        'paulpassword'
+    ),
+    (
+        14,
+        14,
+        'Renard',
+        'Elise',
+        '0655678901',
+        'elise.renard@example.com',
+        'elise2023'
+    ),
+    (
+        15,
+        15,
+        'Gauthier',
+        'Quentin',
+        '0666789012',
+        'quentin.gauthier@example.com',
+        'quentinsecure'
+    ),
+    (
+        16,
+        16,
+        'Masson',
+        'Anais',
+        '0677890123',
+        'anais.masson@example.com',
+        'anaispassword'
+    ),
+    (
+        17,
+        17,
+        'Lambert',
+        'Victor',
+        '0688901234',
+        'victor.lambert@example.com',
+        'victorsecure'
+    ),
+    (
+        18,
+        18,
+        'Girard',
+        'Julie',
+        '0699012345',
+        'julie.girard@example.com',
+        'juliepw2023'
+    ),
+    (
+        19,
+        19,
+        'Meyer',
+        'Laura',
+        '0612345678',
+        'laura.meyer@example.com',
+        'laurapassword'
+    ),
+    (
+        20,
+        20,
+        'Dubois',
+        'Alexandre',
+        '0623456789',
+        'alexandre.dubois@example.com',
+        'alexandrepw2023'
+    ),
+    (
+        21,
+        21,
+        'Morin',
+        'Clara',
+        '0634567890',
+        'clara.morin@example.com',
+        'clarapassword'
+    ),
+    (
+        22,
+        22,
+        'Renaud',
+        'Antoine',
+        '0645678901',
+        'antoine.renaud@example.com',
+        'antoinepw2023'
+    ),
+    (
+        23,
+        23,
+        'Rey',
+        'Lucie',
+        '0656789012',
+        'lucie.rey@example.com',
+        'luciepw2023'
+    ),
+    (
+        24,
+        24,
+        'Clément',
+        'Nicolas',
+        '0667890123',
+        'nicolas.clement@example.com',
+        'nicolaspw2023'
+    ),
+    (
+        25,
+        25,
+        'Marchand',
+        'Emma',
+        '0678901234',
+        'emma.marchand@example.com',
+        'emmapassword'
+    ),
+    (
+        26,
+        26,
+        'Leclerc',
+        'Sophia',
+        '0689012345',
+        'sophia.leclerc@example.com',
+        'sophiapw2023'
+    ),
+    (
+        27,
+        27,
+        'Perrot',
+        'Morgane',
+        '0690123456',
+        'morgane.perrot@example.com',
+        'morganepassword'
+    ),
+    (
+        28,
+        28,
+        'Garcia',
+        'Alexis',
+        '0611234567',
+        'alexis.garcia@example.com',
+        'alexispw2023'
+    ),
+    (
+        29,
+        29,
+        'Lopez',
+        'Nathan',
+        '0622345678',
+        'nathan.lopez@example.com',
+        'nathanpassword'
+    ),
+    (
+        30,
+        30,
+        'Martinez',
+        'Lea',
+        '0633456789',
+        'lea.martinez@example.com',
+        'leapw2023'
+    ),
+    (
+        31,
+        31,
+        'Rodriguez',
+        'Chloe',
+        '0644567890',
+        'chloe.rodriguez@example.com',
+        'chloepassword'
+    ),
+    (
+        32,
+        32,
+        'Hernandez',
+        'Eva',
+        '0655678901',
+        'eva.hernandez@example.com',
+        'evapw2023'
+    ),
+    (
+        33,
+        33,
+        'Fernandez',
+        'Ethan',
+        '0666789012',
+        'ethan.fernandez@example.com',
+        'ethanpassword'
+    ),
+    (
+        34,
+        34,
+        'Alves',
+        'Noah',
+        '0677890123',
+        'noah.alves@example.com',
+        'noahpw2023'
+    ),
+    (
+        35,
+        35,
+        'Silva',
+        'Ines',
+        '0688901234',
+        'ines.silva@example.com',
+        'inespassword'
+    ),
+    (
+        36,
+        36,
+        'Pereira',
+        'Liam',
+        '0699012345',
+        'liam.pereira@example.com',
+        'liampw2023'
+    ),
+    (
+        37,
+        37,
+        'Costa',
+        'Marie',
+        '0612345678',
+        'marie.costa@example.com',
+        'mariepw2023'
+    ),
+    (
+        38,
+        38,
+        'Moreira',
+        'Julien',
+        '0623456789',
+        'julien.moreira@example.com',
+        'julienpassword'
+    ),
+    (
+        39,
+        39,
+        'Barbosa',
+        'Hugo',
+        '0634567890',
+        'hugo.barbosa@example.com',
+        'hugopw2023'
+    ),
+    (
+        40,
+        40,
+        'Oliveira',
+        'Lola',
+        '0645678901',
+        'lola.oliveira@example.com',
+        'lolapassword'
+    ),
+    (
+        41,
+        41,
+        'Duarte',
+        'Lucas',
+        '0656789012',
+        'lucas.duarte@example.com',
+        'lucaspw2023'
+    ),
+    (
+        42,
+        42,
+        'Santos',
+        'Clara',
+        '0667890123',
+        'clara.santos@example.com',
+        'clarapw2023'
+    ),
+    (
+        43,
+        43,
+        'Mendes',
+        'Emma',
+        '0678901234',
+        'emma.mendes@example.com',
+        'emmapassword'
+    ),
+    (
+        44,
+        44,
+        'Ramos',
+        'Sophia',
+        '0689012345',
+        'sophia.ramos@example.com',
+        'sophiapw2023'
+    ),
+    (
+        45,
+        45,
+        'Vieira',
+        'Nathan',
+        '0690123456',
+        'nathan.vieira@example.com',
+        'nathanpassword'
     );
 INSERT INTO EST_SITUE_A_2 (IDPRODUIT, IDETABLISSEMENT)
 VALUES -- Établissement 1
@@ -12987,13 +13924,20 @@ CREATE SEQUENCE HORAIRES_ID_SEQ START 1;
 ALTER TABLE HORAIRES
 ALTER COLUMN IDHORAIRES
 SET DEFAULT NEXTVAL('HORAIRES_id_seq');
-SELECT SETVAL('HORAIRES_id_seq', 315);
+SELECT SETVAL('HORAIRES_id_seq', 316);
 -- HORAIRES_COURSIER
 DROP SEQUENCE IF EXISTS HORAIRES_COURSIER_ID_SEQ CASCADE;
 CREATE SEQUENCE HORAIRES_COURSIER_ID_SEQ START 1;
 ALTER TABLE HORAIRES_COURSIER
 ALTER COLUMN IDHORAIRES_COURSIER
 SET DEFAULT NEXTVAL('HORAIRES_COURSIER_id_seq');
+-- HORAIRES_LIVREUR
+DROP SEQUENCE IF EXISTS HORAIRES_LIVREUR_ID_SEQ CASCADE;
+CREATE SEQUENCE HORAIRES_LIVREUR_ID_SEQ START 1;
+ALTER TABLE HORAIRES_LIVREUR
+ALTER COLUMN IDHORAIRES_LIVREUR
+SET DEFAULT NEXTVAL('HORAIRES_LIVREUR_ID_SEQ');
+SELECT SETVAL('HORAIRES_LIVREUR_ID_SEQ', 42);
 -- LIEU_FAVORI
 DROP SEQUENCE IF EXISTS LIEU_FAVORI_ID_SEQ CASCADE;
 CREATE SEQUENCE LIEU_FAVORI_ID_SEQ START 1;
@@ -13001,6 +13945,13 @@ ALTER TABLE LIEU_FAVORI
 ALTER COLUMN IDLIEUFAVORI
 SET DEFAULT NEXTVAL('LIEU_FAVORI_ID_SEQ');
 SELECT SETVAL('LIEU_FAVORI_ID_SEQ', 20);
+-- LIVREUR
+DROP SEQUENCE IF EXISTS LIVREUR_ID_SEQ CASCADE;
+CREATE SEQUENCE LIVREUR_ID_SEQ START 1;
+ALTER TABLE LIVREUR
+ALTER COLUMN IDLIVREUR
+SET DEFAULT NEXTVAL('LIVREUR_ID_SEQ');
+SELECT SETVAL('LIVREUR_ID_SEQ', 21);
 -- OTP
 DROP SEQUENCE IF EXISTS OTP_ID_SEQ CASCADE;
 CREATE SEQUENCE OTP_ID_SEQ START 1;
@@ -13054,6 +14005,13 @@ ALTER TABLE RESPONSABLE_ENSEIGNE
 ALTER COLUMN IDRESPONSABLE
 SET DEFAULT NEXTVAL('RESPONSABLE_ENSEIGNE_ID_SEQ');
 SELECT SETVAL('RESPONSABLE_ENSEIGNE_ID_SEQ', 45);
+-- RESTAURATEUR
+DROP SEQUENCE IF EXISTS RESTAURATEUR_ID_SEQ CASCADE;
+CREATE SEQUENCE RESTAURATEUR_ID_SEQ START 1;
+ALTER TABLE RESTAURATEUR
+ALTER COLUMN IDRESTAURATEUR
+SET DEFAULT NEXTVAL('RESTAURATEUR_ID_SEQ');
+SELECT SETVAL('RESTAURATEUR_ID_SEQ', 45);
 -- TYPE_PRESTATION
 DROP SEQUENCE IF EXISTS TYPE_PRESTATION_ID_SEQ CASCADE;
 CREATE SEQUENCE TYPE_PRESTATION_ID_SEQ START 1;

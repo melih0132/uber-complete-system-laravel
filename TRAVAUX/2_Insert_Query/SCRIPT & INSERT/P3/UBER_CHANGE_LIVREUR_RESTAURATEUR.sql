@@ -5084,7 +5084,7 @@ VALUES (
         '0676543210',
         'pierre.durand@example.com',
         'securePassword1',
-        NULL,
+        'FR7630004000031654567890143',
         '2022-05-10',
         4.2
     ),
@@ -5114,7 +5114,7 @@ VALUES (
         '0698765432',
         'paul.blanc@example.com',
         'paulsecure987',
-        NULL,
+        'FR7630004000035675901844567',
         '2021-11-20',
         4.9
     ),
@@ -5144,7 +5144,7 @@ VALUES (
         '0611987654',
         'lucas.garnier@example.com',
         'lucaspass2023',
-        NULL,
+        'FR7630004000035675901484567',
         '2023-02-01',
         4.1
     ),
@@ -5159,7 +5159,7 @@ VALUES (
         '0665432101',
         'camille.perrot@example.com',
         'camillepw',
-        NULL,
+        'FR7630004000035675901234487',
         '2022-03-15',
         4.4
     ),
@@ -5189,7 +5189,7 @@ VALUES (
         '0699988776',
         'charlotte.lemoine@example.com',
         'charlottepw',
-        NULL,
+        'FR7630004000035675901984567',
         '2022-06-20',
         4.3
     ),
@@ -5204,7 +5204,7 @@ VALUES (
         '0623345566',
         'antoine.noel@example.com',
         'secureNoel1992',
-        NULL,
+        'FR7630004000035675901234787',
         '2021-12-15',
         4.2
     ),
@@ -5234,7 +5234,7 @@ VALUES (
         '0611228899',
         'hugo.fontaine@example.com',
         'hugoPass2023',
-        NULL,
+        'FR7630004000035125901234567',
         '2023-05-25',
         4.8
     ),
@@ -5249,7 +5249,7 @@ VALUES (
         '0622113344',
         'elise.masson@example.com',
         'secureElise90',
-        NULL,
+        'FR7630004000035675901284567',
         '2023-04-01',
         4.4
     ),
@@ -5279,7 +5279,7 @@ VALUES (
         '0655112233',
         'lucie.dubois@example.com',
         'lucieSecure92',
-        NULL,
+        'FR7630004000035685901234567',
         '2021-11-05',
         4.5
     ),
@@ -5294,7 +5294,7 @@ VALUES (
         '0611998877',
         'julien.morin@example.com',
         'julienpw90',
-        NULL,
+        'FR7630004000036159098765432',
         '2022-07-01',
         4.2
     ),
@@ -5324,7 +5324,7 @@ VALUES (
         '0622334455',
         'alexandre.robert@example.com',
         'alexandreSecure91',
-        NULL,
+        'FR7630004000036789098795432',
         '2023-01-15',
         4.8
     ),
@@ -5339,7 +5339,7 @@ VALUES (
         '0677889900',
         'amelie.petit@example.com',
         'amelieSecure94',
-        NULL,
+        'FR7630004000036789094265432',
         '2023-06-05',
         4.6
     ),
@@ -5358,6 +5358,55 @@ VALUES (
         '2022-11-01',
         4.1
     );
+INSERT INTO HORAIRES_LIVREUR (
+        IDHORAIRES_LIVREUR,
+        IDLIVREUR,
+        JOURSEMAINE,
+        HEUREDEBUT,
+        HEUREFIN
+    )
+VALUES (1, 1, 'Lundi', '08:00:00', '12:00:00'),
+    (2, 1, 'Mardi', '14:00:00', '18:00:00'),
+    (3, 2, 'Mercredi', '09:00:00', '13:00:00'),
+    (4, 2, 'Jeudi', '15:00:00', '19:00:00'),
+    (5, 3, 'Vendredi', '08:30:00', '12:30:00'),
+    (6, 3, 'Samedi', '14:30:00', '18:30:00'),
+    (7, 4, 'Dimanche', '10:00:00', '14:00:00'),
+    (8, 4, 'Lundi', '16:00:00', '20:00:00'),
+    (9, 5, 'Mardi', '08:00:00', '12:00:00'),
+    (10, 5, 'Mercredi', '13:00:00', '17:00:00'),
+    (11, 6, 'Jeudi', '09:00:00', '13:00:00'),
+    (12, 6, 'Vendredi', '14:00:00', '18:00:00'),
+    (13, 7, 'Samedi', '08:00:00', '12:00:00'),
+    (14, 7, 'Dimanche', '14:00:00', '18:00:00'),
+    (15, 8, 'Lundi', '07:00:00', '11:00:00'),
+    (16, 8, 'Mardi', '12:00:00', '16:00:00'),
+    (17, 9, 'Mercredi', '08:30:00', '12:30:00'),
+    (18, 9, 'Jeudi', '14:30:00', '18:30:00'),
+    (19, 10, 'Vendredi', '09:00:00', '13:00:00'),
+    (20, 10, 'Samedi', '15:00:00', '19:00:00'),
+    (21, 11, 'Dimanche', '10:00:00', '14:00:00'),
+    (22, 11, 'Lundi', '16:00:00', '20:00:00'),
+    (23, 12, 'Mardi', '08:00:00', '12:00:00'),
+    (24, 12, 'Mercredi', '13:00:00', '17:00:00'),
+    (25, 13, 'Jeudi', '09:00:00', '13:00:00'),
+    (26, 13, 'Vendredi', '14:00:00', '18:00:00'),
+    (27, 14, 'Samedi', '08:00:00', '12:00:00'),
+    (28, 14, 'Dimanche', '14:00:00', '18:00:00'),
+    (29, 15, 'Lundi', '07:00:00', '11:00:00'),
+    (30, 15, 'Mardi', '12:00:00', '16:00:00'),
+    (31, 16, 'Mercredi', '08:30:00', '12:30:00'),
+    (32, 16, 'Jeudi', '14:30:00', '18:30:00'),
+    (33, 17, 'Vendredi', '09:00:00', '13:00:00'),
+    (34, 17, 'Samedi', '15:00:00', '19:00:00'),
+    (35, 18, 'Dimanche', '10:00:00', '14:00:00'),
+    (36, 18, 'Lundi', '16:00:00', '20:00:00'),
+    (37, 19, 'Mardi', '08:00:00', '12:00:00'),
+    (38, 19, 'Mercredi', '13:00:00', '17:00:00'),
+    (39, 20, 'Jeudi', '09:00:00', '13:00:00'),
+    (40, 20, 'Vendredi', '14:00:00', '18:00:00'),
+    (41, 21, 'Samedi', '08:00:00', '12:00:00'),
+    (42, 21, 'Dimanche', '14:00:00', '18:00:00');
 INSERT INTO CATEGORIE_PRESTATION (
         IDCATEGORIEPRESTATION,
         LIBELLECATEGORIEPRESTATION,
@@ -7193,7 +7242,420 @@ VALUES (
         TRUE,
         TRUE
     );
-
+INSERT INTO RESTAURATEUR (
+        IDRESTAURATEUR,
+        IDETABLISSEMENT,
+        NOMUSER,
+        PRENOMUSER,
+        TELEPHONE,
+        EMAILUSER,
+        MOTDEPASSEUSER
+    )
+VALUES (
+        1,
+        1,
+        'Durand',
+        'Michel',
+        '0612345678',
+        'michel.durand@example.com',
+        'password123'
+    ),
+    (
+        2,
+        2,
+        'Lemoine',
+        'Sophie',
+        '0623456789',
+        'sophie.lemoine@example.com',
+        'sophie2023'
+    ),
+    (
+        3,
+        3,
+        'Petit',
+        'Jean',
+        '0634567890',
+        'jean.petit@example.com',
+        'jeanpassword'
+    ),
+    (
+        4,
+        4,
+        'Martin',
+        'Amelie',
+        '0645678901',
+        'amelie.martin@example.com',
+        'amelie2023'
+    ),
+    (
+        5,
+        5,
+        'Morel',
+        'Julien',
+        '0656789012',
+        'julien.morel@example.com',
+        'juliensecure'
+    ),
+    (
+        6,
+        6,
+        'Blanc',
+        'Alice',
+        '0667890123',
+        'alice.blanc@example.com',
+        'alicepw2023'
+    ),
+    (
+        7,
+        7,
+        'Noel',
+        'Thomas',
+        '0678901234',
+        'thomas.noel@example.com',
+        'thomassecure'
+    ),
+    (
+        8,
+        8,
+        'Fontaine',
+        'Marie',
+        '0689012345',
+        'marie.fontaine@example.com',
+        'mariepw2023'
+    ),
+    (
+        9,
+        9,
+        'Garnier',
+        'Leo',
+        '0690123456',
+        'leo.garnier@example.com',
+        'leosecure2023'
+    ),
+    (
+        10,
+        10,
+        'Robert',
+        'Hugo',
+        '0611234567',
+        'hugo.robert@example.com',
+        'hugopassword'
+    ),
+    (
+        11,
+        11,
+        'Chevalier',
+        'Camille',
+        '0622345678',
+        'camille.chevalier@example.com',
+        'camille2023'
+    ),
+    (
+        12,
+        12,
+        'Bernard',
+        'Lucas',
+        '0633456789',
+        'lucas.bernard@example.com',
+        'lucassecure'
+    ),
+    (
+        13,
+        13,
+        'Simon',
+        'Paul',
+        '0644567890',
+        'paul.simon@example.com',
+        'paulpassword'
+    ),
+    (
+        14,
+        14,
+        'Renard',
+        'Elise',
+        '0655678901',
+        'elise.renard@example.com',
+        'elise2023'
+    ),
+    (
+        15,
+        15,
+        'Gauthier',
+        'Quentin',
+        '0666789012',
+        'quentin.gauthier@example.com',
+        'quentinsecure'
+    ),
+    (
+        16,
+        16,
+        'Masson',
+        'Anais',
+        '0677890123',
+        'anais.masson@example.com',
+        'anaispassword'
+    ),
+    (
+        17,
+        17,
+        'Lambert',
+        'Victor',
+        '0688901234',
+        'victor.lambert@example.com',
+        'victorsecure'
+    ),
+    (
+        18,
+        18,
+        'Girard',
+        'Julie',
+        '0699012345',
+        'julie.girard@example.com',
+        'juliepw2023'
+    ),
+    (
+        19,
+        19,
+        'Meyer',
+        'Laura',
+        '0612345678',
+        'laura.meyer@example.com',
+        'laurapassword'
+    ),
+    (
+        20,
+        20,
+        'Dubois',
+        'Alexandre',
+        '0623456789',
+        'alexandre.dubois@example.com',
+        'alexandrepw2023'
+    ),
+    (
+        21,
+        21,
+        'Morin',
+        'Clara',
+        '0634567890',
+        'clara.morin@example.com',
+        'clarapassword'
+    ),
+    (
+        22,
+        22,
+        'Renaud',
+        'Antoine',
+        '0645678901',
+        'antoine.renaud@example.com',
+        'antoinepw2023'
+    ),
+    (
+        23,
+        23,
+        'Rey',
+        'Lucie',
+        '0656789012',
+        'lucie.rey@example.com',
+        'luciepw2023'
+    ),
+    (
+        24,
+        24,
+        'Clément',
+        'Nicolas',
+        '0667890123',
+        'nicolas.clement@example.com',
+        'nicolaspw2023'
+    ),
+    (
+        25,
+        25,
+        'Marchand',
+        'Emma',
+        '0678901234',
+        'emma.marchand@example.com',
+        'emmapassword'
+    ),
+    (
+        26,
+        26,
+        'Leclerc',
+        'Sophia',
+        '0689012345',
+        'sophia.leclerc@example.com',
+        'sophiapw2023'
+    ),
+    (
+        27,
+        27,
+        'Perrot',
+        'Morgane',
+        '0690123456',
+        'morgane.perrot@example.com',
+        'morganepassword'
+    ),
+    (
+        28,
+        28,
+        'Garcia',
+        'Alexis',
+        '0611234567',
+        'alexis.garcia@example.com',
+        'alexispw2023'
+    ),
+    (
+        29,
+        29,
+        'Lopez',
+        'Nathan',
+        '0622345678',
+        'nathan.lopez@example.com',
+        'nathanpassword'
+    ),
+    (
+        30,
+        30,
+        'Martinez',
+        'Lea',
+        '0633456789',
+        'lea.martinez@example.com',
+        'leapw2023'
+    ),
+    (
+        31,
+        31,
+        'Rodriguez',
+        'Chloe',
+        '0644567890',
+        'chloe.rodriguez@example.com',
+        'chloepassword'
+    ),
+    (
+        32,
+        32,
+        'Hernandez',
+        'Eva',
+        '0655678901',
+        'eva.hernandez@example.com',
+        'evapw2023'
+    ),
+    (
+        33,
+        33,
+        'Fernandez',
+        'Ethan',
+        '0666789012',
+        'ethan.fernandez@example.com',
+        'ethanpassword'
+    ),
+    (
+        34,
+        34,
+        'Alves',
+        'Noah',
+        '0677890123',
+        'noah.alves@example.com',
+        'noahpw2023'
+    ),
+    (
+        35,
+        35,
+        'Silva',
+        'Ines',
+        '0688901234',
+        'ines.silva@example.com',
+        'inespassword'
+    ),
+    (
+        36,
+        36,
+        'Pereira',
+        'Liam',
+        '0699012345',
+        'liam.pereira@example.com',
+        'liampw2023'
+    ),
+    (
+        37,
+        37,
+        'Costa',
+        'Marie',
+        '0612345678',
+        'marie.costa@example.com',
+        'mariepw2023'
+    ),
+    (
+        38,
+        38,
+        'Moreira',
+        'Julien',
+        '0623456789',
+        'julien.moreira@example.com',
+        'julienpassword'
+    ),
+    (
+        39,
+        39,
+        'Barbosa',
+        'Hugo',
+        '0634567890',
+        'hugo.barbosa@example.com',
+        'hugopw2023'
+    ),
+    (
+        40,
+        40,
+        'Oliveira',
+        'Lola',
+        '0645678901',
+        'lola.oliveira@example.com',
+        'lolapassword'
+    ),
+    (
+        41,
+        41,
+        'Duarte',
+        'Lucas',
+        '0656789012',
+        'lucas.duarte@example.com',
+        'lucaspw2023'
+    ),
+    (
+        42,
+        42,
+        'Santos',
+        'Clara',
+        '0667890123',
+        'clara.santos@example.com',
+        'clarapw2023'
+    ),
+    (
+        43,
+        43,
+        'Mendes',
+        'Emma',
+        '0678901234',
+        'emma.mendes@example.com',
+        'emmapassword'
+    ),
+    (
+        44,
+        44,
+        'Ramos',
+        'Sophia',
+        '0689012345',
+        'sophia.ramos@example.com',
+        'sophiapw2023'
+    ),
+    (
+        45,
+        45,
+        'Vieira',
+        'Nathan',
+        '0690123456',
+        'nathan.vieira@example.com',
+        'nathanpassword'
+    );
 INSERT INTO EST_SITUE_A_2 (IDPRODUIT, IDETABLISSEMENT)
 VALUES -- Établissement 1
     (1, 1),
@@ -13469,6 +13931,13 @@ CREATE SEQUENCE HORAIRES_COURSIER_ID_SEQ START 1;
 ALTER TABLE HORAIRES_COURSIER
 ALTER COLUMN IDHORAIRES_COURSIER
 SET DEFAULT NEXTVAL('HORAIRES_COURSIER_id_seq');
+-- HORAIRES_LIVREUR
+DROP SEQUENCE IF EXISTS HORAIRES_LIVREUR_ID_SEQ CASCADE;
+CREATE SEQUENCE HORAIRES_LIVREUR_ID_SEQ START 1;
+ALTER TABLE HORAIRES_LIVREUR
+ALTER COLUMN IDHORAIRES_LIVREUR
+SET DEFAULT NEXTVAL('HORAIRES_LIVREUR_ID_SEQ');
+SELECT SETVAL('HORAIRES_LIVREUR_ID_SEQ', 42);
 -- LIEU_FAVORI
 DROP SEQUENCE IF EXISTS LIEU_FAVORI_ID_SEQ CASCADE;
 CREATE SEQUENCE LIEU_FAVORI_ID_SEQ START 1;
@@ -13476,6 +13945,13 @@ ALTER TABLE LIEU_FAVORI
 ALTER COLUMN IDLIEUFAVORI
 SET DEFAULT NEXTVAL('LIEU_FAVORI_ID_SEQ');
 SELECT SETVAL('LIEU_FAVORI_ID_SEQ', 20);
+-- LIVREUR
+DROP SEQUENCE IF EXISTS LIVREUR_ID_SEQ CASCADE;
+CREATE SEQUENCE LIVREUR_ID_SEQ START 1;
+ALTER TABLE LIVREUR
+ALTER COLUMN IDLIVREUR
+SET DEFAULT NEXTVAL('LIVREUR_ID_SEQ');
+SELECT SETVAL('LIVREUR_ID_SEQ', 21);
 -- OTP
 DROP SEQUENCE IF EXISTS OTP_ID_SEQ CASCADE;
 CREATE SEQUENCE OTP_ID_SEQ START 1;
@@ -13529,6 +14005,13 @@ ALTER TABLE RESPONSABLE_ENSEIGNE
 ALTER COLUMN IDRESPONSABLE
 SET DEFAULT NEXTVAL('RESPONSABLE_ENSEIGNE_ID_SEQ');
 SELECT SETVAL('RESPONSABLE_ENSEIGNE_ID_SEQ', 45);
+-- RESTAURATEUR
+DROP SEQUENCE IF EXISTS RESTAURATEUR_ID_SEQ CASCADE;
+CREATE SEQUENCE RESTAURATEUR_ID_SEQ START 1;
+ALTER TABLE RESTAURATEUR
+ALTER COLUMN IDRESTAURATEUR
+SET DEFAULT NEXTVAL('RESTAURATEUR_ID_SEQ');
+SELECT SETVAL('RESTAURATEUR_ID_SEQ', 45);
 -- TYPE_PRESTATION
 DROP SEQUENCE IF EXISTS TYPE_PRESTATION_ID_SEQ CASCADE;
 CREATE SEQUENCE TYPE_PRESTATION_ID_SEQ START 1;
