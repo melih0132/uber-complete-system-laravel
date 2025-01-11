@@ -1,7 +1,13 @@
+# Composer vendor directory
 /vendor/
-node_modules/
+
+# Node modules
+/node_modules/
+
+# Log files
 npm-debug.log
 yarn-error.log
+*.log
 
 # Laravel 4 specific
 bootstrap/compiled.php
@@ -15,16 +21,77 @@ public/hot
 public_html/storage
 public_html/hot
 
+# Laravel storage directories
 storage/*.key
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+
+# Environment files
 .env
+.env.*
+.env.backup
+.env.production
+
+# PHPStorm project files
+.idea/
+
+# Vagrant files
 Homestead.yaml
 Homestead.json
 /.vagrant
+
+# PHPUnit result cache
 .phpunit.result.cache
 
+# Debugging files
+.php_cs.cache
+*.cover
+*.cov
+
+# Laravel Mix & Webpack build files
 /public/build
-/storage/pail
-.env.backup
-.env.production
-.phpactor.json
+/public/mix-manifest.json
+
+# Cache files
+/.phpunit.result.cache
+/.php-cs-fixer.cache
+
+# IDE-specific files
+/.vscode/
+/.idea/
+/nbproject/
+
+# macOS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux generated files
+*.swp
+*.swo
+*.bak
+
+# Composer auth
 auth.json
+
+# Backup and temporary files
+*.bak
+*.tmp
+*.temp
+*.swp
+*~
+
+# Files generated during deployment or testing
+/public/hot
+/public/build
+/storage/oauth-private.key
+/storage/oauth-public.key
