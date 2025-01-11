@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS ENTRETIEN CASCADE;
 DROP TABLE IF EXISTS EST_SITUE_A_2 CASCADE;
 DROP TABLE IF EXISTS ETABLISSEMENT CASCADE;
 DROP TABLE IF EXISTS FACTURE CASCADE;
+DROP TABLE IF EXISTS GESTION_ETABLISSEMENT CASCADE;
 DROP TABLE IF EXISTS HORAIRES CASCADE;
 DROP TABLE IF EXISTS HORAIRES_COURSIER CASCADE;
 DROP TABLE IF EXISTS HORAIRES_LIVREUR CASCADE;
@@ -104,7 +105,7 @@ CREATE TABLE CATEGORIE_PRODUIT (
 CREATE TABLE CLIENT (
     IDCLIENT INT4 NOT NULL,
     IDENTREPRISE INT4 NULL,
-    IDADRESSE INT4 NOT NULL,
+    IDADRESSE INT4 NULL,
     GENREUSER VARCHAR(20) NOT NULL,
     CONSTRAINT CK_CLIENT_GENRE CHECK (GENREUSER IN ('Monsieur', 'Madame')),
     NOMUSER VARCHAR(50) NOT NULL,
@@ -174,9 +175,13 @@ CREATE TABLE COMMANDE (
             'Paiement validé',
             'En cours',
             'Livrée',
-            'Annulée'
+            'Annulée',
+            'Refusée',
+            'Remboursée'
         )
     ),
+    REFUS_DEMANDEE BOOL NOT NULL DEFAULT FALSE,
+    REMBOURSEMENT_EFFECTUE BOOL NOT NULL DEFAULT FALSE,
     CONSTRAINT PK_COMMANDE PRIMARY KEY (IDCOMMANDE)
 );
 /*==============================================================*/
@@ -338,7 +343,7 @@ CREATE TABLE EST_SITUE_A_2 (
 /*==============================================================*/
 CREATE TABLE ETABLISSEMENT (
     IDETABLISSEMENT INT4 NOT NULL,
-    IDRESPONSABLE INT4 NOT NULL,
+    IDRESTAURATEUR INT4 NOT NULL,
     TYPEETABLISSEMENT VARCHAR(50) NOT NULL,
     CONSTRAINT CK_TYPEETABLISSEMENT CHECK (TYPEETABLISSEMENT IN ('Restaurant', 'Épicerie')),
     IDADRESSE INT4 NOT NULL,
@@ -565,7 +570,6 @@ CREATE TABLE RESPONSABLE_ENSEIGNE (
 /*==============================================================*/
 CREATE TABLE RESTAURATEUR (
     IDRESTAURATEUR INT4 NOT NULL,
-    IDETABLISSEMENT INT4 NOT NULL,
     NOMUSER VARCHAR(50) NOT NULL,
     PRENOMUSER VARCHAR(50) NOT NULL,
     TELEPHONE VARCHAR(20) NOT NULL,
@@ -576,7 +580,17 @@ CREATE TABLE RESTAURATEUR (
     EMAILUSER VARCHAR(200) NOT NULL,
     CONSTRAINT UQ_RESTAURATEUR_MAIL UNIQUE (EMAILUSER),
     MOTDEPASSEUSER VARCHAR(200) NOT NULL,
+    ROLE VARCHAR(50) DEFAULT 'Gérant',
     CONSTRAINT PK_RESTAURATEUR PRIMARY KEY (IDRESTAURATEUR)
+);
+/*==============================================================*/
+/* Table : GESTION_ETABLISSEMENT                                */
+/*==============================================================*/
+CREATE TABLE GESTION_ETABLISSEMENT (
+    IDGESTION INT4 NOT NULL,
+    IDETABLISSEMENT INT4 NOT NULL,
+    IDRESPONSABLE INT4 NOT NULL,
+    CONSTRAINT PK_GESTION_ETABLISSEMENT PRIMARY KEY (IDGESTION)
 );
 /*==============================================================*/
 /* Table : TYPE_PRESTATION                                      */
@@ -662,112 +676,167 @@ CREATE TABLE VILLE (
     CONSTRAINT PK_VILLE PRIMARY KEY (IDVILLE)
 );
 ------------------------------------------------------------------------------------------------------------------------------------------------------
+/*==============================================================*/
+/* Contraintes de clés étrangères                               */
+/*==============================================================*/
+/* Relation ADRESSE - VILLE */
 ALTER TABLE ADRESSE
-ADD CONSTRAINT FK_ADRESSE_EST_DANS_VILLE FOREIGN KEY (IDVILLE) REFERENCES VILLE (IDVILLE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_ADRESSE_VILLE FOREIGN KEY (IDVILLE) REFERENCES VILLE (IDVILLE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation APPARTIENT_2 - CARTE_BANCAIRE */
 ALTER TABLE APPARTIENT_2
 ADD CONSTRAINT FK_APPARTIENT2_CARTE_BANCAIRE FOREIGN KEY (IDCB) REFERENCES CARTE_BANCAIRE (IDCB) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation APPARTIENT_2 - CLIENT */
 ALTER TABLE APPARTIENT_2
 ADD CONSTRAINT FK_APPARTIENT2_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation A_3 - PRODUIT */
 ALTER TABLE A_3
-ADD CONSTRAINT FK_A_3_PRODUIT FOREIGN KEY (IDPRODUIT) REFERENCES PRODUIT (IDPRODUIT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_A3_PRODUIT FOREIGN KEY (IDPRODUIT) REFERENCES PRODUIT (IDPRODUIT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation A_3 - CATEGORIE_PRODUIT */
 ALTER TABLE A_3
-ADD CONSTRAINT FK_A_3_CATEGORIE_PRODUIT FOREIGN KEY (IDCATEGORIE) REFERENCES CATEGORIE_PRODUIT (IDCATEGORIE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_A3_CATEGORIE_PRODUIT FOREIGN KEY (IDCATEGORIE) REFERENCES CATEGORIE_PRODUIT (IDCATEGORIE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation A_COMME_TYPE - VEHICULE */
 ALTER TABLE A_COMME_TYPE
 ADD CONSTRAINT FK_A_COMME_TYPE_VEHICULE FOREIGN KEY (IDVEHICULE) REFERENCES VEHICULE (IDVEHICULE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation A_COMME_TYPE - TYPE_PRESTATION */
 ALTER TABLE A_COMME_TYPE
-ADD CONSTRAINT FK_A_COMME_TYPE_PRESTATION FOREIGN KEY (IDPRESTATION) REFERENCES TYPE_PRESTATION (IDPRESTATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_A_COMME_TYPE_TYPE_PRESTATION FOREIGN KEY (IDPRESTATION) REFERENCES TYPE_PRESTATION (IDPRESTATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CLIENT - ENTREPRISE */
 ALTER TABLE CLIENT
 ADD CONSTRAINT FK_CLIENT_ENTREPRISE FOREIGN KEY (IDENTREPRISE) REFERENCES ENTREPRISE (IDENTREPRISE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CLIENT - ADRESSE */
 ALTER TABLE CLIENT
 ADD CONSTRAINT FK_CLIENT_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CODE_POSTAL - PAYS */
 ALTER TABLE CODE_POSTAL
 ADD CONSTRAINT FK_CODE_POSTAL_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COMMANDE - LIVREUR */
 ALTER TABLE COMMANDE
 ADD CONSTRAINT FK_COMMANDE_LIVREUR FOREIGN KEY (IDLIVREUR) REFERENCES LIVREUR (IDLIVREUR) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COMMANDE - PANIER */
 ALTER TABLE COMMANDE
 ADD CONSTRAINT FK_COMMANDE_PANIER FOREIGN KEY (IDPANIER) REFERENCES PANIER (IDPANIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CONTIENT_2 - PANIER */
 ALTER TABLE CONTIENT_2
 ADD CONSTRAINT FK_CONTIENT2_PANIER FOREIGN KEY (IDPANIER) REFERENCES PANIER (IDPANIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CONTIENT_2 - PRODUIT */
 ALTER TABLE CONTIENT_2
 ADD CONSTRAINT FK_CONTIENT2_PRODUIT FOREIGN KEY (IDPRODUIT) REFERENCES PRODUIT (IDPRODUIT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CONTIENT_2 - ETABLISSEMENT */
 ALTER TABLE CONTIENT_2
 ADD CONSTRAINT FK_CONTIENT2_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSE - TYPE_PRESTATION */
 ALTER TABLE COURSE
-ADD CONSTRAINT FK_COURSE_PRESTATION FOREIGN KEY (IDPRESTATION) REFERENCES TYPE_PRESTATION (IDPRESTATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE COURSE
-ADD CONSTRAINT FK_COURSE_ADRESSE_START FOREIGN KEY (ADR_IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_COURSE_TYPE_PRESTATION FOREIGN KEY (IDPRESTATION) REFERENCES TYPE_PRESTATION (IDPRESTATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSE - RESERVATION */
 ALTER TABLE COURSE
 ADD CONSTRAINT FK_COURSE_RESERVATION FOREIGN KEY (IDRESERVATION) REFERENCES RESERVATION (IDRESERVATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSE - ADRESSE (Départ) */
 ALTER TABLE COURSE
-ADD CONSTRAINT FK_COURSE_ADRESSE_END FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_COURSE_ADRESSE_DEPART FOREIGN KEY (ADR_IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSE - ADRESSE (Arrivée) */
+ALTER TABLE COURSE
+ADD CONSTRAINT FK_COURSE_ADRESSE_ARRIVEE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSE - CARTE_BANCAIRE */
 ALTER TABLE COURSE
 ADD CONSTRAINT FK_COURSE_CARTE_BANCAIRE FOREIGN KEY (IDCB) REFERENCES CARTE_BANCAIRE (IDCB) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSE - COURSIER */
 ALTER TABLE COURSE
-ADD CONSTRAINT FK_COURSE_PAR_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_COURSE_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSIER - ENTREPRISE */
 ALTER TABLE COURSIER
 ADD CONSTRAINT FK_COURSIER_ENTREPRISE FOREIGN KEY (IDENTREPRISE) REFERENCES ENTREPRISE (IDENTREPRISE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation COURSIER - ADRESSE */
 ALTER TABLE COURSIER
 ADD CONSTRAINT FK_COURSIER_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation DEPARTEMENT - PAYS */
 ALTER TABLE DEPARTEMENT
 ADD CONSTRAINT FK_DEPARTEMENT_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation ETABLISSEMENT - RESTAURATEUR */
 ALTER TABLE ETABLISSEMENT
-ADD CONSTRAINT FK_ETABLISSEMENT_RESPONSABLE FOREIGN KEY (IDRESPONSABLE) REFERENCES RESPONSABLE_ENSEIGNE (IDRESPONSABLE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_ETABLISSEMENT_RESTAURATEUR FOREIGN KEY (IDRESTAURATEUR) REFERENCES RESTAURATEUR (IDRESTAURATEUR) ON DELETE CASCADE;
+/* Relation ETABLISSEMENT - ADRESSE */
+ALTER TABLE ETABLISSEMENT
+ADD CONSTRAINT FK_ETABLISSEMENT_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation GESTION_ETABLISSEMENT - ETABLISSEMENT */
+ALTER TABLE GESTION_ETABLISSEMENT
+ADD CONSTRAINT FK_GESTION_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE CASCADE;
+/* Relation GESTION_ETABLISSEMENT - RESPONSABLE */
+ALTER TABLE GESTION_ETABLISSEMENT
+ADD CONSTRAINT FK_GESTION_RESPONSABLE FOREIGN KEY (IDRESPONSABLE) REFERENCES RESPONSABLE_ENSEIGNE (IDRESPONSABLE) ON DELETE CASCADE;
+/* Relation ENTREPRISE - ADRESSE */
 ALTER TABLE ENTREPRISE
 ADD CONSTRAINT FK_ENTREPRISE_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation ENTRETIEN - COURSIER */
 ALTER TABLE ENTRETIEN
 ADD CONSTRAINT FK_ENTRETIEN_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE EST_SITUE_A_2
 ADD CONSTRAINT FK_EST_SITUE2_PRODUIT FOREIGN KEY (IDPRODUIT) REFERENCES PRODUIT (IDPRODUIT) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE EST_SITUE_A_2
 ADD CONSTRAINT FK_EST_SITUE2_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation ETABLISSEMENT - A_COMME_CATEGORIE */
 ALTER TABLE A_COMME_CATEGORIE
-ADD CONSTRAINT FK_A_COMME_CATEGORIE_PRESTATIONC FOREIGN KEY (IDCATEGORIEPRESTATION) REFERENCES CATEGORIE_PRESTATION (IDCATEGORIEPRESTATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_A_COMME_CATEGORIE_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation CATEGORIE_PRESTATION - A_COMME_CATEGORIE */
 ALTER TABLE A_COMME_CATEGORIE
-ADD CONSTRAINT FK_COMME_CATEGORIE_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE ETABLISSEMENT
-ADD CONSTRAINT FK_ETABLISSEMENT_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_A_COMME_CATEGORIE_CATEGORIE FOREIGN KEY (IDCATEGORIEPRESTATION) REFERENCES CATEGORIE_PRESTATION (IDCATEGORIEPRESTATION) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation HORAIRES - ETABLISSEMENT */
 ALTER TABLE HORAIRES
-ADD CONSTRAINT FK_ETABLISSEMENT_HORAIRES FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_HORAIRES_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation HORAIRES_COURSIER - COURSIER */
 ALTER TABLE HORAIRES_COURSIER
-ADD CONSTRAINT FK_COURSIER_HORAIRES FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_HORAIRES_COURSIER_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation HORAIRES_LIVREUR - LIVREUR */
 ALTER TABLE HORAIRES_LIVREUR
-ADD CONSTRAINT FK_HORAIRES_LIVREUR FOREIGN KEY (IDLIVREUR) REFERENCES LIVREUR (IDLIVREUR) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ADD CONSTRAINT FK_HORAIRES_LIVREUR_LIVREUR FOREIGN KEY (IDLIVREUR) REFERENCES LIVREUR (IDLIVREUR) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation FACTURE - RESERVATION */
 ALTER TABLE FACTURE
 ADD CONSTRAINT FK_FACTURE_RESERVATION FOREIGN KEY (IDRESERVATION) REFERENCES RESERVATION (IDRESERVATION) ON DELETE
 SET NULL ON UPDATE CASCADE;
+/* Relation FACTURE - COMMANDE */
 ALTER TABLE FACTURE
 ADD CONSTRAINT FK_FACTURE_COMMANDE FOREIGN KEY (IDCOMMANDE) REFERENCES COMMANDE (IDCOMMANDE) ON DELETE
 SET NULL ON UPDATE CASCADE;
-ALTER TABLE FACTURE
-ADD CONSTRAINT FK_FACTURE_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE CASCADE;
+/* Relation FACTURE - CLIENT */
 ALTER TABLE FACTURE
 ADD CONSTRAINT FK_FACTURE_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE CASCADE;
+/* Relation FACTURE - PAYS */
+ALTER TABLE FACTURE
+ADD CONSTRAINT FK_FACTURE_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE CASCADE;
+/* Relation LIEU_FAVORI - CLIENT */
 ALTER TABLE LIEU_FAVORI
 ADD CONSTRAINT FK_LIEU_FAVORI_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE CASCADE ON UPDATE CASCADE;
+/* Relation LIEU_FAVORI - ADRESSE */
 ALTER TABLE LIEU_FAVORI
 ADD CONSTRAINT FK_LIEU_FAVORI_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE PANIER
-ADD CONSTRAINT FK_PANIER_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE PLANNING_RESERVATION
-ADD CONSTRAINT FK_PLANNING_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE REGLEMENT_SALAIRE
-ADD CONSTRAINT FK_REGLEMENT_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE RESERVATION
-ADD CONSTRAINT FK_RESERVATION_PLANNING FOREIGN KEY (IDPLANNING) REFERENCES PLANNING_RESERVATION (IDPLANNING) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE RESERVATION
-ADD CONSTRAINT FK_RESERVATION_VELO FOREIGN KEY (IDVELO) REFERENCES VELO (IDVELO) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE RESERVATION
-ADD CONSTRAINT FK_RESERVATION_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
-ALTER TABLE RESTAURATEUR
-ADD CONSTRAINT FK_RESTAURATEUR_ETABLISSEMENT FOREIGN KEY (IDETABLISSEMENT) REFERENCES ETABLISSEMENT (IDETABLISSEMENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation OTP - CLIENT */
 ALTER TABLE OTP
 ADD CONSTRAINT FK_OTP_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE PANIER
+ADD CONSTRAINT FK_PANIER_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation REGLEMENT_SALAIRE - COURSIER */
+ALTER TABLE REGLEMENT_SALAIRE
+ADD CONSTRAINT FK_REGLEMENT_SALAIRE_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation PLANNING_RESERVATION - CLIENT */
+ALTER TABLE PLANNING_RESERVATION
+ADD CONSTRAINT FK_PLANNING_RESERVATION_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation RESERVATION - CLIENT */
+ALTER TABLE RESERVATION
+ADD CONSTRAINT FK_RESERVATION_CLIENT FOREIGN KEY (IDCLIENT) REFERENCES CLIENT (IDCLIENT) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation RESERVATION - PLANNING_RESERVATION */
+ALTER TABLE RESERVATION
+ADD CONSTRAINT FK_RESERVATION_PLANNING FOREIGN KEY (IDPLANNING) REFERENCES PLANNING_RESERVATION (IDPLANNING) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation RESERVATION - VELO */
+ALTER TABLE RESERVATION
+ADD CONSTRAINT FK_RESERVATION_VELO FOREIGN KEY (IDVELO) REFERENCES VELO (IDVELO) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE VEHICULE
 ADD CONSTRAINT FK_VEHICULE_COURSIER FOREIGN KEY (IDCOURSIER) REFERENCES COURSIER (IDCOURSIER) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation VELO - ADRESSE */
 ALTER TABLE VELO
 ADD CONSTRAINT FK_VELO_ADRESSE FOREIGN KEY (IDADRESSE) REFERENCES ADRESSE (IDADRESSE) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation VILLE - CODE_POSTAL */
 ALTER TABLE VILLE
 ADD CONSTRAINT FK_VILLE_CODE_POSTAL FOREIGN KEY (IDCODEPOSTAL) REFERENCES CODE_POSTAL (IDCODEPOSTAL) ON DELETE RESTRICT ON UPDATE RESTRICT;
+/* Relation VILLE - PAYS */
 ALTER TABLE VILLE
 ADD CONSTRAINT FK_VILLE_PAYS FOREIGN KEY (IDPAYS) REFERENCES PAYS (IDPAYS) ON DELETE RESTRICT ON UPDATE RESTRICT;
 INSERT INTO PAYS (IDPAYS, NOMPAYS, POURCENTAGETVA)
@@ -2653,7 +2722,7 @@ VALUES (
         4,
         4,
         'Madame',
-        'Bernard',  
+        'Bernard',
         'Sophie',
         '1992-12-10',
         '0612345681',
@@ -6732,9 +6801,423 @@ VALUES (
         'cihan.durmaz@example.com',
         'password45'
     );
+INSERT INTO RESTAURATEUR (
+        IDRESTAURATEUR,
+        NOMUSER,
+        PRENOMUSER,
+        TELEPHONE,
+        EMAILUSER,
+        MOTDEPASSEUSER,
+        ROLE
+    )
+VALUES (
+        1,
+        'Durand',
+        'Michel',
+        '0612345678',
+        'michel.durand@example.com',
+        'password123',
+        'Gérant'
+    ),
+    (
+        2,
+        'Lemoine',
+        'Sophie',
+        '0623456789',
+        'sophie.lemoine@example.com',
+        'sophie2023',
+        'Gérant'
+    ),
+    (
+        3,
+        'Petit',
+        'Jean',
+        '0634567890',
+        'jean.petit@example.com',
+        'jeanpassword',
+        'Gérant'
+    ),
+    (
+        4,
+        'Martin',
+        'Amelie',
+        '0645678901',
+        'amelie.martin@example.com',
+        'amelie2023',
+        'Gérant'
+    ),
+    (
+        5,
+        'Morel',
+        'Julien',
+        '0656789012',
+        'julien.morel@example.com',
+        'juliensecure',
+        'Gérant'
+    ),
+    (
+        6,
+        'Blanc',
+        'Alice',
+        '0667890123',
+        'alice.blanc@example.com',
+        'alicepw2023',
+        'Gérant'
+    ),
+    (
+        7,
+        'Noel',
+        'Thomas',
+        '0678901234',
+        'thomas.noel@example.com',
+        'thomassecure',
+        'Gérant'
+    ),
+    (
+        8,
+        'Fontaine',
+        'Marie',
+        '0689012345',
+        'marie.fontaine@example.com',
+        'mariepw2023',
+        'Gérant'
+    ),
+    (
+        9,
+        'Garnier',
+        'Leo',
+        '0690123456',
+        'leo.garnier@example.com',
+        'leosecure2023',
+        'Gérant'
+    ),
+    (
+        10,
+        'Robert',
+        'Hugo',
+        '0611234567',
+        'hugo.robert@example.com',
+        'hugopassword',
+        'Gérant'
+    ),
+    (
+        11,
+        'Chevalier',
+        'Camille',
+        '0622345678',
+        'camille.chevalier@example.com',
+        'camille2023',
+        'Gérant'
+    ),
+    (
+        12,
+        'Bernard',
+        'Lucas',
+        '0633456789',
+        'lucas.bernard@example.com',
+        'lucassecure',
+        'Gérant'
+    ),
+    (
+        13,
+        'Simon',
+        'Paul',
+        '0644567890',
+        'paul.simon@example.com',
+        'paulpassword',
+        'Gérant'
+    ),
+    (
+        14,
+        'Renard',
+        'Elise',
+        '0655678901',
+        'elise.renard@example.com',
+        'elise2023',
+        'Gérant'
+    ),
+    (
+        15,
+        'Gauthier',
+        'Quentin',
+        '0666789012',
+        'quentin.gauthier@example.com',
+        'quentinsecure',
+        'Gérant'
+    ),
+    (
+        16,
+        'Masson',
+        'Anais',
+        '0677890123',
+        'anais.masson@example.com',
+        'anaispassword',
+        'Gérant'
+    ),
+    (
+        17,
+        'Lambert',
+        'Victor',
+        '0688901234',
+        'victor.lambert@example.com',
+        'victorsecure',
+        'Gérant'
+    ),
+    (
+        18,
+        'Girard',
+        'Julie',
+        '0699012345',
+        'julie.girard@example.com',
+        'juliepw2023',
+        'Gérant'
+    ),
+    (
+        19,
+        'Meyer',
+        'Laura',
+        '0612345678',
+        'laura.meyer@example.com',
+        'laurapassword',
+        'Gérant'
+    ),
+    (
+        20,
+        'Dubois',
+        'Alexandre',
+        '0623456789',
+        'alexandre.dubois@example.com',
+        'alexandrepw2023',
+        'Gérant'
+    ),
+    (
+        21,
+        'Morin',
+        'Clara',
+        '0634567890',
+        'clara.morin@example.com',
+        'clarapassword',
+        'Gérant'
+    ),
+    (
+        22,
+        'Renaud',
+        'Antoine',
+        '0645678901',
+        'antoine.renaud@example.com',
+        'antoinepw2023',
+        'Gérant'
+    ),
+    (
+        23,
+        'Rey',
+        'Lucie',
+        '0656789012',
+        'lucie.rey@example.com',
+        'luciepw2023',
+        'Gérant'
+    ),
+    (
+        24,
+        'Clément',
+        'Nicolas',
+        '0667890123',
+        'nicolas.clement@example.com',
+        'nicolaspw2023',
+        'Gérant'
+    ),
+    (
+        25,
+        'Marchand',
+        'Emma',
+        '0678901234',
+        'emma.marchand@example.com',
+        'emmapassword',
+        'Gérant'
+    ),
+    (
+        26,
+        'Leclerc',
+        'Sophia',
+        '0689012345',
+        'sophia.leclerc@example.com',
+        'sophiapw2023',
+        'Gérant'
+    ),
+    (
+        27,
+        'Perrot',
+        'Morgane',
+        '0690123456',
+        'morgane.perrot@example.com',
+        'morganepassword',
+        'Gérant'
+    ),
+    (
+        28,
+        'Garcia',
+        'Alexis',
+        '0611234567',
+        'alexis.garcia@example.com',
+        'alexispw2023',
+        'Gérant'
+    ),
+    (
+        29,
+        'Lopez',
+        'Nathan',
+        '0622345678',
+        'nathan.lopez@example.com',
+        'nathanpassword',
+        'Gérant'
+    ),
+    (
+        30,
+        'Martinez',
+        'Lea',
+        '0633456789',
+        'lea.martinez@example.com',
+        'leapw2023',
+        'Gérant'
+    ),
+    (
+        31,
+        'Rodriguez',
+        'Chloe',
+        '0644567890',
+        'chloe.rodriguez@example.com',
+        'chloepassword',
+        'Gérant'
+    ),
+    (
+        32,
+        'Hernandez',
+        'Eva',
+        '0655678901',
+        'eva.hernandez@example.com',
+        'evapw2023',
+        'Gérant'
+    ),
+    (
+        33,
+        'Fernandez',
+        'Ethan',
+        '0666789012',
+        'ethan.fernandez@example.com',
+        'ethanpassword',
+        'Gérant'
+    ),
+    (
+        34,
+        'Alves',
+        'Noah',
+        '0677890123',
+        'noah.alves@example.com',
+        'noahpw2023',
+        'Gérant'
+    ),
+    (
+        35,
+        'Silva',
+        'Ines',
+        '0688901234',
+        'ines.silva@example.com',
+        'inespassword',
+        'Gérant'
+    ),
+    (
+        36,
+        'Pereira',
+        'Liam',
+        '0699012345',
+        'liam.pereira@example.com',
+        'liampw2023',
+        'Gérant'
+    ),
+    (
+        37,
+        'Costa',
+        'Marie',
+        '0612345678',
+        'marie.costa@example.com',
+        'mariepw2023',
+        'Gérant'
+    ),
+    (
+        38,
+        'Moreira',
+        'Julien',
+        '0623456789',
+        'julien.moreira@example.com',
+        'julienpassword',
+        'Gérant'
+    ),
+    (
+        39,
+        'Barbosa',
+        'Hugo',
+        '0634567890',
+        'hugo.barbosa@example.com',
+        'hugopw2023',
+        'Gérant'
+    ),
+    (
+        40,
+        'Oliveira',
+        'Lola',
+        '0645678901',
+        'lola.oliveira@example.com',
+        'lolapassword',
+        'Gérant'
+    ),
+    (
+        41,
+        'Duarte',
+        'Lucas',
+        '0656789012',
+        'lucas.duarte@example.com',
+        'lucaspw2023',
+        'Gérant'
+    ),
+    (
+        42,
+        'Santos',
+        'Clara',
+        '0667890123',
+        'clara.santos@example.com',
+        'clarapw2023',
+        'Gérant'
+    ),
+    (
+        43,
+        'Mendes',
+        'Emma',
+        '0678901234',
+        'emma.mendes@example.com',
+        'emmapassword',
+        'Gérant'
+    ),
+    (
+        44,
+        'Ramos',
+        'Sophia',
+        '0689012345',
+        'sophia.ramos@example.com',
+        'sophiapw2023',
+        'Gérant'
+    ),
+    (
+        45,
+        'Vieira',
+        'Nathan',
+        '0690123456',
+        'nathan.vieira@example.com',
+        'nathanpassword',
+        'Gérant'
+    );
 INSERT INTO ETABLISSEMENT (
         IDETABLISSEMENT,
-        IDRESPONSABLE,
+        IDRESTAURATEUR,
         TYPEETABLISSEMENT,
         IDADRESSE,
         NOMETABLISSEMENT,
@@ -7238,420 +7721,52 @@ VALUES (
         TRUE,
         TRUE
     );
-INSERT INTO RESTAURATEUR (
-        IDRESTAURATEUR,
-        IDETABLISSEMENT,
-        NOMUSER,
-        PRENOMUSER,
-        TELEPHONE,
-        EMAILUSER,
-        MOTDEPASSEUSER
-    )
-VALUES (
-        1,
-        1,
-        'Durand',
-        'Michel',
-        '0612345678',
-        'michel.durand@example.com',
-        'password123'
-    ),
-    (
-        2,
-        2,
-        'Lemoine',
-        'Sophie',
-        '0623456789',
-        'sophie.lemoine@example.com',
-        'sophie2023'
-    ),
-    (
-        3,
-        3,
-        'Petit',
-        'Jean',
-        '0634567890',
-        'jean.petit@example.com',
-        'jeanpassword'
-    ),
-    (
-        4,
-        4,
-        'Martin',
-        'Amelie',
-        '0645678901',
-        'amelie.martin@example.com',
-        'amelie2023'
-    ),
-    (
-        5,
-        5,
-        'Morel',
-        'Julien',
-        '0656789012',
-        'julien.morel@example.com',
-        'juliensecure'
-    ),
-    (
-        6,
-        6,
-        'Blanc',
-        'Alice',
-        '0667890123',
-        'alice.blanc@example.com',
-        'alicepw2023'
-    ),
-    (
-        7,
-        7,
-        'Noel',
-        'Thomas',
-        '0678901234',
-        'thomas.noel@example.com',
-        'thomassecure'
-    ),
-    (
-        8,
-        8,
-        'Fontaine',
-        'Marie',
-        '0689012345',
-        'marie.fontaine@example.com',
-        'mariepw2023'
-    ),
-    (
-        9,
-        9,
-        'Garnier',
-        'Leo',
-        '0690123456',
-        'leo.garnier@example.com',
-        'leosecure2023'
-    ),
-    (
-        10,
-        10,
-        'Robert',
-        'Hugo',
-        '0611234567',
-        'hugo.robert@example.com',
-        'hugopassword'
-    ),
-    (
-        11,
-        11,
-        'Chevalier',
-        'Camille',
-        '0622345678',
-        'camille.chevalier@example.com',
-        'camille2023'
-    ),
-    (
-        12,
-        12,
-        'Bernard',
-        'Lucas',
-        '0633456789',
-        'lucas.bernard@example.com',
-        'lucassecure'
-    ),
-    (
-        13,
-        13,
-        'Simon',
-        'Paul',
-        '0644567890',
-        'paul.simon@example.com',
-        'paulpassword'
-    ),
-    (
-        14,
-        14,
-        'Renard',
-        'Elise',
-        '0655678901',
-        'elise.renard@example.com',
-        'elise2023'
-    ),
-    (
-        15,
-        15,
-        'Gauthier',
-        'Quentin',
-        '0666789012',
-        'quentin.gauthier@example.com',
-        'quentinsecure'
-    ),
-    (
-        16,
-        16,
-        'Masson',
-        'Anais',
-        '0677890123',
-        'anais.masson@example.com',
-        'anaispassword'
-    ),
-    (
-        17,
-        17,
-        'Lambert',
-        'Victor',
-        '0688901234',
-        'victor.lambert@example.com',
-        'victorsecure'
-    ),
-    (
-        18,
-        18,
-        'Girard',
-        'Julie',
-        '0699012345',
-        'julie.girard@example.com',
-        'juliepw2023'
-    ),
-    (
-        19,
-        19,
-        'Meyer',
-        'Laura',
-        '0612345678',
-        'laura.meyer@example.com',
-        'laurapassword'
-    ),
-    (
-        20,
-        20,
-        'Dubois',
-        'Alexandre',
-        '0623456789',
-        'alexandre.dubois@example.com',
-        'alexandrepw2023'
-    ),
-    (
-        21,
-        21,
-        'Morin',
-        'Clara',
-        '0634567890',
-        'clara.morin@example.com',
-        'clarapassword'
-    ),
-    (
-        22,
-        22,
-        'Renaud',
-        'Antoine',
-        '0645678901',
-        'antoine.renaud@example.com',
-        'antoinepw2023'
-    ),
-    (
-        23,
-        23,
-        'Rey',
-        'Lucie',
-        '0656789012',
-        'lucie.rey@example.com',
-        'luciepw2023'
-    ),
-    (
-        24,
-        24,
-        'Clément',
-        'Nicolas',
-        '0667890123',
-        'nicolas.clement@example.com',
-        'nicolaspw2023'
-    ),
-    (
-        25,
-        25,
-        'Marchand',
-        'Emma',
-        '0678901234',
-        'emma.marchand@example.com',
-        'emmapassword'
-    ),
-    (
-        26,
-        26,
-        'Leclerc',
-        'Sophia',
-        '0689012345',
-        'sophia.leclerc@example.com',
-        'sophiapw2023'
-    ),
-    (
-        27,
-        27,
-        'Perrot',
-        'Morgane',
-        '0690123456',
-        'morgane.perrot@example.com',
-        'morganepassword'
-    ),
-    (
-        28,
-        28,
-        'Garcia',
-        'Alexis',
-        '0611234567',
-        'alexis.garcia@example.com',
-        'alexispw2023'
-    ),
-    (
-        29,
-        29,
-        'Lopez',
-        'Nathan',
-        '0622345678',
-        'nathan.lopez@example.com',
-        'nathanpassword'
-    ),
-    (
-        30,
-        30,
-        'Martinez',
-        'Lea',
-        '0633456789',
-        'lea.martinez@example.com',
-        'leapw2023'
-    ),
-    (
-        31,
-        31,
-        'Rodriguez',
-        'Chloe',
-        '0644567890',
-        'chloe.rodriguez@example.com',
-        'chloepassword'
-    ),
-    (
-        32,
-        32,
-        'Hernandez',
-        'Eva',
-        '0655678901',
-        'eva.hernandez@example.com',
-        'evapw2023'
-    ),
-    (
-        33,
-        33,
-        'Fernandez',
-        'Ethan',
-        '0666789012',
-        'ethan.fernandez@example.com',
-        'ethanpassword'
-    ),
-    (
-        34,
-        34,
-        'Alves',
-        'Noah',
-        '0677890123',
-        'noah.alves@example.com',
-        'noahpw2023'
-    ),
-    (
-        35,
-        35,
-        'Silva',
-        'Ines',
-        '0688901234',
-        'ines.silva@example.com',
-        'inespassword'
-    ),
-    (
-        36,
-        36,
-        'Pereira',
-        'Liam',
-        '0699012345',
-        'liam.pereira@example.com',
-        'liampw2023'
-    ),
-    (
-        37,
-        37,
-        'Costa',
-        'Marie',
-        '0612345678',
-        'marie.costa@example.com',
-        'mariepw2023'
-    ),
-    (
-        38,
-        38,
-        'Moreira',
-        'Julien',
-        '0623456789',
-        'julien.moreira@example.com',
-        'julienpassword'
-    ),
-    (
-        39,
-        39,
-        'Barbosa',
-        'Hugo',
-        '0634567890',
-        'hugo.barbosa@example.com',
-        'hugopw2023'
-    ),
-    (
-        40,
-        40,
-        'Oliveira',
-        'Lola',
-        '0645678901',
-        'lola.oliveira@example.com',
-        'lolapassword'
-    ),
-    (
-        41,
-        41,
-        'Duarte',
-        'Lucas',
-        '0656789012',
-        'lucas.duarte@example.com',
-        'lucaspw2023'
-    ),
-    (
-        42,
-        42,
-        'Santos',
-        'Clara',
-        '0667890123',
-        'clara.santos@example.com',
-        'clarapw2023'
-    ),
-    (
-        43,
-        43,
-        'Mendes',
-        'Emma',
-        '0678901234',
-        'emma.mendes@example.com',
-        'emmapassword'
-    ),
-    (
-        44,
-        44,
-        'Ramos',
-        'Sophia',
-        '0689012345',
-        'sophia.ramos@example.com',
-        'sophiapw2023'
-    ),
-    (
-        45,
-        45,
-        'Vieira',
-        'Nathan',
-        '0690123456',
-        'nathan.vieira@example.com',
-        'nathanpassword'
-    );
+INSERT INTO GESTION_ETABLISSEMENT (IDGESTION, IDETABLISSEMENT, IDRESPONSABLE)
+VALUES (1, 1, 1),
+    (2, 2, 2),
+    (3, 3, 3),
+    (4, 4, 4),
+    (5, 5, 5),
+    (6, 6, 6),
+    (7, 7, 7),
+    (8, 8, 8),
+    (9, 9, 9),
+    (10, 10, 10),
+    (11, 11, 11),
+    (12, 12, 12),
+    (13, 13, 13),
+    (14, 14, 14),
+    (15, 15, 15),
+    (16, 16, 16),
+    (17, 17, 17),
+    (18, 18, 18),
+    (19, 19, 19),
+    (20, 20, 20),
+    (21, 21, 21),
+    (22, 22, 22),
+    (23, 23, 23),
+    (24, 24, 24),
+    (25, 25, 25),
+    (26, 26, 26),
+    (27, 27, 27),
+    (28, 28, 28),
+    (29, 29, 29),
+    (30, 30, 30),
+    (31, 31, 31),
+    (32, 32, 32),
+    (33, 33, 33),
+    (34, 34, 34),
+    (35, 35, 35),
+    (36, 36, 36),
+    (37, 37, 37),
+    (38, 38, 38),
+    (39, 39, 39),
+    (40, 40, 40),
+    (41, 41, 41),
+    (42, 42, 42),
+    (43, 43, 43),
+    (44, 44, 44),
+    (45, 45, 45);
 INSERT INTO EST_SITUE_A_2 (IDPRODUIT, IDETABLISSEMENT)
 VALUES -- Établissement 1
     (1, 1),
@@ -13986,7 +14101,7 @@ VALUES (1, 7),
     (115, 7),
     (105, 7),
     (104, 11),
-        (119, 7),
+    (119, 7),
     (120, 7),
     (121, 8),
     (122, 8),
@@ -14219,6 +14334,13 @@ ALTER TABLE RESTAURATEUR
 ALTER COLUMN IDRESTAURATEUR
 SET DEFAULT NEXTVAL('RESTAURATEUR_ID_SEQ');
 SELECT SETVAL('RESTAURATEUR_ID_SEQ', 45);
+-- GESTION_ETABLISSEMENT
+DROP SEQUENCE IF EXISTS GESTION_ETABLISSEMENT_ID_SEQ CASCADE;
+CREATE SEQUENCE GESTION_ETABLISSEMENT_ID_SEQ START 1;
+ALTER TABLE GESTION_ETABLISSEMENT
+ALTER COLUMN IDGESTION
+SET DEFAULT NEXTVAL('GESTION_ETABLISSEMENT_ID_SEQ');
+SELECT SETVAL('GESTION_ETABLISSEMENT_ID_SEQ', 45);
 -- TYPE_PRESTATION
 DROP SEQUENCE IF EXISTS TYPE_PRESTATION_ID_SEQ CASCADE;
 CREATE SEQUENCE TYPE_PRESTATION_ID_SEQ START 1;
