@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Titre de la page -->
     <title>@yield('title')</title>
 
     <!-- Favicon -->
@@ -35,7 +34,7 @@
                 $user = session('user');
             @endphp
             <ul>
-                @if (!$user || $user['role'] === 'client')
+                @if (!$user || $user['role'] === 'client' && $user['typeclient'] === 'Uber')
                     <li>
                         <a data-baseweb="link" href="{{ url('./') }}" target="_self">
                             <img src="/img/Uber.png" alt="Uber Logo" class="logo-image"
@@ -66,16 +65,38 @@
                     </li>
                 @endif
 
-                @if ($user && $user['role'] === 'responsable')
+                @if ($user && $user['role'] === 'livreur')
                     <li class="pr-1">
-                        <a data-baseweb="button" aria-label="Commandes à livrer dans la prochaine heure"
-                            href="{{ route('manager.ordernextHour', $user['id']) }}" target="_self"
-                            class="header-links">Commandes Urgentes</a>
+                        <a data-baseweb="button" aria-label="Accéder aux courses"
+                            href="{{ route('coursier.livraisons.index') }}" target="_self" class="header-links">Courses
+                            en
+                            attente</a>
                     </li>
+                @endif
+
+                @if ($user && $user['role'] === 'restaurateur')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Ajouter un établissement"
                             href="{{ route('etablissement.create') }}" target="_self" class="header-links">Ajouter
                             Établissement</a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Ajouter un produit"
+                            href="{{ route('manager.produits.create') }}" target="_self" class="header-links">Ajouter
+                            Produit</a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Voir tous les produits"
+                            href="{{ route('manager.produits.index') }}" target="_self" class="header-links">Liste des
+                            Produits</a>
+                    </li>
+                @endif
+
+                @if ($user && $user['role'] === 'responsable')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Commandes à livrer dans la prochaine heure"
+                            href="{{ route('responsable.commandes') }}" target="_self" class="header-links">Commandes
+                            Urgentes</a>
                     </li>
                 @endif
 
@@ -134,7 +155,27 @@
                     </li>
                 @endif
 
-                @if (!$user || $user['role'] === 'client')
+                @if ($user && $user['role'] === 'commande')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Voir les courses demandées"
+                            href="{{ route('commandes.index') }}" target="_self" class="header-links">Commandes</a>
+                    </li>
+                @endif
+
+                @if ($user && $user['role'] === 'juridique')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Voir les courses demandées"
+                            href="{{ route('juridique.index') }}" target="_self" class="header-links">Politique de
+                            confidentialité</a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Analyses et Performances"
+                            href="{{ route('service-course.analyse') }}" target="_self"
+                            class="header-links">Anonymisation</a>
+                    </li>
+                @endif
+
+                @if (!$user || $user['role'] === 'client' && $user['typeclient'] === 'Uber')
                     <li class="pr-1">
                         <a href="{{ url('./') }}" class="header-links">Réserver un Uber</a>
                     </li>
@@ -145,7 +186,7 @@
                     </li>
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Velo"
-                            href="{{ url('/UberVelo') }}" target="_self" class="header-links">Uber&nbsp;Velo
+                            href="{{ route('velo.show') }}" target="_self" class="header-links">Uber&nbsp;Velo
                         </a>
                     </li>
                     <li class="pr-1">
@@ -186,15 +227,15 @@
     </div>
 
     <footer>
-        <div class="footer-container">
+        <div class="footer-container mt-5">
             <div class="footer-links">
-                <a href="{{ url('/Cookies') }}">Politique de Cookies</a>
+                <a href="{{ route('juridique.index') }}">Politique de Cookies</a>
             </div>
             <div class="footer-info">
                 <p>&copy; {{ date('Y') }} Uber. Tous droits réservés.</p>
                 <p>
                     Ce site utilise des cookies pour améliorer l'expérience utilisateur.
-                    <a href="{{ url('/Cookies') }}">En savoir plus</a>.
+                    <a href="{{ route('juridique.index') }}">En savoir plus</a>.
                 </p>
             </div>
         </div>

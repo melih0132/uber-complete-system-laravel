@@ -215,8 +215,8 @@
                             <div class="produits-grid">
                                 @foreach ($produits as $produit)
                                     <div class="produit-card">
-                                        <img src="{{ $produit->imageproduit }}" alt="{{ $produit->nomproduit }}"
-                                            class="produit-img">
+                                        <img src="{{ Str::startsWith($produit->imageproduit, 'http') ? $produit->imageproduit : asset('storage/' . $produit->imageproduit) }}"
+                                            alt="{{ $produit->nomproduit }}" class="produit-img">
                                         <h5 class="produit-name">{{ $produit->nomproduit }}</h5>
                                         <h6 class="produit-etablissement">
                                             Établi à : {{ $produit->nometablissement }}
@@ -227,8 +227,7 @@
                                         <form method="POST" action="{{ route('panier.ajouter') }}">
                                             @csrf
                                             <input type="hidden" name="product" value="{{ $produit->idproduit }}">
-                                            <button class="btn-panier">Ajouter au
-                                                panier</button>
+                                            <button class="btn-panier">Ajouter au panier</button>
                                         </form>
                                     </div>
                                 @endforeach
@@ -379,4 +378,18 @@
             });
         });
     </script>
+    <script>
+    var botmanWidget = {
+        frameEndpoint: '/botman/chat',
+        introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
+        chatServer: '/botman',
+        mainColor: '#000000',
+        bubbleBackground: '#FFFFFF',
+        bubbleAvatarUrl: '../img/UberLogo.png',
+        title: 'Assistant Uber',
+        headerTextColor: '#FFFFFF',
+        placeholderText: 'Écrivez votre message ici...',
+    };
+</script>
+<script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 @endsection

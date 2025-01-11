@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pour qui la voiture ?')
+@section('title', 'Ajout Véhicule')
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/entretien.blade.css') }}">

@@ -32,6 +32,19 @@ h3 {
     padding-right: 0;
 }
 
+.btn-favorite {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 18px;
+    color: #f39c12; /* Couleur dorée */
+}
+
+.btn-favorite:hover {
+    color: #d35400; /* Couleur foncée au survol */
+}
+
 #map {
     height: 500px;
     width: 100%;
@@ -258,4 +271,63 @@ a.mt-4:hover {
 
 .hidden {
     display: none;
+}
+
+
+
+
+
+.input-with-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-toggle {
+    background: none;
+    border: none;
+    margin-left: -45px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+    color: #ffcc00;
+}
+
+.favorites-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    list-style: none;
+    margin: 5px 0 0;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+}
+
+.favorites-dropdown li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.favorites-dropdown li:hover {
+    background-color: #f0f8ff;
+}
+
+.hidden {
+    display: none;
+}
+
+.show {
+    display: block;
 }

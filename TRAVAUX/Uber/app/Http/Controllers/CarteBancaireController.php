@@ -33,30 +33,25 @@ class CarteBancaireController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'numerocb' => str_replace(' ', '', $request->input('numerocb')),
+        ]);
+
+        $numerocb = $request->input('numerocb');
+        $typereseaux = $this->detectNetwork($numerocb);
+
+        if (!$typereseaux) {
+            return back()->withErrors(['numerocb' => 'Le type de réseau ne peut pas être déterminé.'])->withInput();
+        }
+
+        $request->merge(['typereseaux' => $typereseaux]);
+
         $validated = $request->validate([
             'numerocb' => ['required', 'digits:16', 'numeric'],
             'dateexpirecb' => ['required', 'date_format:Y-m', 'after:today'],
             'cryptogramme' => ['required', 'digits:3', 'numeric'],
             'typecarte' => ['required', 'string', 'in:Crédit,Débit'],
-            'typereseaux' => ['required', 'string', 'in:Visa,MasterCard'],
-        ], [
-            'numerocb.required' => 'Le numéro de la carte est requis.',
-            'numerocb.digits' => 'Le numéro de la carte doit contenir exactement 16 chiffres.',
-            'numerocb.numeric' => 'Le numéro de la carte doit être composé uniquement de chiffres.',
-
-            'dateexpirecb.required' => 'La date d\'expiration est requise.',
-            'dateexpirecb.date_format' => 'La date d\'expiration doit être au format AAAA-MM.',
-            'dateexpirecb.after' => 'La date d\'expiration doit être dans le futur.',
-
-            'cryptogramme.required' => 'Le cryptogramme est requis.',
-            'cryptogramme.digits' => 'Le cryptogramme doit contenir exactement 3 chiffres.',
-            'cryptogramme.numeric' => 'Le cryptogramme doit être composé uniquement de chiffres.',
-
-            'typecarte.required' => 'Le type de carte est requis.',
-            'typecarte.in' => 'Le type de carte doit être "Crédit" ou "Débit".',
-
-            'typereseaux.required' => 'Le type de réseau est requis.',
-            'typereseaux.in' => 'Le type de réseau doit être "Visa" ou "MasterCard".',
+            'typereseaux' => ['required', 'string', 'in:Visa,MasterCard'], // Valider le type de réseau
         ]);
 
         $validated['dateexpirecb'] = $validated['dateexpirecb'] . '-01';
@@ -67,5 +62,44 @@ class CarteBancaireController extends Controller
         $carte->clients()->attach($userSession['id']);
 
         return redirect()->route('carte-bancaire.index')->with('success', 'La carte a été ajoutée avec succès.');
+    }
+
+    public function destroy($idcb, Request $request)
+    {
+        $userSession = $request->session()->get('user');
+
+        if (!$userSession) {
+            abort(403, 'Accès non autorisé - devenez client');
+        }
+
+        if ($userSession['role'] !== 'client') {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $carte = CarteBancaire::whereHas('clients', function ($query) use ($userSession) {
+            $query->where('client.idclient', $userSession['id']);
+        })->findOrFail($idcb);
+
+        $carte->clients()->detach($userSession['id']);
+        $carte->delete();
+
+        return redirect()->route('carte-bancaire.index')->with('success', 'La carte a été supprimée avec succès.');
+    }
+
+    private function detectNetwork($numerocb)
+    {
+        $bin = (int) substr($numerocb, 0, 6);
+
+        if (substr($numerocb, 0, 1) == '4') {
+            return 'Visa'; // Commence par 4
+        } elseif ($bin >= 222100 && $bin <= 272099 || ($bin >= 510000 && $bin <= 559999)) {
+            return 'MasterCard'; // MasterCard (BIN 222100-272099 ou 51-55)
+        } elseif (substr($numerocb, 0, 2) == '34' || substr($numerocb, 0, 2) == '37') {
+            return 'Amex'; // American Express
+        } elseif (substr($numerocb, 0, 4) == '6011' || ($bin >= 622126 && $bin <= 622925) || (substr($numerocb, 0, 3) >= '644' && substr($numerocb, 0, 3) <= '649') || substr($numerocb, 0, 2) == '65') {
+            return 'Discover'; // Discover
+        }
+
+        return null; // Réseau non déterminé
     }
 }

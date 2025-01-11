@@ -4,7 +4,7 @@ use App\Http\Controllers\TranslationController;
 use Illuminate\Support\Facades\Route;
 
 // use App\Http\Controllers\Auth\AuthController;
-
+use App\Models\LieuFavori;
 use App\Http\Controllers\ServiceCourseController;
 use App\Http\Controllers\CoursierController;
 use App\Http\Controllers\CourseController;
@@ -14,8 +14,12 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\PanierController;
 
+use App\Http\Controllers\VeloController;
+
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\DeleteController;
+use App\Http\Controllers\SecurityController;
 
 use App\Http\Controllers\CarteBancaireController;
 
@@ -24,6 +28,7 @@ use App\Http\Controllers\LogistiqueController;
 use App\Http\Controllers\FacturationController;
 
 use App\Http\Controllers\BotManController;
+
 // use Google\Cloud\Dialogflow\V2\SessionsClient;
 
 use Illuminate\Http\Request;
@@ -50,18 +55,20 @@ Route::get('/', function () {
 Route::post('/course', [CourseController::class, 'index'])->name('course.index');
 
 // 2 - visu détails de la réservation
-Route::post('/course/details', [CourseController::class, 'showDetails'])->name('course.details');
+Route::match(['get', 'post'], '/course/details', [CourseController::class, 'showDetails'])->name('course.details');
 
 // 3 - début course
+Route::post('/course/search-driver', [CourseController::class, 'searchDriver'])->name('course.searchDriver');
+Route::get('/course/search-driver', [CourseController::class, 'createCourse'])->name('course.createCourse');
 Route::post('/course/validate', [CourseController::class, 'validateCourse'])->name('course.validate');
 Route::post('/course/cancel', [CourseController::class, 'cancelCourse'])->name('course.cancel');
 
 // 4 - fin course - avec facture
 Route::post('/course/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.addTipRate');
+Route::post('/courses/{id}/update', [CourseController::class, 'updateCourse'])->name('courses.update');
 Route::post('/invoice/reservation/{idreservation}', [FacturationController::class, 'generateInvoiceCourse'])->name('invoice.view');
 
-
-
+Route::get('/favorites-suggestions', [CourseController::class, 'getFavorites'])->name('favorites.suggestions');
 
 
 
@@ -180,11 +187,6 @@ Route::post('/coursier/courses/finish/{idreservation}', [CoursierController::cla
 
 
 
-
-
-
-
-
 // ! Uber Eats
 Route::get('/UberEats', [EtablissementController::class, 'accueilubereats'])->name('etablissement.accueilubereats');
 Route::get('/UberEats/etablissements', [EtablissementController::class, 'index'])->name('etablissement.index');
@@ -204,20 +206,14 @@ Route::get('/panier/commander/choix-livraison', [CommandeController::class, 'cho
 Route::post('/panier/commander/choix-livraison', [CommandeController::class, 'choisirModeLivraisonStore'])->name('commande.choixLivraisonStore');
 
 Route::get('/panier/commander/choix-carte', [CommandeController::class, 'choisirCarteBancaire'])->name('commande.choisirCarteBancaire');
-Route::post('/panier/commander/choix-carte', [CommandeController::class, 'paiementCarte'])->name('commande.paiementCarte');
+Route::post('/panier/commander/enregistrer-commande', [CommandeController::class, 'enregistrerCommande'])->name('commande.enregistrer');
 
-Route::get('/panier/commander/enregistrer-commande', [CommandeController::class, 'enregistrerCommande'])->name('commande.enregistrer');
+Route::match(['get', 'post'], '/panier/commander/paiement', [CommandeController::class, 'paiementCarte'])->name('commande.paiementCarte');
+
 Route::get('/commande/confirmation/{id}', [CommandeController::class, 'confirmation'])->name('commande.confirmation');
 
-
-
-/* Route::get('/panier/livraison', function () {
-    return view('livraison');
-}); */
-
-// Route::post('/panier/commander', [PanierController::class, 'passerCommande'])->name('panier.commander');
-// Route::post('/choix-livraison', [CommandeController::class, 'choixLivraison'])->name('mode.livraison');
-// Route::get('/commande/{idcommande}', [CommandeController::class, 'show'])->name('commande.show');
+Route::get('/mes-commandes', [CommandeController::class, 'mesCommandes'])->name('commande.mesCommandes');
+Route::post('/commandes/{id}/informer-refus', [CommandeController::class, 'informerRefus'])->name('commande.informerRefus');
 
 
 
@@ -244,10 +240,24 @@ Route::post('/coursier/livraisons/finish/{idreservation}', [CoursierController::
 
 
 
+
 // ! Uber Velo
-Route::get('/UberVelo', function () {
-    return view('uber-velo');
-});
+Route::get('/UberVelo', [VeloController::class, 'accueilVelo'])->name('velo.show');
+
+Route::post('/UberVelo', [VeloController::class, 'index'])->name('velo.index');
+
+Route::get('/UberVelo/velos/details-velo/{id}', [VeloController::class, 'showDetailsVelo'])->name('velo.details');
+Route::get('/UberVelo/velos/details-reservation/{id}', [VeloController::class, 'showReservationDetails'])->name('velo.reservation');
+
+Route::post('/UberVelo/velos/reserver/{id}', [VeloController::class, 'validateReservation'])->name('velo.reserver');
+
+Route::get('/UberVelo/velos/confirmation/{id}', [VeloController::class, 'confirmation'])->name('velo.confirmation');
+
+Route::get('/paiement', [VeloController::class, 'choixCarte'])->name('velo.paiement');
+
+Route::match(['get', 'post'], '/reservation-effectuer', [VeloController::class, 'finaliserPaiement'])->name('velo.fin-reservation');
+
+Route::post('/reservation-effectuer', [VeloController::class, 'finaliserPaiement'])->name('velo.fin-reservation');
 
 
 
@@ -257,13 +267,7 @@ Route::get('/UberVelo', function () {
 
 
 
-
-
-
-
-
-
-// * POV MANAGER
+// * POV RESTAURATEUR
 // Ajout d'un établissement
 Route::get('/UberEats/etablissements/ajouter', [ResponsableEnseigneController::class, 'add'])->name('etablissement.create');
 Route::post('/UberEats/etablissements/ajouter', [ResponsableEnseigneController::class, 'store'])->name('etablissement.store');
@@ -272,15 +276,20 @@ Route::post('/UberEats/etablissements/ajouter', [ResponsableEnseigneController::
 Route::get('/UberEats/etablissements/{id}/banniere/ajouter', [ResponsableEnseigneController::class, 'addBanner'])->name('etablissement.banner.create');
 Route::post('/UberEats/etablissements/banniere/enregistrer', [ResponsableEnseigneController::class, 'storeBanner'])->name('etablissement.banner.store');
 
+// Ajout de produits
+Route::get('/UberEats/produits/create', [ResponsableEnseigneController::class, 'createProduit'])->name('manager.produits.create');
+Route::post('/UberEats/produits/store', [ResponsableEnseigneController::class, 'storeProduit'])->name('manager.produits.store');
+
+Route::get('produits', [ResponsableEnseigneController::class, 'indexProduits'])->name('manager.produits.index');
+
+
+// * POV RESPONSABLE
 // Gestion des commandes
-Route::get('/UberEats/etablissements/{id}/commandes/prochaine-heure', [ResponsableEnseigneController::class, 'commandesProchaineHeure'])->name('manager.ordernextHour');
+Route::get('/UberEats/etablissements/commandes', [ResponsableEnseigneController::class, 'commandes'])->name('responsable.commandes');
+Route::get('/UberEats/etablissements/{id}/commandes/prochaine-heure', [ResponsableEnseigneController::class, 'commandesProchaineHeure'])->name('responsable.ordernextHour');
 
-Route::get('/commandes/search-coursiers', [ResponsableEnseigneController::class, 'searchCoursiers'])->name('manager.search-coursiers');
-Route::post('/commandes/{idcommande}/assigner-livreur', [ResponsableEnseigneController::class, 'assignerLivreur'])->name('assignerLivreur');
-
-
-
-
+Route::get('/commandes/search-livreurs', [ResponsableEnseigneController::class, 'searchLivreurs'])->name('responsable.search-livreur');
+Route::post('/commandes/{idcommande}/assigner-livreur', [ResponsableEnseigneController::class, 'assignerLivreur'])->name('responsable.assignerlivreur');
 
 
 
@@ -313,6 +322,7 @@ Route::get('/login-service', function () {
 Route::post('/login', [LoginController::class, 'auth'])->name('auth');
 
 Route::get('/myaccount', [LoginController::class, 'showAccount'])->name('myaccount');
+
 Route::post('/myaccount/favorites/add', [LoginController::class, 'addFavoriteAddress'])->name('account.favorites.add');
 Route::delete('/myaccount/favorites/{id}', [LoginController::class, 'deleteFavoriteAddress'])->name('account.favorites.delete');
 
@@ -320,47 +330,79 @@ Route::post('/update-profile-image', [LoginController::class, 'updateProfileImag
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Carte Bancaire
-Route::get('/carte-bancaire', [CarteBancaireController::class, 'index'])->name('carte-bancaire.index');
-Route::get('/carte-bancaire/create', [CarteBancaireController::class, 'create'])->name('carte-bancaire.create');
-Route::post('/carte-bancaire', [CarteBancaireController::class, 'store'])->name('carte-bancaire.store');
+Route::get('/security', [LoginController::class, 'show'])->name('security.show')->middleware('auth');
+Route::post('/security/update-password', [LoginController::class, 'updatePassword'])->name('security.update')->middleware('auth');
 
+// MFA
+Route::post('/activate-mfa', [SecurityController::class, 'activateMFA'])->name('activateMFA');
 
+Route::post('/send-otp', [SecurityController::class, 'sendOtp'])->name('sendOtp');
 
+Route::get('/otp', function () {
+    return view('auth.otp');
+})->name('otp');
 
+Route::post('/validate-otp', [SecurityController::class, 'verifyOtp'])->name('verifyOtp');
+Route::post('/resend-otp', [SecurityController::class, 'resendOtp'])->name('resendOtp');
 
-
-
-
-
-
-
-
-
-
+// Reset Password
+Route::get('/reset-password', [SecurityController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [SecurityController::class, 'resetPassword'])->name('password.update');
 
 
 
 // ! Register
+// client
 Route::get('/interface-inscription', function () {
     return view('interfaces.interface-inscription');
 });
 
-Route::get('/register/driver', [RegisterController::class, 'showDriverRegistrationForm'])->name('register.driver');
-Route::get('/register/passenger', [RegisterController::class, 'showPassengerRegistrationForm'])->name('register.passenger');
-Route::get('/register/eats', [RegisterController::class, 'showEatsRegistrationForm'])->name('register.eats');
-Route::get('/register/manager', [RegisterController::class, 'showManagerRegistrationForm'])->name('register.manager');
-
-Route::post('/register/driver/form', [RegisterController::class, 'register'])->name('register');
 Route::post('/register/passenger/form', [RegisterController::class, 'register'])->name('register');
 Route::post('/register/eats/form', [RegisterController::class, 'register'])->name('register');
-Route::post('/register/manager/form', [RegisterController::class, 'register'])->name('register');
+
+Route::get('/register/passenger', [RegisterController::class, 'showPassengerRegistrationForm'])->name('register.passenger');
+Route::get('/register/eats', [RegisterController::class, 'showEatsRegistrationForm'])->name('register.eats');
+
+// coursier
+Route::get('/interface-inscription-coursier', function () {
+    return view('interfaces.interface-inscription-coursier');
+});
+
+Route::post('/register/driver/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/deliverer/form', [RegisterController::class, 'register'])->name('register');
+
+Route::get('/register/coursier/{role}', [RegisterController::class, 'registerCoursier'])->name('register.coursier');
+Route::get('/register/driver', [RegisterController::class, 'showDriverRegistrationForm'])->name('register.driver');
+Route::get('/register/deliverer', [RegisterController::class, 'showDelivererRegistrationForm'])->name('register.deliverer');
+
+// manager
+Route::get('/interface-inscription-manager', function () {
+    return view('interfaces.interface-inscription-manager');
+});
+
+Route::post('/register/brandmanager/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/restaurateur/form', [RegisterController::class, 'register'])->name('register');
+
+Route::get('/register/manager/{role}', [RegisterController::class, 'registerManager'])->name('register.manager');
+Route::get('/register/brandmanager', [RegisterController::class, 'showBrandManagerRegistrationForm'])->name('register.brandmanager');
+Route::get('/register/restaurateur', [RegisterController::class, 'showRestaurateurRegistrationForm'])->name('register.restaurateur');
+
+
+
+// ! Delete
+Route::delete('/user/delete', [DeleteController::class, 'destroy'])->name('user.delete');
 
 
 
 
 
 
+
+// Carte Bancaire
+Route::get('/carte-bancaire', [CarteBancaireController::class, 'index'])->name('carte-bancaire.index');
+Route::get('/carte-bancaire/create', [CarteBancaireController::class, 'create'])->name('carte-bancaire.create');
+Route::post('/carte-bancaire', [CarteBancaireController::class, 'store'])->name('carte-bancaire.store');
+Route::delete('/carte-bancaire/{id}', [CarteBancaireController::class, 'destroy'])->name('carte-bancaire.destroy');
 
 
 
@@ -412,35 +454,20 @@ Route::get('/facturation', [FacturationController::class, 'index'])->name('factu
 Route::post('/facturation/filter', [FacturationController::class, 'filterTrips'])->name('facturation.filter');
 Route::post('/facturation/generate', [FacturationController::class, 'generateInvoice'])->name('facturation.generate');
 
-// Service Course - aller voir en haut pour l'instant
-Route::get('/service-course/index', [ServiceCourseController::class, 'index'])->name('service-course.index');
-Route::get('/service-course/analyse', [ServiceCourseController::class, 'analyse'])->name('service-course.analyse');
+// Service Juridique
+Route::get('/juridique/cookie-politique', function () {
+    return view('juridique.cookie-politique');
+})->name('juridique.index');
 
+/* Route::get('/juridique/anonymisation', [ClientController::class, 'index'])->name('juridique.anonymisation');
+Route::post('/juridique/anonymisation', [ClientController::class, 'anonymiser']); */
 
+// Service Commande
+Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ! DROIT
-Route::get('/Cookies', function () {
-    return view('cookie-politique');
-});
-
-
-
-
+Route::post('/commandes/{id}/refuser', [CommandeController::class, 'enregistrerRefus'])->name('commande.refuser');
+Route::post('/commandes/{id}/rembourser', [CommandeController::class, 'rembourserCommande'])->name('commande.rembourser');
+Route::post('/commandes/{id}/mettre-a-jour-statut', [CommandeController::class, 'mettreAJourStatut'])->name('commande.mettreAJourStatut');
 
 
 
@@ -472,14 +499,6 @@ Route::post('/translate', [TranslationController::class, 'translate']);
 
 // ! CHATBOT
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
-
-
-
-
-
-
-
-
 
 
 

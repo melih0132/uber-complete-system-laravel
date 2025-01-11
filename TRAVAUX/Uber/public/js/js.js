@@ -74,3 +74,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const formattedMaxDate = maxDate.toISOString().split("T")[0];
   dateNaissanceInput.setAttribute("max", formattedMaxDate);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleEntrepriseBtn = document.getElementById("toggleEntreprise");
+  const entrepriseSection = document.getElementById("entrepriseSection");
+
+  toggleEntrepriseBtn.addEventListener("click", function () {
+    entrepriseSection.classList.toggle("d-none");
+    this.textContent = entrepriseSection.classList.contains("d-none")
+      ? "Ajouter des informations sur l'entreprise (optionnel)"
+      : "Cacher les informations sur l'entreprise";
+  });
+});

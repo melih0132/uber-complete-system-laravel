@@ -46,7 +46,7 @@
             <button type="submit" class="btn-login">Connexion</button>
 
             <div class="text-center mt-3">
-                <a href="{{ url('/interface-inscription') }}" class="login-link">Créer un compte</a>
+                <a href="{{ url('/register/passenger') }}" class="login-link">Créer un compte</a>
             </div>
         </form>
     </div>

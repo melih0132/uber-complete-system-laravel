@@ -31,4 +31,9 @@ class Reservation extends Model
     {
         return $this->hasOne(Course::class, 'idreservation');
     }
+    public function velo()
+    {
+        return $this->belongsTo(Velo::class, 'idvelo');
+    }
+
 }

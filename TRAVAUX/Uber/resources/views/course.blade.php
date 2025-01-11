@@ -84,8 +84,13 @@
 
 @section('Prestation')
     <section>
+
         <div class="container">
-            @if ($prestations->isNotEmpty())
+            @if ($tripDate < $dateNow)
+            <h2 class="text-center mt-4">Veuillez modifier la période de la course choisi.</h2>
+            @elseif ($tripDate == $dateNow && $tripTime < $now)
+            <h2 class="text-center mt-4">Veuillez modifier l'horaire de la course choisi.</h2>
+            @elseif ($prestations->isNotEmpty())
                 <h2>Pour une course le {{ $jourSemaine }} {{ $tripDate }} de {{ $startAddress }} à {{ $endAddress }}
                     :
                 </h2>

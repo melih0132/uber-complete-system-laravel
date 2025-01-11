@@ -19,7 +19,7 @@
     <main class="main-content">
         <section class="section-container">
             <header class="section-header">
-                <h1 class="header-title">Commandez vos plats favoris</h1>
+                <h1 class="header-title">Vos restos locaux livrés chez vous</h1>
                 <p class="header-description">Trouvez et faites-vous livrer les meilleurs plats des restaurants proches de
                     chez vous.</p>
             </header>
@@ -65,69 +65,84 @@
     </main>
 
 
-    {{--     <section>
-        <!-- Cookie Banner -->
+    <section>
         <div class="cookie hidden" id="cookie-banner">
             <div class="p-3">
                 <h1>Nous utilisons des cookies</h1>
                 <p>
-                    Cliquez sur « Accepter » pour autoriser Uber à utiliser des cookies afin de personnaliser ce site, ainsi
-                    qu'à diffuser des annonces et mesurer leur efficacité sur d'autres applications et sites Web, y compris
-                    les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou cliquez sur «
-                    Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins. Pour en savoir plus,
-                    consultez notre
-                    <a href="{{ url('/Legal') }}" class="text-decoration-underline">
+                    Cliquez sur « Accepter » pour autoriser Uber à utiliser des cookies afin de personnaliser ce
+                    site, ainsi qu'à diffuser des annonces et mesurer leur efficacité sur d'autres applications et sites
+                    Web, y compris les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou
+                    cliquez sur « Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins.
+                    Pour en savoir plus, consultez notre
+                    <a href="{{ url('/juridique/cookie-politique') }}">
                         Déclaration relative aux cookies
                     </a>
                 </p>
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-start">
                     <button id="cookie-settings" class="text-decoration-underline mx-4">Paramètres des cookies</button>
-                    <button id="cookie-reject" class="mr-4">Refuser</button>
-                    <button id="cookie-accept" class="ml-4">Accepter</button>
+                    <button id="cookie-reject" class="mx-2">Refuser</button>
+                    <button id="cookie-accept" class="">Accepter</button>
                 </div>
             </div>
         </div>
-
-        <!-- Cookie Settings Banner -->
-        <div class="cookie-settings-banner hidden m-5" id="cookie-settings-banner" style="display: none;">
-            <div class="css-etreRh">
-                <div class="css-bcvoMj">
+        <div class="cookie-settings-banner hidden" id="cookie-settings-banner" style="display: none;">
+            <div class="p-3">
+                <div class="div-cookie-settings">
                     <h1 data-baseweb="heading" class="css-glaEHe">Nous utilisons des cookies</h1>
-                    <div class="css-bsBbCu row">
-                        <div class="css-eFLfxY col">
+                    <div class="d-inline-flex cookie-settings">
+                        <div class="d-flex flex-column cookie-settings-checkbox">
                             <label data-baseweb="checkbox" class="css-eCdekH">
                                 <span class="css-gpGwpS"></span>
                                 <input type="checkbox" class="css-fJmKOk" id="essential-checkbox" checked disabled>
-                                <div class="css-dvKwsj">
+                                <div class="text">
                                     <a data-baseweb="link" class="css-dLzUvf">Essentiel</a>
                                 </div>
                             </label>
-                            <label data-baseweb="checkbox" class="css-eCdekH">
-                                <span class="css-lhNqTx"></span>
-                                <input type="checkbox" class="css-fJmKOk" id="advertising-checkbox">
-                                <div class="css-dvKwsj">Ciblage publicitaire</div>
+                            <label data-baseweb="checkbox" class="d-flex">
+                                <span class=""></span>
+                                <input type="checkbox" class="d-flex" id="advertising-checkbox">
+                                <div class="text">Ciblage publicitaire</div>
                             </label>
-                            <label data-baseweb="checkbox" class="css-eCdekH">
-                                <span class="css-lhNqTx"></span>
+                            <label data-baseweb="checkbox" class="d-flex">
+                                <span class=""></span>
                                 <input type="checkbox" class="css-fJmKOk" id="statistics-checkbox">
-                                <div class="css-dvKwsj">Statistiques</div>
+                                <div class="text">Statistiques</div>
                             </label>
                         </div>
-                        <p data-baseweb="typo-paragraphsmall" class="css-igflQV css-lnLvkz col" id="cookie-description">
-                            Les cookies essentiels sont nécessaires aux fonctionnalités fondamentales de notre site ou de
-                            nos services, telles que la connexion au compte, l'authentification et la sécurité du site.
-                        </p>
+                        <div id="cookie-settings-description">
+                            <p data-baseweb="typo-paragraphsmall">
+                                Les cookies essentiels sont nécessaires aux fonctionnalités fondamentales de notre site ou
+                                de
+                                nos services,
+                                telles que la connexion au compte, l'authentification et la sécurité du site.
+                            </p>
+                        </div>
                     </div>
-                    <div class="css-gTwEmV">
+                    <div class="d-flex justify-content-end">
                         <button data-baseweb="button" data-tracking-name="cookie-preferences-mloi-settings-close"
-                            class="css-heRtxy" id="cookie-close-settings">
+                            class="mx-4" id="cookie-close-settings">
                             Masquer
                         </button>
-                        <button id="cookie-reject" class="mr-4">Refuser</button>
-                        <button id="cookie-accept" class="ml-4">Accepter</button>
+                        <button id="cookie-reject" class="mx-2">Refuser</button>
+                        <button id="cookie-accept" class="">Accepter</button>
                     </div>
                 </div>
             </div>
         </div>
-    </section> --}}
+    </section>
+    <script>
+        var botmanWidget = {
+            frameEndpoint: '/botman/chat',
+            introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
+            chatServer: '/botman',
+            mainColor: '#000000',
+            bubbleBackground: '#FFFFFF',
+            bubbleAvatarUrl: 'img/UberLogo.png',
+            title: 'Assistant Uber',
+            headerTextColor: '#FFFFFF',
+            placeholderText: 'Écrivez votre message ici...',
+        };
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 @endsection

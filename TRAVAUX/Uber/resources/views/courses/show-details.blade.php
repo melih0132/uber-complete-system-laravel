@@ -12,7 +12,7 @@
             <h1 class="text-center mb-4 fw-bold">Détails de la réservation</h1>
             <div class="details-wrapper row gx-5 gy-4 align-items-center">
                 <div class="col-lg-6 text-center">
-                    <img alt="Image de la prestation" class="img-fluid rounded shadow-sm"
+                    <img alt="Image de la prestation" class="img-fluid rounded"
                         src="{{ asset('img/' . $course['imageprestation']) }}" loading="lazy">
                 </div>
                 <div class="col-lg-6">
@@ -35,7 +35,7 @@
                         </li>
                         <li class="detail-item">
                             <strong>Nom du client :</strong>
-                            <span>Monsieur Jean DUPONT</span>
+                            <span>{{ $client->nomuser }}</span>
                         </li>
                         <li class="detail-item">
                             <strong>Prix de la course :</strong>
@@ -61,14 +61,15 @@
                 </div>
             </div>
 
-            <div class="button-container mt-4 d-flex justify-content-between gap-3">
-                <form method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ?')">
+            <div class="button-container mt-4 d-flex justify-content-center gap-3">
+                <form method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ?')" class="mx-2">
                     @csrf
-                    <button type="button" class="btn-annuler" onclick="window.history.back(); return false;">
+                    <button type="button" class="btn-annuler"
+                        onclick="window.history.back() || window.location.href='{{ route('accueil') }}'; return false;">
                         Annuler
                     </button>
                 </form>
-                <form method="POST" action="{{ route('course.validate') }}">
+                <form method="POST" action="{{ route('course.searchDriver') }}">
                     @csrf
                     <input type="hidden" name="course" value="{{ json_encode($course) }}">
                     <button type="submit" class="btn-valider">Valider</button>

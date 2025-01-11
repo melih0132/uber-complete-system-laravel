@@ -72,7 +72,7 @@
                     </div>
                 @empty
                     <div class="col-12">
-                        <p class="text-center">Aucune tâche en attente pour le moment.</p>
+                        <p>Aucune tâche en attente pour le moment.</p>
                     </div>
                 @endforelse
             </div>

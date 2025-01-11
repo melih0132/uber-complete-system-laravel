@@ -181,7 +181,7 @@
 
                 <!-- Bouton -->
                 <div class="d-flex justify-content-center">
-                    <button class="btn-add" type="submit">Créer</button>
+                    <button class="btn-add" type="submit">Ajouter une banière</button>
                 </div>
             </form>
         </div>

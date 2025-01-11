@@ -1,209 +1,228 @@
-@extends('layouts.app')
+    @extends('layouts.app')
 
-@section('title', 'Uber')
+    @section('title', 'Uber')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/accueil-uber.blade.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
-    @yield('css2')
-@endsection
+    @section('css')
+        <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/accueil-uber.blade.css') }}">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+        @yield('css2')
 
-@section('js')
-    {{-- MAP --}}
-    <script src="{{ asset('js/leaflet.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="{{ asset('js/main.js') }}" defer></script>
-@endsection
 
-@section('content')
-    <section>
-        <div class="main-container">
-            <div class="row p-4">
-                <div class="col-12 col-sm-6">
-                    <h1 class="pb-4">Allez où vous voulez avec Uber</h1>
-                    <form action="{{ route('course.index') }}" method="POST">
-                        @csrf
-                        <!-- Adresse de départ -->
-                        <input type="text" id="startAddress" name="startAddress" placeholder="Adresse de départ"
-                            value="{{ old('startAddress', $startAddress ?? '') }}"
-                            oninput="fetchSuggestions(this, 'startSuggestions')" required>
-                        <ul id="startSuggestions" class="suggestions-list"></ul>
+    @endsection
 
-                        <!-- Adresse d'arrivée -->
-                        <input type="text" id="endAddress" name="endAddress" class="mt-3"
-                            placeholder="Adresse d'arrivée" value="{{ old('endAddress', $endAddress ?? '') }}"
-                            oninput="fetchSuggestions(this, 'endSuggestions')" required>
-                        <ul id="endSuggestions" class="suggestions-list"></ul>
+    @section('js')
+        {{-- MAP --}}
+        <script src="{{ asset('js/leaflet.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="{{ asset('js/main.js') }}" defer></script>
 
-                        <div class="date-container">
-                            <div class="date-time-container mt-3 mr-3"
-                                onclick="document.getElementById('tripDate').showPicker()">
-                                <label id="tripDateLabel" data-icon="📅" class="mr-1">
-                                    {{ old('tripDate', isset($tripDate) ? \Carbon\Carbon::parse($tripDate)->translatedFormat('d F Y') : 'Aujourd\'hui') }}
-                                </label>
-                                <input type="date" id="tripDate" name="tripDate"
-                                    value="{{ old('tripDate', $tripDate ?? date('Y-m-d')) }}" onchange="updateDateLabel()">
+    @endsection
+
+    @section('content')
+        <section>
+            <div class="main-container">
+                <div class="row p-4">
+                    <div class="col-12 col-sm-6">
+                        <h1 class="pb-4">Allez où vous voulez avec Uber</h1>
+                        <form action="{{ route('course.index') }}" method="POST">
+                            @csrf
+
+                            <div class="address-input-container">
+                                <!-- Adresse de départ -->
+                                <label for="startAddress" class="form-label"></label>
+                                <div class="input-with-dropdown">
+                                    <input type="text" id="startAddress" name="startAddress" placeholder="Adresse de départ"
+                                        oninput="fetchSuggestions(this, 'startSuggestions')" required class="form-control">
+                                    <button type="button" class="dropdown-toggle" id="startFavoritesToggle">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <ul id="startFavoritesDropdown" class="favorites-dropdown hidden">
+
+                                    </ul>
+                                </div>
+                                <ul id="startSuggestions" class="suggestions-list"></ul>
                             </div>
 
-                            <div id="customTimePicker" class="date-time-container mt-3">
-                                <label id="tripTimeLabel" data-icon="⏰">
-                                    {{ old('tripTime', isset($tripTime) ? $tripTime : 'Maintenant') }}
-                                </label>
-                                <input type="hidden" id="tripTime" name="tripTime"
-                                    value="{{ old('tripTime', $tripTime ?? '') }}">
-                                <ul id="customTimeDropdown" class="dropdown-list"></ul>
+                            <div class="address-input-container">
+                                <!-- Adresse d'arrivée -->
+                                <label for="endAddress" class="form-label"></label>
+                                <div class="input-with-dropdown">
+                                    <input type="text" id="endAddress" name="endAddress" placeholder="Adresse d'arrivée"
+                                        oninput="fetchSuggestions(this, 'endSuggestions')" required class="form-control">
+                                    <button type="button" class="dropdown-toggle" id="endFavoritesToggle">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <ul id="endFavoritesDropdown" class="favorites-dropdown hidden">
+
+                                    </ul>
+                                </div>
+                                <ul id="endSuggestions" class="suggestions-list"></ul>
                             </div>
 
-                        </div>
+                            <div class="date-container">
+                                <div class="date-time-container mt-3 mr-3"
+                                    onclick="document.getElementById('tripDate').showPicker()">
+                                    <label id="tripDateLabel" data-icon="📅" class="mr-1">
+                                        {{ old('tripDate', isset($tripDate) ? \Carbon\Carbon::parse($tripDate)->translatedFormat('d F Y') : 'Aujourd\'hui') }}
+                                    </label>
+                                    <input type="date" id="tripDate" name="tripDate"
+                                        value="{{ old('tripDate', $tripDate ?? date('Y-m-d')) }}" onchange="updateDateLabel()">
+                                </div>
 
-                        <!-- Distance -->
-                        <div id="distanceResult" class="mt-3"></div>
+                                <div id="customTimePicker" class="date-time-container mt-3">
+                                    <label id="tripTimeLabel" data-icon="⏰">
+                                        {{ old('tripTime', isset($tripTime) ? $tripTime : 'Maintenant') }}
+                                    </label>
+                                    <input type="hidden" id="tripTime" name="tripTime"
+                                        value="{{ old('tripTime', $tripTime ?? '') }}">
+                                    <ul id="customTimeDropdown" class="dropdown-list"></ul>
+                                </div>
 
-                        <!-- Calculer l'itinéraire -->
-                        {{--                         ne supprimer pas c'est pour que si il veut voir les course proposer il doit se connecter mais j'active quand c'est tout fait
-                         <a href="{{ url('/login') }}" class="mt-4">Voir les prestations</a> --}}
+                            </div>
 
-                        @if (session('user') && session('user.role') === 'client')
-                            <button type="submit" class="mt-4" onclick="voirPrix();">Voir les prestations</button>
-                        @else
-                            <a href="{{ url('/login') }}" class="mt-4">Voir les prestations
-                            </a>
-                        @endif
-                    </form>
-                </div>
+                            <!-- Distance -->
+                            <div id="distanceResult" class="mt-3"></div>
 
-                <!-- Colonne Droite : Carte Leaflet -->
-                <div class="col-12 col-sm-6">
-                    <div id="map"></div>
+                            <!-- Calculer l'itinéraire -->
+                            @if (session('user') && session('user.role') === 'client')
+                                <button type="submit" class="mt-4" onclick="voirPrix();">Voir les prestations</button>
+                            @else
+                                <a href="{{ url('/login') }}" class="mt-4">Voir les prestations
+                                </a>
+                            @endif
+                        </form>
+                    </div>
+
+                    <!-- Colonne Droite : Carte Leaflet -->
+                    <div class="col-12 col-sm-6">
+                        <div id="map"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    @yield('Prestation')
+        @yield('Prestation')
 
-    {{-- @section('Suggestion') --}}
-
-    <section>
-        <div class="main-container mt-5">
-            <h3 class="css-fXLKki">Suggestions</h3>
-            <ul class="gap-2 py-5 row">
-                <li class="col-12 col-sm-4 my-2">
-                    <a class="card-suggestion" href="{{ url('/') }}">
-                        <div>
-                            <div class="title-prestation">Course</div>
-                            <p class="p-suggestion">
-                                Allez où vous voulez avec Uber. Commandez une course en un clic et c'est parti&nbsp;!
-                            </p>
-                        </div>
-                        <img alt="Course" class="img-suggestion" src="img/ride.png">
-                    </a>
-                </li>
-                <li class="col-12 col-sm-4 my-2">
-                    <a class="card-suggestion" href="{{ url('/UberVelo') }}">
-                        <div>
-                            <div class="title-prestation">Deux-roues</div>
-                            <p class="p-suggestion">
-                                Vous pouvez désormais trouver et louer un vélo électrique via l'application Uber.
-                            </p>
-                        </div>
-                        <img alt="Deux-roues" class="img-suggestion" src="img/uber-velo.png">
-                    </a>
-                </li>
-                {{--  <li class="col-12 col-sm-4 my-2">
-                        <a class="card-suggestion"
-                            href="https://m.uber.com/reserve/?uclick_id=374a0bd1-9406-45f7-8726-c0314f5526f7&amp;marketing_vistor_id=9e31eda8-c946-4b64-8c15-0f19645b2387"
-                            data-uclick-id="374a0bd1-9406-45f7-8726-c0314f5526f7">
+        <section>
+            <div class="main-container mt-5">
+                <h3 class="css-fXLKki">Suggestions</h3>
+                <ul class="gap-2 py-5 row">
+                    <li class="col-12 col-sm-4 my-2">
+                        <a class="card-suggestion" href="{{ url('/') }}">
                             <div>
-                                <div class="title-prestation">Réserver</div>
+                                <div class="title-prestation">Course</div>
                                 <p class="p-suggestion">
-                                    Réservez votre course à l'avance pour pouvoir vous détendre le jour même.
+                                    Allez où vous voulez avec Uber. Commandez une course en un clic et c'est parti&nbsp;!
                                 </p>
                             </div>
-                            <img alt="Réserver" class="img-suggestion" src="img/reserve_clock.png">
+                            <img alt="Course" class="img-suggestion" src="img/ride.png">
                         </a>
-                    </li> --}}
-                <li class="col-12 col-sm-4 my-2">
-                    <a class="card-suggestion" href="{{ url('/UberEats') }}">
-                        <div>
-                            <div class="title-prestation">Courses</div>
-                            <p data-baseweb="typo-paragraphxsmall" class="p-suggestion">
-                                Faites livrer vos courses à votre porte avec Uber&nbsp;Eats.
-                            </p>
-                        </div>
-                        <img alt="Courses" class="img-suggestion" src="img/course.png">
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </section>
-
-    {{-- @endsection --}}
-
-    <!-- Section Cookies -->
-    <section>
-        <div class="cookie hidden" id="cookie-banner">
-            <div class="p-3">
-                <h1>Nous utilisons des cookies</h1>
-                <p>
-                    Cliquez sur « Accepter » pour autoriser Uber à utiliser des cookies afin de personnaliser ce
-                    site, ainsi qu'à diffuser des annonces et mesurer leur efficacité sur d'autres applications et sites
-                    Web, y compris les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou
-                    cliquez sur « Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins.
-                    Pour en savoir plus, consultez notre
-                    <a href="{{ url('/Legal') }}">
-                        Déclaration relative aux cookies
-                    </a>
-                </p>
-                <div class="d-flex justify-content-end">
-                    <button id="cookie-settings" class="text-decoration-underline mx-4">Paramètres des cookies</button>
-                    <button id="cookie-reject" class="mr-4">Refuser</button>
-                    <button id="cookie-accept" class="ml-4">Accepter</button>
-                </div>
+                    </li>
+                    <li class="col-12 col-sm-4 my-2">
+                        <a class="card-suggestion" href="{{ url('/UberVelo') }}">
+                            <div>
+                                <div class="title-prestation">Deux-roues</div>
+                                <p class="p-suggestion">
+                                    Vous pouvez désormais trouver et louer un vélo électrique via l'application Uber.
+                                </p>
+                            </div>
+                            <img alt="Deux-roues" class="img-suggestion" src="img/uber-velo.png">
+                        </a>
+                    <li class="col-12 col-sm-4 my-2">
+                        <a class="card-suggestion" href="{{ url('/UberEats') }}">
+                            <div>
+                                <div class="title-prestation">Courses</div>
+                                <p data-baseweb="typo-paragraphxsmall" class="p-suggestion">
+                                    Faites livrer vos courses à votre porte avec Uber&nbsp;Eats.
+                                </p>
+                            </div>
+                            <img alt="Courses" class="img-suggestion" src="img/course.png">
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </div>
-        <div class="cookie-settings-banner hidden m-5" id="cookie-settings-banner" style="display: none;">
-            <div class="css-etreRh">
-                <div class="css-bcvoMj">
-                    <h1 data-baseweb="heading" class="css-glaEHe">Nous utilisons des cookies</h1>
-                    <div class="css-bsBbCu row">
-                        <div class="css-eFLfxY col">
-                            <label data-baseweb="checkbox" class="css-eCdekH">
-                                <span class="css-gpGwpS"></span>
-                                <input type="checkbox" class="css-fJmKOk" id="essential-checkbox" checked disabled>
-                                <div class="css-dvKwsj">
-                                    <a data-baseweb="link" class="css-dLzUvf">Essentiel</a>
-                                </div>
-                            </label>
-                            <label data-baseweb="checkbox" class="css-eCdekH">
-                                <span class="css-lhNqTx"></span>
-                                <input type="checkbox" class="css-fJmKOk" id="advertising-checkbox">
-                                <div class="css-dvKwsj">Ciblage publicitaire</div>
-                            </label>
-                            <label data-baseweb="checkbox" class="css-eCdekH">
-                                <span class="css-lhNqTx"></span>
-                                <input type="checkbox" class="css-fJmKOk" id="statistics-checkbox">
-                                <div class="css-dvKwsj">Statistiques</div>
-                            </label>
-                        </div>
-                        <p data-baseweb="typo-paragraphsmall" class="css-igflQV css-lnLvkz col" id="cookie-description">
-                            Les cookies essentiels sont nécessaires aux fonctionnalités fondamentales de notre site ou de
-                            nos services,
-                            telles que la connexion au compte, l'authentification et la sécurité du site.
-                        </p>
-                    </div>
-                    <div class="css-gTwEmV">
-                        <button data-baseweb="button" data-tracking-name="cookie-preferences-mloi-settings-close"
-                            class="css-heRtxy" id="cookie-close-settings">
-                            Masquer
-                        </button>
-                        <button id="cookie-reject" class="mr-4">Refuser</button>
-                        <button id="cookie-accept" class="ml-4">Accepter</button>
+        </section>
+
+        <section>
+            <div class="cookie hidden" id="cookie-banner">
+                <div class="p-3">
+                    <h1>Nous utilisons des cookies</h1>
+                    <p>
+                        Cliquez sur « Accepter » pour autoriser Uber à utiliser des cookies afin de personnaliser ce
+                        site, ainsi qu'à diffuser des annonces et mesurer leur efficacité sur d'autres applications et sites
+                        Web, y compris les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou
+                        cliquez sur « Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins.
+                        Pour en savoir plus, consultez notre
+                        <a href="{{ url('/juridique/cookie-politique') }}">
+                            Déclaration relative aux cookies
+                        </a>
+                    </p>
+                    <div class="d-flex justify-content-end">
+                        <button id="cookie-settings" class="text-decoration-underline mx-4">Paramètres des cookies</button>
+                        <button id="cookie-reject" class="mx-2">Refuser</button>
+                        <button id="cookie-accept" class="">Accepter</button>
                     </div>
                 </div>
             </div>
-        </div>
-        <script src="{{ asset('js/scriptCookie.js') }}"></script>
-    </section>
-@endsection
+            <div class="cookie-settings-banner hidden" id="cookie-settings-banner" style="display: none;">
+                <div class="p-3">
+                    <div class="div-cookie-settings">
+                        <h1 data-baseweb="heading" class="css-glaEHe">Nous utilisons des cookies</h1>
+                        <div class="d-inline-flex cookie-settings">
+                            <div class="d-flex flex-column cookie-settings-checkbox">
+                                <label data-baseweb="checkbox" class="css-eCdekH">
+                                    <span class="css-gpGwpS"></span>
+                                    <input type="checkbox" class="css-fJmKOk" id="essential-checkbox" checked disabled>
+                                    <div class="text">
+                                        <a data-baseweb="link" class="css-dLzUvf">Essentiel</a>
+                                    </div>
+                                </label>
+                                <label data-baseweb="checkbox" class="d-flex">
+                                    <span class=""></span>
+                                    <input type="checkbox" class="d-flex" id="advertising-checkbox">
+                                    <div class="text">Ciblage publicitaire</div>
+                                </label>
+                                <label data-baseweb="checkbox" class="d-flex">
+                                    <span class=""></span>
+                                    <input type="checkbox" class="css-fJmKOk" id="statistics-checkbox">
+                                    <div class="text">Statistiques</div>
+                                </label>
+                            </div>
+                            <div id="cookie-settings-description">
+                                <p data-baseweb="typo-paragraphsmall">
+                                    Les cookies essentiels sont nécessaires aux fonctionnalités fondamentales de notre site ou
+                                    de
+                                    nos services,
+                                    telles que la connexion au compte, l'authentification et la sécurité du site.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button data-baseweb="button" data-tracking-name="cookie-preferences-mloi-settings-close"
+                                class="mx-4" id="cookie-close-settings">
+                                Masquer
+                            </button>
+                            <button id="cookie-reject" class="mx-2">Refuser</button>
+                            <button id="cookie-accept" class="">Accepter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="{{ asset('js/scriptCookie.js') }}"></script>
+        </section>
+        <script>
+            var botmanWidget = {
+                frameEndpoint: '/botman/chat',
+                introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
+                chatServer: '/botman',
+                mainColor: '#000000',
+                bubbleBackground: '#FFFFFF',
+                bubbleAvatarUrl: 'img/UberLogo.png',
+                title: 'Assistant Uber',
+                headerTextColor: '#FFFFFF',
+                placeholderText: 'Écrivez votre message ici...',
+            };
+        </script>
+        <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+    @endsection

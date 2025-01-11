@@ -26,7 +26,30 @@ class Panier extends Model
     public function produits()
     {
         return $this->belongsToMany(Produit::class, 'contient_2', 'idpanier', 'idproduit')
-            ->withPivot('quantite')
-            ->as('pivot');
+            ->withPivot('quantite', 'idetablissement');
+    }
+
+    public function etablissements()
+    {
+        return $this->hasManyThrough(
+            Etablissement::class,
+            'contient_2',
+            'idpanier',
+            'idetablissement',
+            'idpanier',
+            'idetablissement'
+        )->distinct();
+    }
+
+    public function getTotalPrixAttribute()
+    {
+        return $this->produits->sum(function ($produit) {
+            return $produit->pivot->quantite * $produit->prixproduit;
+        });
+    }
+
+    public function hasProduit($produitId)
+    {
+        return $this->produits->contains('idproduit', $produitId);
     }
 }

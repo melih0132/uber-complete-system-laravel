@@ -92,6 +92,24 @@ ul {
     background-color: #f0f0f0;
 }
 
+.header-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgb(0, 0, 0);
+    background: rgb(255, 255, 255);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 12px;
+    text-decoration: none;
+    transition: all 0.1s ease-in-out;
+    border-radius: 500px;
+    height: 36px;
+}
+
 /* Links and buttons */
 .a-login,
 .a-register {
@@ -100,6 +118,7 @@ ul {
     justify-content: center;
     font-size: 14px;
     font-weight: 600;
+    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
     border: none;
     outline: none;
     cursor: pointer;
@@ -115,7 +134,8 @@ ul {
     background: rgb(255, 255, 255);
 }
 
-.a-login:hover {
+.a-login:hover,
+.header-link:hover {
     background: rgb(247, 247, 247);
     text-decoration: none;
     color: rgb(0, 0, 0);
@@ -294,30 +314,27 @@ ul {
     }
 }
 
-/* COOKIES */
+/* COOKIES FEYZA */
 .cookie {
-    position: sticky;
-    width: 552px;
-    height: 340px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 4px 16px;
     border-radius: 12px;
     background-color: white;
-    color: black;
+    color: rgb(0, 0, 0);
     position: fixed;
-    bottom: 50px;
-    right: 50px;
+    right: 65rem;
+    bottom: 40px;
     transform: translate(20px, 20px);
-    padding: 20px;
+    padding: 10px;
     z-index: 1000;
+}
+
+.cookie.hidden {
+    opacity: 0;
 }
 
 .cookie a {
     color: rgb(0, 0, 0);
     font-weight: bold;
-}
-
-.cookie.hidden {
-    opacity: 0;
 }
 
 .cookie h1 {
@@ -327,43 +344,43 @@ ul {
 }
 
 .cookie p {
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 400;
     line-height: 20px;
     margin-top: 0px;
 }
 
 .cookie button {
-    font-size: 1rem;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 16px;
+    background: #000;
+    color: #fff;
     border-radius: 8px;
-    padding: 10px 12px;
-    color: black;
-    background-color: rgb(243, 243, 243);
+    padding: 0.5rem 1rem;
     border: none;
-    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .cookie button:hover {
-    background-color: rgb(230, 230, 230);
+    background: #282828;
+    color: #fff;
 }
 
 .cookie-settings-banner {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    transform: translate(20px, 20px);
-    width: 552px;
-    height: 340px;
-    background-color: white;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 4px 16px;
     border-radius: 12px;
-    padding: 20px;
-    z-index: 1001;
-    font-family: Arial, sans-serif;
-    color: black;
-    opacity: 1;
+    background-color: white;
+    color: rgb(0, 0, 0);
+    position: fixed;
+    bottom: 40px;
+    right: 1335px;
+    transform: translate(20px, 20px);
+    padding: 10px;
+    z-index: 1000;
+}
+
+.div-cookie-setings {
+    gap: 20px;
 }
 
 .cookie-settings-banner.show {
@@ -371,16 +388,15 @@ ul {
 }
 
 .cookie-settings-banner h1 {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 16px;
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 36px;
 }
 
 .cookie-settings-banner .options {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 16px;
 }
 
 .cookie-settings-banner label {
@@ -390,11 +406,24 @@ ul {
     cursor: pointer;
 }
 
+.cookie-settings-banner label .text {
+    color: rgb(0, 0, 0);
+    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
 .cookie-settings-banner input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: black;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
+    border: 3px solid rgb(94, 94, 94);
+}
+
+.cookie-settings-checkbox {
+    gap: 8px;
+    flex-basis: 40%;
 }
 
 .cookie-settings-banner .description {
@@ -404,27 +433,26 @@ ul {
     line-height: 1.5;
 }
 
-.cookie-settings-banner .buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
 .cookie-settings-banner button {
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
     font-size: 14px;
-    cursor: pointer;
+    font-weight: 600;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
 .cookie-settings-banner button:hover {
-    opacity: 0.9;
+    background: #282828;
+    color: #fff;
 }
 
-.cookie-settings-banner button:first-of-type {
-    background-color: rgb(243, 243, 243);
-    color: black;
+#cookie-settings-description {
+    font-size: 13px;
+    margin-bottom: 20px;
+    flex-basis: 60%;
 }
 
 .cookie-settings-banner button:nth-of-type(2) {

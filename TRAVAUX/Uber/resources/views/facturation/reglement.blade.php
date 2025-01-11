@@ -145,7 +145,7 @@
 
         <!-- Détails des Courses -->
         <div class="section">
-            <div class="section-title">Détails des Courses (10 premières)</div>
+            <div class="section-title">Détails des Courses</div>
             <table>
                 <thead>
                     <tr>

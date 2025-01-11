@@ -9,18 +9,39 @@ let calculatedDistance = null; // Variable globale pour la distance
 let startCoords = null;
 let endCoords = null;
 
+// Debounce timer for fetchSuggestions
+let debounceTimer;
+
+// Initialize the map and other functionalities on DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
   // Initialisation de la carte
   map = L.map("map").setView([45.8992, 6.1284], 13); // Центр карты (пример: Annecy)
-  L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
-        '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  ).addTo(map);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+    maxZoom: 19,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> ' +
+      '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+  }).addTo(map);
+
+  // Initialiser d'autres fonctionnalités après le chargement de la carte
+  populateTimeDropdown();
+  document.getElementById("customTimePicker").onclick = toggleTimeDropdown;
+
+  // Gestion des clics en dehors du dropdown pour le fermer
+  document.addEventListener("click", (event) => {
+    const dropdown = document.getElementById("customTimeDropdown");
+    const picker = document.getElementById("customTimePicker");
+    if (!dropdown.contains(event.target) && !picker.contains(event.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
+
+  // Charger les favoris
+  fetchFavorites();
+
+  // Mettre à jour le label de la date au chargement
+  updateDateLabel();
+
 });
 
 // Функция для установки маркера начальной точки
@@ -55,7 +76,7 @@ function setEndMarker(lat, lon, address) {
   endCoords = { lat, lon }; // Сохраняем координаты
 }
 
-// Fonction pour obtenir des suggestions d'adresses
+// Fonction pour obtenir des suggestions d'adresses avec debounce
 async function fetchSuggestions(inputElement, suggestionsListId) {
   const query = inputElement.value.trim();
   const suggestionsList = document.getElementById(suggestionsListId);
@@ -65,91 +86,98 @@ async function fetchSuggestions(inputElement, suggestionsListId) {
 
   if (query.length < 3) return; // Commencer la recherche seulement après avoir saisi 3 caractères
 
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&countrycodes=fr`;
-    const response = await axios.get(url);
-    const results = response.data;
+  // Debounce to limit API calls
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(async () => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        query
+      )}&format=json&addressdetails=1&countrycodes=fr`;
+      const response = await axios.get(url);
+      const results = response.data;
 
-    // Ajouter les suggestions à la liste
-    results.forEach((result) => {
-      const address = result.address;
+      // Ajouter les suggestions à la liste
+      results.forEach((result) => {
+        const address = result.address;
 
-      // Extraire les données pour un format correct
-      const houseNumber = address.house_number || ""; // Numéro de maison
-      const road = address.road || ""; // Rue
-      const cityDistrict = address.city_district || ""; // Quartier/Arrondissement
-      const suburb = address.suburb || ""; // Banlieue
-      const town = address.town || ""; // Ville (plus petite)
-      const village = address.village || ""; // Village
-      const city = address.city || ""; // Ville principale
-      const postcode = address.postcode || ""; // Code postal
+        // Extraire les données pour un format correct
+        const houseNumber = address.house_number || ""; // Numéro de maison
+        const road = address.road || ""; // Rue
+        const cityDistrict = address.city_district || ""; // Quartier/Arrondissement
+        const suburb = address.suburb || ""; // Banlieue
+        const town = address.town || ""; // Ville (plus petite)
+        const village = address.village || ""; // Village
+        const city = address.city || ""; // Ville principale
+        const postcode = address.postcode || ""; // Code postal
 
-      // Определить самый детализированный адрес
-      const detailedCity = cityDistrict || suburb || town || village || city;
+        // Определить самый детализированный адрес
+        const detailedCity = cityDistrict || suburb || town || village || city;
 
-      // Форматировать адрес
-      const formattedAddress = [
-        houseNumber, // Numéro de maison
-        road, // Rue
-        detailedCity, // Детализированное название населённого пункта
-        postcode, // Code postal
-      ]
-        .filter((part) => part) // Supprimer les parties vides
-        .join(", ");
+        // Форматировать адрес
+        const formattedAddress = [
+          houseNumber, // Numéro de maison
+          road, // Rue
+          detailedCity, // Детализированное название населённого пункта
+          postcode, // Code postal
+        ]
+          .filter((part) => part) // Supprimer les parties vides
+          .join(", ");
 
-      if (formattedAddress) {
-        const li = document.createElement("li");
-        li.textContent = formattedAddress;
-        li.classList.add("suggestion-item"); // Ajouter une classe pour le style
+        if (formattedAddress) {
+          const li = document.createElement("li");
+          li.textContent = formattedAddress;
+          li.classList.add("suggestion-item"); // Ajouter une classe pour le style
 
-        // Gestion de la sélection de l'adresse
-        li.addEventListener("click", () => {
-          inputElement.value = formattedAddress; // Insérer l'adresse sélectionnée dans le champ
-          suggestionsList.innerHTML = ""; // Effacer la liste des suggestions
+          // Gestion de la sélection de l'adresse
+          li.addEventListener("click", () => {
+            inputElement.value = formattedAddress; // Insérer l'adresse sélectionnée dans le champ
+            suggestionsList.innerHTML = ""; // Effacer la liste des suggestions
 
-          const lat = parseFloat(result.lat); // Latitude
-          const lon = parseFloat(result.lon); // Longitude
+            const lat = parseFloat(result.lat); // Latitude
+            const lon = parseFloat(result.lon); // Longitude
 
-          if (inputElement.id === "startAddress") {
-            setStartMarker(lat, lon, formattedAddress);
-          } else if (inputElement.id === "endAddress") {
-            setEndMarker(lat, lon, formattedAddress);
-          }
-        });
+            if (inputElement.id === "startAddress") {
+              setStartMarker(lat, lon, formattedAddress);
+            } else if (inputElement.id === "endAddress") {
+              setEndMarker(lat, lon, formattedAddress);
+            }
+          });
 
-        suggestionsList.appendChild(li);
-      }
-    });
-  } catch (error) {
-    console.error("Erreur lors de la récupération des adresses:", error);
-  }
+          suggestionsList.appendChild(li);
+        }
+      });
+    } catch (error) {
+      console.error("Erreur lors de la récupération des adresses:", error);
+    }
+  }, 300); // Adjust the debounce delay as needed
 }
 
 // Fonction principale pour calculer l'itinéraire
-// Fonction principale pour calculer l'itinéraire
-async function voirPrix() {
+async function voirPrix(event) {
+  event.preventDefault(); // Empêcher le rechargement de la page
+
   try {
     console.log("function voirPrix() started");
 
-    // Проверяем, существуют ли маркеры
+    // Vérifiez si les marqueurs existent
     if (!startMarker || !endMarker) {
       console.error("Start or end marker is missing.");
-
+      alert("Veuillez sélectionner les adresses de départ et d'arrivée.");
       return;
     }
 
     const startCoords = startMarker.getLatLng();
     const endCoords = endMarker.getLatLng();
 
-    // Проверяем наличие координат
+    // Vérifiez la validité des coordonnées
     if (!startCoords || !endCoords) {
       console.error("Coordinates for start or end marker are invalid.");
-
+      alert("Les coordonnées des adresses de départ ou d'arrivée sont invalides.");
       return;
     }
 
     const graphhopperApiKey = "a2404e3a-1aef-4546-a2e8-7477f836a79d";
-    const url = `https://graphhopper.com/api/1/route?point=${startCoords.lat},${startCoords.lng}&point=${endCoords.lat},${endCoords.lng}&vehicle=car&locale=fr&key=${graphhopperApiKey}`;
+    const url = `https://graphhopper.com/api/1/route?point=${startCoords.lat},${startCoords.lng}&point=${endCoords.lat},${endCoords.lng}&vehicle=car&locale=fr&key=${graphhopperApiKey}&points_encoded=true`;
 
     console.log("GraphHopper API URL:", url);
 
@@ -161,7 +189,7 @@ async function voirPrix() {
       response.data.paths.length === 0
     ) {
       console.error("Invalid response from GraphHopper API");
-
+      alert("Impossible de calculer l'itinéraire. Veuillez réessayer.");
       return;
     }
 
@@ -171,26 +199,28 @@ async function voirPrix() {
 
     console.log(`distance entre 2 points: ${calculatedDistance} km`);
 
-    // Удалить предыдущий маршрут, если он существует
+    // Afficher la distance dans l'interface utilisateur
+    document.getElementById("distanceResult").textContent = `Distance: ${calculatedDistance} km`;
+
+    // Supprimer le précédent itinéraire, s'il existe
     if (currentRouteLayer) {
       map.removeLayer(currentRouteLayer);
     }
 
-    // Декодировать полилинию и отобразить маршрут на карте
+    // Décoder la polyline et afficher l'itinéraire sur la carte
     const latLngs = path.points_encoded
-      ? decodePolyline(path.points) // Если полилиния закодирована
-      : path.points.coordinates.map(([lon, lat]) => [lat, lon]); // Если полилиния в GeoJSON
+      ? decodePolyline(path.points) // Si la polyline est encodée
+      : path.points.coordinates.map(([lon, lat]) => [lat, lon]); // Si la polyline est en GeoJSON
 
-    currentRouteLayer = L.polyline(latLngs, { color: "blue", weight: 4 }).addTo(
-      map,
-    );
+    currentRouteLayer = L.polyline(latLngs, { color: "blue", weight: 4 }).addTo(map);
     map.fitBounds(L.polyline(latLngs).getBounds());
   } catch (error) {
     console.error("Erreur lors du calcul de l'itinéraire:", error);
+    alert("Une erreur est survenue lors du calcul de l'itinéraire.");
   }
 }
 
-// Функция для декодирования полилинии
+// Fonction pour décoder une polyline encodée
 function decodePolyline(encoded) {
   let points = [];
   let index = 0,
@@ -225,6 +255,7 @@ function decodePolyline(encoded) {
   return points;
 }
 
+// Fonction pour mettre à jour le label de la date
 function updateDateLabel() {
   const dateInput = document.getElementById("tripDate");
   const dateLabel = document.getElementById("tripDateLabel");
@@ -242,22 +273,21 @@ function updateDateLabel() {
   }
 }
 
-// Assure que la fonction est appelée au chargement de la page
-document.addEventListener("DOMContentLoaded", function () {
-  updateDateLabel();
-});
-
+// Générer des intervalles de temps de 15 minutes
 function generateTimeIntervals() {
   const intervals = [];
   for (let hour = 0; hour < 24; hour++) {
     for (let minute = 0; minute < 60; minute += 15) {
-      const formattedTime = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+      const formattedTime = `${hour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")}`;
       intervals.push(formattedTime);
     }
   }
   return intervals;
 }
 
+// Remplir le dropdown de temps personnalisé
 function populateTimeDropdown() {
   const dropdown = document.getElementById("customTimeDropdown");
   const intervals = generateTimeIntervals();
@@ -273,6 +303,7 @@ function populateTimeDropdown() {
   });
 }
 
+// Sélectionner un temps et mettre à jour l'affichage
 function selectTime(time) {
   const timeInput = document.getElementById("tripTime");
   const timeLabel = document.getElementById("tripTimeLabel");
@@ -285,48 +316,116 @@ function selectTime(time) {
   dropdown.classList.remove("show");
 }
 
+// Basculer l'affichage du dropdown de temps personnalisé
 function toggleTimeDropdown() {
   const dropdown = document.getElementById("customTimeDropdown");
   dropdown.classList.toggle("show");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  populateTimeDropdown();
 
-  document.getElementById("customTimePicker").onclick = toggleTimeDropdown;
 
-  document.addEventListener("click", (event) => {
-    const dropdown = document.getElementById("customTimeDropdown");
-    const picker = document.getElementById("customTimePicker");
-    if (!dropdown.contains(event.target) && !picker.contains(event.target)) {
-      dropdown.classList.remove("show");
-    }
-  });
-});
+// Функция для загрузки фаворитов
+function fetchFavorites() {
+  axios
+    .get("/favorites-suggestions") // Запрос к серверу
+    .then((response) => {
+      const favorites = response.data;
 
-/* let details = document.querySelector("details");
-details.addEventListener("click", function() {
-    details.classList.toggle("visible");
-}) */
-document.addEventListener("DOMContentLoaded", () => {
-  const stars = document.querySelectorAll(".star-rating .fa");
-  const ratingInput = document.getElementById("rating");
-
-  stars.forEach((star) => {
-    star.addEventListener("click", () => {
-      const rating = star.getAttribute("data-value");
-      ratingInput.value = rating;
-
-      // Reset des étoiles
-      stars.forEach((s) => s.classList.remove("checked"));
-
-      // Ajouter une classe 'checked' jusqu'à l'étoile cliquée
-      star.classList.add("checked");
-      let previousStar = star.previousElementSibling;
-      while (previousStar) {
-        previousStar.classList.add("checked");
-        previousStar = previousStar.previousElementSibling;
+      if (!Array.isArray(favorites)) {
+        console.error("Данные фаворитов имеют некорректный формат:", favorites);
+        return;
       }
+
+      // Заполнение выпадающих списков для отправления и прибытия
+      populateFavoritesDropdown(favorites, "startFavoritesDropdown", "startAddress", "start");
+      populateFavoritesDropdown(favorites, "endFavoritesDropdown", "endAddress", "end");
+
+      // Логика pour gérer les dropdowns des favoris
+      toggleDropdown("startFavoritesToggle", "startFavoritesDropdown");
+      toggleDropdown("endFavoritesToggle", "endFavoritesDropdown");
+    })
+    .catch((error) => {
+      console.error("Ошибка при загрузке избранных мест:", error);
     });
+}
+
+// Функция для заполнения выпадающего списка фаворитов
+function populateFavoritesDropdown(favorites, dropdownId, inputId, type) {
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.innerHTML = ""; // Очистка списка
+
+    if (!favorites || favorites.length === 0) {
+      dropdown.innerHTML = `<li class="no-favorites">Нет избранных мест</li>`;
+      return;
+    }
+
+    favorites.forEach((favorite) => {
+      if (!favorite.nomlieu || !favorite.libelleadresse) {
+        console.warn("Некорректные данные для фаворита:", favorite);
+        return;
+      }
+
+      // Формирование текста: адрес, город
+      const city = favorite.adresse && favorite.adresse.ville ? favorite.adresse.ville.nomville : "Ville inconu";
+      const addressText = `${favorite.libelleadresse}, ${city}`;
+
+      console.log(favorite.libelleadresse);
+
+      const item = document.createElement("li");
+      item.textContent = `${favorite.nomlieu} - ${addressText}`;
+      item.classList.add("suggestion-item"); // Ajouter une classe pour le style
+
+      item.addEventListener("click", async () => {
+        document.getElementById(inputId).value = favorite.libelleadresse;
+        dropdown.classList.remove("show"); // Скрыть выпадающий список после выбора
+
+        try {
+          // Geocoding pour obtenir les coordonnées de l'adresse
+          const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+            favorite.libelleadresse
+          )}&format=json&addressdetails=1&limit=1&countrycodes=fr`;
+          const response = await axios.get(geocodeUrl);
+          const results = response.data;
+
+          if (results.length === 0) {
+            console.error("Aucune coordonnée trouvée pour l'adresse:", favorite.libelleadresse);
+            alert("Impossible de trouver l'emplacement sélectionné.");
+            return;
+          }
+
+          const result = results[0];
+          const lat = parseFloat(result.lat);
+          const lon = parseFloat(result.lon);
+
+          if (type === "start") {
+            setStartMarker(lat, lon, favorite.libelleadresse);
+          } else if (type === "end") {
+            setEndMarker(lat, lon, favorite.libelleadresse);
+          }
+        } catch (error) {
+          console.error("Erreur lors du géocodage de l'adresse favorite:", error);
+          alert("Une erreur est survenue lors de la localisation de l'adresse sélectionnée.");
+        }
+      });
+
+      dropdown.appendChild(item);
+    });
+  }
+
+// Fonction pour gérer l'affichage des dropdowns de favoris
+function toggleDropdown(buttonId, dropdownId) {
+  const button = document.getElementById(buttonId);
+  const dropdown = document.getElementById(dropdownId);
+
+  if (!button || !dropdown) {
+    console.error("Éléments non trouvés:", { buttonId, dropdownId });
+    return;
+  }
+
+  button.addEventListener("click", () => {
+    console.log(`Клик по кнопке ${buttonId}`); // Vérification
+    dropdown.classList.toggle("show"); // Ajouter ou supprimer la classe 'show'
   });
-});
+}
+
+

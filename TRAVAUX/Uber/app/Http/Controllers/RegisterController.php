@@ -8,10 +8,13 @@ use App\Models\Panier;
 use App\Models\PlanningReservation;
 
 use App\Models\Client;
+
 use App\Models\Coursier;
+use App\Models\Livreur;
 use App\Models\Entreprise;
 
 use App\Models\ResponsableEnseigne;
+use App\Models\Restaurateur;
 
 use App\Models\Adresse;
 use App\Models\Code_postal;
@@ -23,21 +26,56 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
+    public function registerCoursier($role)
+    {
+        if ($role === 'coursier') {
+            return redirect()->route('register.driver');
+        } elseif ($role === 'livreur') {
+            return redirect()->route('register.deliverer');
+        } else {
+            abort(404, 'Role not found');
+        }
+    }
+
     public function showDriverRegistrationForm()
     {
         return view('auth.register-driver');
     }
+
+    public function showDelivererRegistrationForm()
+    {
+        return view('auth.register-deliverer');
+    }
+
     public function showPassengerRegistrationForm()
     {
         return view('auth.register-passenger');
     }
+
     public function showEatsRegistrationForm()
     {
         return view('auth.register-eats');
     }
-    public function showManagerRegistrationForm()
+
+    public function registerManager($role)
     {
-        return view('auth.register-manager');
+        if ($role === 'restaurateur') {
+            return redirect()->route('register.restaurateur');
+        } elseif ($role === 'responsable') {
+            return redirect()->route('register.brandmanager');
+        } else {
+            abort(404, 'Role not found');
+        }
+    }
+
+    public function showBrandManagerRegistrationForm()
+    {
+        return view('auth.register-brandmanager');
+    }
+
+    public function showRestaurateurRegistrationForm()
+    {
+        return view('auth.register-restaurateur');
     }
 
     public function register(Request $request)
@@ -54,14 +92,16 @@ class RegisterController extends Controller
             if (
                 Client::where('emailuser', $request->emailuser)->exists() ||
                 Coursier::where('emailuser', $request->emailuser)->exists() ||
-                ResponsableEnseigne::where('emailuser', $request->emailuser)->exists()
+                Livreur::where('emailuser', $request->emailuser)->exists() ||
+                ResponsableEnseigne::where('emailuser', $request->emailuser)->exists() ||
+                Restaurateur::where('emailuser', $request->emailuser)->exists()
             ) {
                 $validator->errors()->add('emailuser', 'Cette adresse email est déjà utilisée.');
             }
         });
 
         if ($validator->fails()) {
-            return redirect()->back()->with('error', 'L\'adresse email est déjà utilisée.');
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $adresse = null;
@@ -83,9 +123,17 @@ class RegisterController extends Controller
                         $this->createCoursier($request, $adresse->idadresse);
                         $redirectRoute = 'login-driver';
                         break;
+                    case 'livreur':
+                        $this->createLivreur($request, $adresse->idadresse);
+                        $redirectRoute = 'login-driver';
+                        break;
                     case 'responsable':
                         $this->createResponsable($request);
                         $redirectRoute = 'login-manager';
+                        break;
+                    case 'restaurateur':
+                        $this->createRestaurateur($request);
+                        $redirectRoute = 'login-restaurateur';
                         break;
                     default:
                         throw new \Exception('Role invalide.');
@@ -106,38 +154,7 @@ class RegisterController extends Controller
 
     private function createClient(Request $request, $idadresse)
     {
-        $identreprise = $this->handleEntreprise($request, $idadresse);
-
-        /*         if (!empty($request->nomentreprise)) {
-            $entreprise = DB::table('entreprise')
-                ->where('nomentreprise', $request->nomentreprise)
-                ->orWhere('siretentreprise', $request->siretentreprise)
-                ->first();
-
-            if ($entreprise) {
-                $identreprise = $entreprise->identreprise;
-
-                if ($entreprise->idadresse !== $idadresse) {
-                    DB::table('entreprise')
-                        ->where('identreprise', $identreprise)
-                        ->update(['idadresse' => $idadresse]);
-                }
-
-                if ($entreprise->taille !== $request->taille) {
-                    DB::table('entreprise')
-                        ->where('identreprise', $identreprise)
-                        ->update(['taille' => $request->taille]);
-                }
-            } else {
-                $entreprise = Entreprise::create([
-                    'idadresse' => $idadresse,
-                    'siretentreprise' => $request->siretentreprise,
-                    'nomentreprise' => $request->nomentreprise,
-                    'taille' => $request->taille,
-                ]);
-                $identreprise = $entreprise->identreprise;
-            }
-        } */
+        $identreprise = $this->handleEntreprise($request);
 
         $client = Client::create([
             'identreprise' => $identreprise,
@@ -150,6 +167,7 @@ class RegisterController extends Controller
             'emailuser' => $request->emailuser,
             'motdepasseuser' => Hash::make($request->motdepasseuser),
             'souhaiterecevoirbonplan' => $request->souhaiterecevoirbonplan ?? false,
+            'typeclient' => $request->input('typeclient') ?? 'Uber',
         ]);
 
         Panier::create([
@@ -162,40 +180,29 @@ class RegisterController extends Controller
         ]);
     }
 
+    private function createLivreur(Request $request, $idadresse)
+    {
+        $identreprise = $this->handleEntreprise($request);
+
+        return Livreur::create([
+            'identreprise' => $identreprise,
+            'idadresse' => $idadresse,
+            'genreuser' => $request->genreuser,
+            'nomuser' => $request->nomuser,
+            'prenomuser' => $request->prenomuser,
+            'datenaissance' => $request->datenaissance,
+            'telephone' => $request->telephone,
+            'emailuser' => $request->emailuser,
+            'motdepasseuser' => Hash::make($request->motdepasseuser),
+            'iban' => $request->iban ?? null,
+            'datedebutactivite' => $request->datedebutactivite ?? null,
+            'notemoyenne' => null,
+        ]);
+    }
+
     private function createCoursier(Request $request, $idadresse)
     {
-        $identreprise = $this->handleEntreprise($request, $idadresse);
-
-        /*        if (!empty($request->nomentreprise)) {
-            $entreprise = DB::table('entreprise')
-                ->where('nomentreprise', $request->nomentreprise)
-                ->orWhere('siretentreprise', $request->siretentreprise)
-                ->first();
-
-            if ($entreprise) {
-                $identreprise = $entreprise->identreprise;
-
-                if ($entreprise->idadresse !== $adresse->idadresse) {
-                    DB::table('entreprise')
-                        ->where('identreprise', $identreprise)
-                        ->update(['idadresse' => $adresse->idadresse]);
-                }
-
-                if ($entreprise->taille !== $request->taille) {
-                    DB::table('entreprise')
-                        ->where('identreprise', $identreprise)
-                        ->update(['taille' => $request->taille]);
-                }
-            } else {
-                $entreprise = Entreprise::create([
-                    'idadresse' => $adresse->idadresse,
-                    'siretentreprise' => $request->siretentreprise,
-                    'nomentreprise' => $request->nomentreprise,
-                    'taille' => $request->taille,
-                ]);
-                $identreprise = $entreprise->identreprise;
-            }
-        } */
+        $identreprise = $this->handleEntreprise($request);
 
         $coursier = Coursier::create([
             'identreprise' => $identreprise,
@@ -228,11 +235,44 @@ class RegisterController extends Controller
         ]);
     }
 
-    private function handleEntreprise(Request $request, $idadresse)
+    private function createRestaurateur(Request $request)
+    {
+        Restaurateur::create([
+            'nomuser' => $request->nomuser,
+            'prenomuser' => $request->prenomuser,
+            'telephone' => $request->telephone,
+            'emailuser' => $request->emailuser,
+            'motdepasseuser' => Hash::make($request->motdepasseuser),
+            'role' => $request->role ?? 'Gérant',
+        ]);
+    }
+
+    private function handleEntreprise(Request $request)
     {
         $identreprise = null;
 
         if (!empty($request->nomentreprise)) {
+            $adresseEntreprise = null;
+
+            if (!empty($request->adresseEntreprise) && !empty($request->villeEntreprise) && !empty($request->codepostalEntreprise)) {
+                $codePostalEntreprise = Code_postal::firstOrCreate([
+                    'codepostal' => $request->codepostalEntreprise,
+                    'idpays' => 1 // Exemple pour le pays par défaut
+                ]);
+
+                $villeEntreprise = Ville::firstOrCreate([
+                    'nomville' => $request->villeEntreprise,
+                    'idcodepostal' => $codePostalEntreprise->idcodepostal,
+                    'idpays' => 1 // Exemple pour le pays par défaut
+                ]);
+
+                $adresseEntreprise = Adresse::firstOrCreate([
+                    'libelleadresse' => $request->adresseEntreprise,
+                    'idville' => $villeEntreprise->idville
+                ]);
+            }
+
+            // Recherche ou création de l'entreprise
             $entreprise = Entreprise::where('nomentreprise', $request->nomentreprise)
                 ->orWhere('siretentreprise', $request->siretentreprise)
                 ->first();
@@ -240,8 +280,9 @@ class RegisterController extends Controller
             if ($entreprise) {
                 $identreprise = $entreprise->identreprise;
 
-                if ($entreprise->idadresse !== $idadresse) {
-                    $entreprise->update(['idadresse' => $idadresse]);
+                // Mise à jour des informations si nécessaires
+                if ($adresseEntreprise && $entreprise->idadresse !== $adresseEntreprise->idadresse) {
+                    $entreprise->update(['idadresse' => $adresseEntreprise->idadresse]);
                 }
 
                 if ($entreprise->taille !== $request->taille) {
@@ -249,7 +290,7 @@ class RegisterController extends Controller
                 }
             } else {
                 $entreprise = Entreprise::create([
-                    'idadresse' => $idadresse,
+                    'idadresse' => $adresseEntreprise->idadresse ?? null,
                     'siretentreprise' => $request->siretentreprise,
                     'nomentreprise' => $request->nomentreprise,
                     'taille' => $request->taille,

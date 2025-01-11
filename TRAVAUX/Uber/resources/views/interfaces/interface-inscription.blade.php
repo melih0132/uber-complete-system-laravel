@@ -11,7 +11,7 @@
     <div class="container">
         <div class="row justify-content-between mt-5">
             <div class="col-12 col-sm-6 interface d-flex align-items-center">
-                <a href="{{ url('/register/driver') }}" class="text-decoration-none">
+                <a href="{{ url('/interface-inscription-coursier') }}"" class="text-decoration-none">
                     <div class="bloc-interface">
                         <h2>Inscrivez-vous pour conduire ou livrer</h2>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
@@ -41,7 +41,7 @@
                 </a>
             </div>
             <div class="col-12 col-sm-6 interface d-flex align-items-center">
-                <a href="{{ url('/register/manager') }}" class="text-decoration-none">
+                <a href="{{ url('/interface-inscription-manager') }}" class="text-decoration-none">
                     <div class="bloc-interface">
                         <h2>Créez un compte Manager</h2>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none">

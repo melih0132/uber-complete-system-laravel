@@ -17,16 +17,17 @@
             <img class="img-fluid my-2 " src="{{ asset('img/guide-ubereat/menuubereat.png') }}">
         </div>
         <h2 class="text-decoration-underline mt-5 mb-4">Page d'accueil</h2>
-        <p>Voici la page d'accueil, point de départ de votre commande</p>
+        <p>Voici la page d'accueil, point de départ de votre commande.</p>
         <img class="img-fluid my-4" src="{{ asset('img/guide-ubereat/accueilubereat.png') }}">
 
         <p class="pt-5">Ici vous allez pouvoir définir tous les paramètres de livraison
-        <br>C'est également ici que vous allez pouvoir ajouter votre restaurant</p>
+        <br>C'est également ici que vous allez pouvoir ajouter votre restaurant.</p>
         <img class="img-fluid my-5" src="{{ asset('img/guide-ubereat/accueilubereat2.png') }}">
         <hr/>
         <h2 class="text-decoration-underline mt-5 mb-4">Page Etablissement</h2>
+        <p>Sur cette page vous verrez tous les établissements disponibles et ouverts.</p>
         <img class="img-fluid my-5" src="{{ asset('img/guide-ubereat/etablissementfiltre.png') }}">
-        <p>Voici la page d'accueil, point de départ de votre commande</p>
+        <p>Choisissez l'établissement de votre choix, puis ajouter au panier les produits qui vous font envie.</p>
         <div class="row my-5">
             <div class="col-4 d-flex justify-content-center">
                 <img class="img-fluid" src="{{ asset('img/guide-ubereat/etablissementclic.png') }}">

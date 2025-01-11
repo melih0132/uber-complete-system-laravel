@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use GuzzleHttp\Client;
+use App\Models\Client as turcclient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use App\Models\LieuFavori;
 use App\Models\Reservation;
 use App\Models\Course;
+use App\Models\Coursier;
 use App\Models\Adresse;
+use App\Models\Ville;
 
 class CourseController extends Controller
 {
-    // j'ai pas touché
     public function index(Request $request)
     {
         $startAddress = $request->input('startAddress');
@@ -24,6 +27,12 @@ class CourseController extends Controller
         $baseTime = 5;
 
         $tripDate = Carbon::parse($tripDate)->format('Y-m-d');
+
+        $dateNow = Carbon::now('Europe/Paris')->format('d-m-Y');;
+        $now = Carbon::now('Europe/Paris')->format('H:i:sP');
+        $now = $this->roundToPreviousHalfHour($now);
+
+
 
         if (empty($tripTime)) {
             $tripTime = Carbon::now('Europe/Paris')->format('H:i:sP');
@@ -77,6 +86,11 @@ class CourseController extends Controller
             return $prestation;
         })->values();
 
+        session()->put('ville', $city);
+
+
+
+
         return view('course', [
             'prestations' => $calculatedPrestations,
             'endAddress' => $endAddress,
@@ -89,16 +103,27 @@ class CourseController extends Controller
             'city' => $city,
             'polyline' => $polyline,
             'startCoords' => $startCoords,
-            'endCoords' => $endCoords
+            'endCoords' => $endCoords,
+            'now' => $now,
+            'dateNow' => $dateNow
         ]);
+
+
+
     }
 
     public function showDetails(Request $request)
     {
+        $user = session('user');
+
+        $client = turcclient::where('idclient', $user['id'])->first();
+
+
         $course = $request->all();
 
         return view('courses.show-details', [
             'course' => $course,
+            'client' => $client
         ]);
     }
 
@@ -107,54 +132,45 @@ class CourseController extends Controller
     {
         $sessionUser = $request->session()->get('user');
         if (!$sessionUser || $sessionUser['role'] !== 'client') {
-            return redirect()->route('login')->withErrors(['Vous devez être connecté en tant que client pour commander une course.']);
+            return redirect()->route('login')->withErrors([
+                'Vous devez être connecté en tant que client pour commander une course.'
+            ]);
         }
 
-        $idclient = $sessionUser['id'];
+        $idreservation = session('idreservation');
 
-        $validatedData = $request->validate([
-            'course' => 'required|json',
-        ]);
+        $courseData = Course::where('idreservation',$idreservation)->first();
 
-        $course = json_decode($validatedData['course'], true);
 
-        if (!is_array($course) || empty($course['tripDate']) || empty($course['startAddress']) || empty($course['endAddress']) || empty($course['idprestation']) || empty($course['calculated_price']) || empty($course['distance']) || empty($course['adjusted_time']) || empty($course['tripTime'])) {
-            return response()->json(['error' => 'Données de course invalides ou incomplètes.'], 422);
+        $tripTimeNow = Carbon::now('Europe/Paris');
+        $tripTimeNow = Carbon::parse($tripTimeNow);
+        $tripTimeNow = $tripTimeNow->format('Y-m-d H:i');
+
+        $heurecourse = Carbon::createFromFormat('H:i:s', $courseData['heurecourse']);
+        $formattedTime = $heurecourse->format('H:i');
+
+
+
+        $tripDateTime = Carbon::createFromFormat('Y-m-d H:i', $courseData['datecourse'] . ' ' . $formattedTime);
+
+        $statut = DB::table('course')->where('idreservation', $idreservation)
+        ->select('statutcourse')
+        ->first();
+
+        if ($tripDateTime->greaterThan($tripTimeNow)) {
+            return view('courses.reservation-confirmed', [
+                'message' => 'Votre réservation de course a été enregistrée.',
+            ]);
         }
-
-        $tripDate = date('Y-m-d', strtotime($course['tripDate']));
-        $tripTimeNow = date('H:i:s');
-
-        $startAddress = Adresse::firstOrCreate(['libelleadresse' => $course['startAddress']]);
-        $endAddress = Adresse::firstOrCreate(['libelleadresse' => $course['endAddress']]);
-
-        $reservation = Reservation::create([
-            'idclient' => $idclient,
-            'idplanning' => $idclient,
-            'pourqui' => 'moi',
-            'datereservation' => now()->toDateString(),
-            'heurereservation' => $tripTimeNow,
-        ]);
-
-        $courseData = Course::create([
-            'idcoursier' => 1, // à faire passer au service course //
-            'idcb' => 1, // ceci est faux aussi donc
-            'idreservation' => $reservation->idreservation,
-            'idprestation' => $course['idprestation'],
-            'prixcourse' => $course['calculated_price'],
-            'distance' => $course['distance'],
-            'idadresse' => $startAddress->idadresse,
-            'adr_idadresse' => $endAddress->idadresse,
-            'temps' => $course['adjusted_time'],
-            'datecourse' => $tripDate,
-            'heurecourse' => $course['tripTime'],
-            'statutcourse' => 'En attente',
-        ]);
+        else{
 
         return view('courses.complete', [
             'course' => $courseData,
-            'idreservation' => $reservation->idreservation
+            'statutcourse' => $statut->statutcourse,
+            'idreservation' => $idreservation,
+            'message' => 'Votre course a été validée et commencera bientôt.'
         ]);
+    }
     }
 
     public function cancelCourse(Request $request)
@@ -163,7 +179,6 @@ class CourseController extends Controller
             'idreservation' => 'required|integer|exists:course,idreservation',
         ]);
 
-        // ish ish ish, ils manquent des trucs
         $courseUpdated = Course::where('idreservation', $validatedData['idreservation'])
             ->update(['statutcourse' => 'Annulée']);
 
@@ -180,115 +195,154 @@ class CourseController extends Controller
             'idreservation' => 'required|integer|exists:course,idreservation',
         ]);
 
-        // pour historique course il faut
+
         Course::where('idreservation', $validatedData['idreservation'])
             ->update(['statutcourse' => 'Terminée']);
 
-        // VOUS COMPTEZ LES AJOUTER DANS LA BASE LE POURBPORE...
+
         return view('courses.add-tip-and-rate', [
             'idreservation' => $validatedData['idreservation'],
         ]);
+
+
+    }
+
+    public function getFavorites(Request $request)
+    {
+        $user = $request->session()->get('user');
+
+        if (!$user || $user['role'] !== 'client') {
+            return response()->json([], 403); // Non autorisé
+        }
+
+        $favorites = DB::table('lieu_favori')
+            ->join('adresse', 'lieu_favori.idadresse', '=', 'adresse.idadresse')
+            ->select('lieu_favori.nomlieu', 'adresse.libelleadresse')
+            ->where('lieu_favori.idclient', $user['id'])
+            ->get();
+
+        return response()->json($favorites);
+    }
+
+    public function view(Request $request, $idreservation)
+    {
+        // Validation des champs
+        $validated = $request->validate([
+            'notecourse' => 'required|integer|min:1|max:5', // Note obligatoire entre 1 et 5
+            'pourboire' => 'nullable|numeric|min:0|max:80', // Pourboire optionnel entre 0 et 80
+        ]);
+
+        // Trouver la course associée à la réservation
+        $course = Course::where('idreservation', $idreservation)->firstOrFail();
+
+        // Mise à jour de la course
+        $course->notecourse = $validated['notecourse'];
+        $course->pourboire = $validated['pourboire'] ?? 0;
+        $course->save();
     }
 
 
 
 
+    public function searchDriver(Request $request)
+    {
 
+        $sessionUser = $request->session()->get('user');
+        if (!$sessionUser || $sessionUser['role'] !== 'client') {
+            return redirect()->route('login')->withErrors([
+                'Vous devez être connecté en tant que client pour commander une course.'
+            ]);
+        }
 
+        $city = session('ville');
 
 
 
+        $idclient = $sessionUser['id'];
 
+        $validatedData = $request->validate([
+            'course' => 'required|json',
+        ]);
 
+        $course = json_decode($validatedData['course'], true);
 
+        $requiredFields = ['tripDate', 'startAddress', 'endAddress', 'idprestation', 'calculated_price', 'distance', 'adjusted_time', 'tripTime'];
+        foreach ($requiredFields as $field) {
+            if (empty($course[$field])) {
+                return response()->json(['error' => "Le champ {$field} est requis et doit être valide."], 422);
+            }
+        }
 
+        $tripDate = date('Y-m-d', strtotime($course['tripDate']));
+        $tripTimeNow = Carbon::now('Europe/Paris');
 
+        $startVille = Ville::firstOrCreate([
+            'nomville' => $city,
+            'idpays' => 1
+        ]);
 
+        $startAddress = Adresse::firstOrCreate([
+            'libelleadresse' => $course['startAddress'],
+            'idville' => $startVille['idville'] ?? null,
+        ]);
 
 
 
 
 
+        $endAddress = Adresse::firstOrCreate([
+            'libelleadresse' => $course['endAddress'],
+            'idville' => $course['endCityId'] ?? null,
+        ]);
 
+        $reservation = Reservation::create([
+            'idclient' => $idclient,
+            'idplanning' => $idclient,
+            'pourqui' => 'moi',
+            'datereservation' => $tripTimeNow->toDateString(),
+            'heurereservation' => $tripTimeNow->addHour()->toTimeString(),
+        ]);
 
 
+        Course::create([
+            'idcoursier' => null,
+            'idcb' => 1,
+            'idreservation' => $reservation->idreservation,
+            'idprestation' => $course['idprestation'],
+            'prixcourse' => $course['calculated_price'],
+            'distance' => $course['distance'],
+            'idadresse' => $startAddress->idadresse,
+            'adr_idadresse' => $endAddress->idadresse,
+            'temps' => $course['adjusted_time'],
+            'datecourse' => $tripDate,
+            'heurecourse' => $course['tripTime'],
+            'statutcourse' => 'En attente',
+        ]);
 
 
 
 
 
 
+        session()->put('idreservation', $reservation->idreservation);
+        return redirect()->route('course.createCourse');
 
 
+    }
 
+    public function createCourse(){
 
+        $idreservation = session('idreservation');
 
+        $courseData = Course::where('idreservation',$idreservation)->first();
 
+        $coursier = Coursier::where('idcoursier', $courseData['idcoursier'])->first();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return view('courses.searchDriver', [
+            'course' => $courseData,
+            'idreservation' => $idreservation,
+            'coursier' => $coursier]);
+    }
 
     public function getJourSemaine($dateString)
     {

@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Course;
+use App\Models\Coursier;
 
-// use App\Models\Coursier;
+use App\Models\Commande;
+
 use App\Models\Entretien;
 use App\Models\Vehicule;
 
@@ -46,19 +48,15 @@ class CoursierController extends Controller
         switch ($entretien->status) {
             case 'En attente':
                 return view('entretien.en-attente', compact('entretien'));
-                break;
 
             case 'Planifié':
                 return view('entretien.planifie', compact('entretien'));
-                break;
 
             case 'Terminée':
                 return view('entretien.termine', compact('entretien'));
-                break;
 
             case 'Annulée':
                 return view('entretien.annule', compact('entretien'));
-                break;
 
             default:
                 return redirect()->route('myaccount')->with('error', 'Statut d\'entretien inconnu.');
@@ -106,12 +104,27 @@ class CoursierController extends Controller
     {
         $user = session('user');
 
-        if (!$user || !$this->isCoursierEligible($user['id'])) {
-            return redirect()->route('myaccount')->with('error', 'Accès refusé.');
+        if (!$user) {
+            return redirect()->route('login-coursier')->with('error', 'Vous devez être connecté pour accéder à cette section.');
+        }
+
+        $userRole = $user['role'] ?? null;
+
+        if ($userRole === 'coursier' && !$this->isCoursierEligible($user['id'])) {
+            return redirect()->route('myaccount')->with('error', 'Accès refusé : vous n\'êtes pas éligible.');
         }
 
         $routeName = $request->route()->getName();
         $isCoursesRoute = str_contains($routeName, 'courses');
+
+        $villeCoursier = DB::table('coursier as cou')
+            ->join('adresse as a', 'cou.idadresse', '=', 'a.idadresse')
+            ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
+            ->leftJoin('code_postal as cp', 'v.idcodepostal', '=', 'cp.idcodepostal')
+            ->where('cou.idcoursier', $user['id'])
+            ->select('v.nomville')
+            ->first();
+
 
         if ($isCoursesRoute) {
             $tasks = DB::table('course as co')
@@ -122,6 +135,7 @@ class CoursierController extends Controller
                 ->leftJoin('code_postal as cp', 'v.idcodepostal', '=', 'cp.idcodepostal')
                 ->join('adresse as a2', 'co.adr_idadresse', '=', 'a2.idadresse')
                 ->where('statutcourse', 'En attente')
+                ->where('v.nomville', $villeCoursier->nomville)
                 ->select(
                     'c.nomuser',
                     'c.prenomuser',
@@ -143,30 +157,29 @@ class CoursierController extends Controller
                 ->orderBy('idreservation')
                 ->get();
         } else {
-            $tasks = DB::table('commande as cm')
-                ->join('panier as p', 'p.idpanier', '=', 'cm.idpanier')
-                ->join('client as c', 'p.idclient', '=', 'c.idclient')
-                ->leftJoin('adresse as a', 'cm.idadresse', '=', 'a.idadresse')
-                ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
-                ->leftJoin('code_postal as cp', 'v.idcodepostal', '=', 'cp.idcodepostal')
-                ->leftJoin('adresse as a2', 'cm.adr_idadresse', '=', 'a2.idadresse')
-                ->where('statutcommande', 'En attente')
-                ->select(
-                    'c.nomuser',
-                    'c.prenomuser',
-                    'c.genreuser',
-                    'cm.idadresse',
-                    'a.libelleadresse as libelle_idadresse',
-                    'cm.adr_idadresse',
-                    'cm.idcommande',
-                    'a2.libelleadresse as libelle_adr_idadresse',
-                    'v.nomville',
-                    'cp.codepostal',
-                    'cm.prixcommande',
-                    'cm.statutcommande',
-                    'cm.tempscommande'
-                )
-                ->get();
+            $tasks = Commande::with([
+                'panier.client',
+                'adresseDestination.ville.codePostal',
+            ])
+                ->enAttente()
+                ->livraison()
+                ->orderBy('heurecreation', 'asc')
+                ->get()
+                ->map(function ($commande) {
+                    return [
+                        'idcommande' => $commande->idcommande,
+                        'client_nom' => $commande->panier->client->nomuser ?? null,
+                        'client_prenom' => $commande->panier->client->prenomuser ?? null,
+                        'client_genre' => $commande->panier->client->genreuser ?? null,
+                        'adresse_livraison' => $commande->adresseDestination->libelleadresse ?? null,
+                        'ville' => $commande->adresseDestination->ville->nomville ?? null,
+                        'code_postal' => $commande->adresseDestination->ville->codePostal->codepostal ?? null,
+                        'prixcommande' => $commande->prixcommande,
+                        'statutcommande' => $commande->statutcommande,
+                        'tempscommande' => $commande->tempscommande,
+                        'heurecommande' => $commande->heurecommande,
+                    ];
+                });
         }
 
         return view('conducteurs.course-en-attente', [
@@ -177,16 +190,19 @@ class CoursierController extends Controller
 
     public function acceptTask(Request $request, $idreservation)
     {
+
+
         $routeName = $request->route()->getName();
         $isCoursesRoute = str_contains($routeName, 'courses');
 
         DB::transaction(function () use ($idreservation, $isCoursesRoute) {
+            $user = session('user');
             if ($isCoursesRoute) {
                 DB::table('course')->where('idreservation', $idreservation)
-                    ->update(['idcoursier' => 1, 'statutcourse' => 'En cours']);
+                    ->update(['idcoursier' => $user['id'], 'statutcourse' => 'En cours']);
             } else {
                 DB::table('commande')->where('idcommande', $idreservation)
-                    ->update(['idcoursier' => 1, 'statutcommande' => 'En cours']);
+                    ->update(['idcoursier' => $user['id'], 'statutcommande' => 'En cours']);
             }
         });
 

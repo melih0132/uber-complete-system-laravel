@@ -88,7 +88,8 @@
         @foreach ($produits as $produit)
             <div class="product-card">
                 <div class="product-image">
-                    <img src="{{ $produit->imageproduit }}" alt="{{ $produit->nomproduit }}">
+                    <img src="{{ Str::startsWith($produit->imageproduit, 'http') ? $produit->imageproduit : asset('storage/' . $produit->imageproduit) }}"
+                        alt="{{ $produit->nomproduit }}" class="produit-img">
                 </div>
                 <div class="product-details">
                     <h5 class="product-name">{{ $produit->nomproduit }}</h5>

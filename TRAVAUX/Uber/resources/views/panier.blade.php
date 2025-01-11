@@ -35,7 +35,8 @@
                     <div class="cart-item" data-id="{{ $produit->idproduit }}">
                         <div class="item-info">
                             <div class="item-img">
-                                <img src="{{ $produit->imageproduit }}" alt="{{ $produit->nomproduit }}" />
+                                <img src="{{ Str::startsWith($produit->imageproduit, 'http') ? $produit->imageproduit : asset('storage/' . $produit->imageproduit) }}"
+                                    alt="{{ $produit->nomproduit }}" class="produit-img" />
                             </div>
                             <div class="item-name">{{ $produit->nomproduit }}</div>
                             <div class="item-price">
@@ -73,11 +74,11 @@
                         <div class="actions">
                             <form action="{{ route('panier.vider') }}" method="POST" class="clear-form">
                                 @csrf
-                                <button type="submit" class="btn btn-secondary">Vider le panier</button>
+                                <button type="submit" class="btn-panier">Vider le panier</button>
                             </form>
                             <form action="{{ route('commande.choixLivraison') }}" method="GET" class="order-form">
                                 @csrf
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn-panier">
                                     Passer la commande
                                 </button>
                             </form>

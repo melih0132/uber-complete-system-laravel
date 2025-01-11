@@ -7,14 +7,201 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use Stripe\Stripe;
+use Stripe\Checkout\Session  as StripeSession;
+
 use App\Models\Client;
 use App\Models\CarteBancaire;
+use App\Models\Facture;
+
+use App\Models\Etablissement;
+
 use App\Models\Panier;
 use App\Models\Produit;
 use App\Models\Commande;
 
+use App\Models\Adresse;
+use App\Models\Code_postal;
+use App\Models\Ville;
+
 class CommandeController extends Controller
 {
+    public function mesCommandes(Request $request)
+    {
+        $sessionUser = $request->session()->get('user');
+
+        if (!$sessionUser || !isset($sessionUser['id'])) {
+            return redirect()->route('login')->with('error', 'Vous devez être connecté pour voir vos commandes.');
+        }
+
+        $userId = $sessionUser['id'];
+        $client = Client::find($userId);
+
+        if (!$client) {
+            return redirect()->route('login')->with('error', 'Utilisateur introuvable.');
+        }
+
+        $commandes = Commande::parClient($userId)
+            ->orderBy('heurecreation', 'desc')
+            ->orderBy('idcommande', 'desc')
+            ->paginate(10);
+
+        return view('commande.mes-commandes', compact('commandes', 'client'));
+    }
+
+    public function informerRefus(Request $request, $idCommande)
+    {
+        $sessionUser = $request->session()->get('user');
+        $userId = $sessionUser['id'];
+
+        $commande = Commande::find($idCommande);
+
+        if (!$commande) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        }
+
+        if (!$commande->panier || $commande->panier->idclient != $userId) {
+            return redirect()->back()->with('error', 'Cette commande ne vous appartient pas.');
+        }
+
+        if ($commande->refus_demandee) {
+            return redirect()->back()->with('warning', 'Vous avez déjà demandé un refus pour cette commande.');
+        }
+
+        $commande->refus_demandee = true;
+        $commande->save();
+
+        return redirect()->route('commande.mesCommandes')->with('success', 'Votre souhait de refus a été envoyé au service commande.');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function index(Request $request)
+    {
+        $commandes = Commande::orderBy('statutcommande', 'desc')->paginate(10);
+        return view('commandes.index', compact('commandes'));
+    }
+
+    public function enregistrerRefus(Request $request, $idCommande)
+    {
+        $commande = Commande::find($idCommande);
+
+        if (!$commande) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        }
+
+        if (!$commande->refus_demandee) {
+            return redirect()->back()->with('warning', 'Aucune demande de refus pour cette commande.');
+        }
+
+        $commande->statutcommande = 'Refusée';
+        $commande->refus_demandee = false;
+        $commande->save();
+
+        return redirect()->route('commandes.index')->with('success', 'Le refus de la commande a été enregistré.');
+    }
+
+    public function rembourserCommande(Request $request, $idCommande)
+    {
+        $commande = Commande::find($idCommande);
+
+        if (!$commande) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        }
+
+        if ($commande->statutcommande !== 'Refusée') {
+            return redirect()->back()->with('error', 'La commande doit être refusée avant de procéder au remboursement.');
+        }
+
+        if ($commande->remboursement_effectue) {
+            return redirect()->back()->with('warning', 'Le remboursement a déjà été effectué.');
+        }
+
+        try {
+            // Simuler un remboursement réussi
+            $remboursementReussi = true; // Exemple fictif
+
+            if ($remboursementReussi) {
+                $commande->remboursement_effectue = true;
+                $commande->statutcommande = 'Remboursée';
+                $commande->save();
+
+                return redirect()->route('commandes.index')->with('success', 'Le remboursement a été effectué avec succès.');
+            } else {
+                throw new \Exception('Échec du remboursement.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Une erreur est survenue lors du remboursement. Veuillez réessayer.');
+        }
+    }
+
+    public function mettreAJourStatut(Request $request, $idCommande)
+    {
+        $request->validate([
+            'statutcommande' => 'required|string|in:En attente de paiement,Paiement validé,En cours,Livrée,Annulée,Refusée,Remboursée'
+        ]);
+
+        $commande = Commande::find($idCommande);
+
+        if (!$commande) {
+            return redirect()->back()->with('error', 'Commande introuvable.');
+        }
+
+        $commande->statutcommande = $request->input('statutcommande');
+        $commande->save();
+
+        return redirect()->route('commandes.index')->with('success', 'Le statut de la commande a été mis à jour avec succès.');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public function choisirModeLivraison(Request $request)
     {
         $sessionUser = $request->session()->get('user');
@@ -32,9 +219,20 @@ class CommandeController extends Controller
     {
         $validatedData = $request->validate([
             'modeLivraison' => 'required|in:livraison,retrait',
+            'adresse_livraison' => 'nullable|string|max:255',
+            'ville' => 'nullable|string|max:100',
+            'code_postal' => 'nullable|string|max:10',
         ]);
 
         Session::put('modeLivraison', $validatedData['modeLivraison']);
+
+        if ($validatedData['modeLivraison'] === 'livraison') {
+            Session::put('adresseLivraison', [
+                'adresse' => $validatedData['adresse_livraison'],
+                'ville' => $validatedData['ville'],
+                'code_postal' => $validatedData['code_postal'],
+            ]);
+        }
 
         return redirect()->route('commande.choisirCarteBancaire');
     }
@@ -68,30 +266,12 @@ class CommandeController extends Controller
         }
     }
 
-    public function paiementCarte(Request $request)
-    {
-        $validatedData = $request->validate([
-            'carte_id' => 'required|exists:carte_bancaire,idcb',
-        ]);
-
-        Session::put('carte_id', $validatedData['carte_id']);
-
-        if (!Session::has('modeLivraison')) {
-            return redirect()->route('commande.choixLivraison')->withErrors([
-                'message' => 'Veuillez sélectionner un mode de livraison.',
-            ]);
-        }
-
-        return redirect()->route('commande.enregistrer');
-    }
-
     public function enregistrerCommande(Request $request)
     {
         $sessionUser = $request->session()->get('user');
         $modeLivraison = Session::get('modeLivraison');
-        $carteId = Session::get('carte_id');
+        $adresseLivraison = Session::get('adresseLivraison');
 
-        // Vérifications initiales
         if (!$sessionUser) {
             return redirect()->route('login')->withErrors(['message' => 'Vous devez être connecté pour continuer.']);
         }
@@ -100,67 +280,160 @@ class CommandeController extends Controller
             return redirect()->route('commande.choixLivraison')->withErrors(['message' => 'Veuillez sélectionner un mode de livraison.']);
         }
 
-        if (!$carteId) {
-            return redirect()->route('commande.choisirCarteBancaire')->withErrors(['message' => 'Veuillez sélectionner une carte bancaire.']);
-        }
-
-        // Récupérer le client et son panier
         $client = Client::findOrFail($sessionUser['id']);
         $panier = Panier::where('idclient', $client->idclient)
             ->with('produits')
             ->first();
 
         if (!$panier || $panier->produits->isEmpty()) {
-            return redirect()->route('panier.index')->withErrors(['message' => 'Votre panier est vide. Veuillez ajouter des produits avant de continuer.']);
+            return redirect()->route('panier.index')->withErrors(['message' => 'Votre panier est vide.']);
         }
+
+        $estLivraison = $modeLivraison === 'livraison';
+        $fraisLivraison = $estLivraison ? 5.00 : 0;
 
         DB::beginTransaction();
 
         try {
-            $carte = CarteBancaire::findOrFail($carteId);
+            $produitsParEtablissement = $panier->produits->groupBy(fn($produit) => $produit->pivot->idetablissement);
 
-            // Calculer le prix total
-            $prixTotal = $panier->produits->reduce(function ($total, $produit) {
-                return $total + $produit->pivot->quantite * $produit->prixproduit;
-            }, 0);
+            $commandes = [];
+            foreach ($produitsParEtablissement as $idetablissement => $produits) {
+                $etablissement = Etablissement::findOrFail($idetablissement);
+                $adresseId = $estLivraison
+                    ? $this->getOrCreateAdresse($adresseLivraison)->idadresse
+                    : $etablissement->idadresse;
 
-            // Mettre à jour le panier avec le prix total
-            $panier->update(['prix' => $prixTotal]);
+                $idPays = $adresseLivraison
+                    ? Adresse::findOrFail($adresseId)->ville->idpays
+                    : $etablissement->adresse->ville->idpays;
 
-            // Créer la commande
-            $commande = Commande::create([
-                'idpanier' => $panier->idpanier,
-                'idadresse' => $client->idadresse,
-                'prixcommande' => $prixTotal,
-                'tempscommande' => 30,
-                'heurecommande' => now(),
-                'estlivraison' => $modeLivraison === 'livraison',
-                'statutcommande' => 'En attente',
-            ]);
+                $prixCommande = $produits->sum(function ($produit) {
+                    $quantite = $produit->pivot->quantite ?? 1;
+                    $prixProduit = $produit->prixproduit ?? 0;
+                    return $quantite * $prixProduit;
+                });
 
-            Session::forget(['modeLivraison', 'carte_id']);
+                if ($estLivraison) {
+                    $prixCommande += $fraisLivraison;
+                }
+
+                $commande = Commande::create([
+                    'idpanier' => $panier->idpanier,
+                    'idlivreur' => null,
+                    'idcb' => null,
+                    'idadresse' => $adresseId,
+                    'prixcommande' => $prixCommande,
+                    'tempscommande' => 30,
+                    'heurecreation' => now()->addHour(),
+                    'heurecommande' => now()->addMinutes(90),
+                    'estlivraison' => $estLivraison,
+                    'statutcommande' => 'En attente de paiement',
+                ]);
+
+                $commandes[] = $commande;
+            }
 
             DB::commit();
 
-            return redirect()->route('commande.confirmation', ['id' => $commande->idcommande]);
+            Session::put('commandes', $commandes);
+
+            return redirect()->route('commande.paiementCarte');
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->route('commande.choisirCarteBancaire')->withErrors([
-                'message' => 'Une erreur s\'est produite lors de la création de la commande. Veuillez réessayer.',
-            ]);
+            return response()->json([
+                'error' => true,
+                'message' => 'Une erreur est survenue lors de la création de la commande.',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
 
-    public function confirmation($id)
+    public function paiementCarte()
     {
-        $commande = Commande::with(['panier.produits', 'client', 'adresseDestination'])->findOrFail($id);
+        $commandes = Session::get('commandes');
+        if (!$commandes) {
+            return redirect()->route('panier.index')->withErrors(['message' => 'Aucune commande en attente de paiement.']);
+        }
 
-        return view('commande.confirmation', [
-            'commande' => $commande,
-            'produits' => $commande->panier->produits,
-            'adresse' => $commande->adresseDestination,
-            'client' => $commande->client,
+        $total = collect($commandes)->sum('prixcommande');
+
+        // Intégration Stripe
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $stripeSession = StripeSession::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => 'Commande UberEats',
+                        ],
+                        'unit_amount' => $total * 100,
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('commande.confirmation', ['id' => 'replace_with_actual_id']) . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('panier.index'),
+            ]);
+
+            return redirect($stripeSession->url);
+        } catch (\Exception $e) {
+            return back()->withErrors(['message' => 'Erreur Stripe : ' . $e->getMessage()]);
+        }
+    }
+
+    public function confirmation(Request $request)
+    {
+        $sessionId = $request->query('session_id');
+        if (!$sessionId) {
+            return redirect()->route('panier.index')->withErrors(['message' => 'Session Stripe invalide.']);
+        }
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $session = Session::retrieve($sessionId);
+
+            if ($session->payment_status === 'paid') {
+                $commandes = Session::get('commandes');
+
+                foreach ($commandes as $commande) {
+                    $commande->update([
+                        'idcb' => Session::get('carte_id'),
+                        'statutcommande' => 'Paiement validé',
+                    ]);
+                }
+
+                Session::forget('commandes');
+
+                return view('commande.confirmation', ['message' => 'Votre paiement a été effectué avec succès !']);
+            }
+
+            return redirect()->route('panier.index')->withErrors(['message' => 'Paiement non validé.']);
+        } catch (\Exception $e) {
+            return redirect()->route('panier.index')->withErrors(['message' => 'Erreur lors de la confirmation : ' . $e->getMessage()]);
+        }
+    }
+
+    private function getOrCreateAdresse(array $adresseLivraison)
+    {
+        $codePostal = Code_postal::firstOrCreate([
+            'codepostal' => $adresseLivraison['code_postal'],
+            'idpays' => 1,
+        ]);
+
+        $ville = Ville::firstOrCreate([
+            'nomville' => $adresseLivraison['ville'],
+            'idcodepostal' => $codePostal->idcodepostal,
+            'idpays' => 1,
+        ]);
+        return Adresse::firstOrCreate([
+            'libelleadresse' => $adresseLivraison['adresse'],
+            'idville' => $ville->idville,
         ]);
     }
 }

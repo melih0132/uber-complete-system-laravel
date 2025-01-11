@@ -38,12 +38,12 @@
                 <label for="role" class="form-label">Rôle</label>
                 <select name="role" id="role" required class="form-control">
                     <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir un rôle</option>
+                    <option value="rh" {{ old('role') === 'rh' ? 'selected' : '' }}>RH</option>
                     <option value="logistique" {{ old('role') === 'logistique' ? 'selected' : '' }}>Logistique</option>
                     <option value="facturation" {{ old('role') === 'facturation' ? 'selected' : '' }}>Facturation</option>
-                    <option value="administration" {{ old('role') === 'administration' ? 'selected' : '' }}>Administration</option>
                     <option value="course" {{ old('role') === 'course' ? 'selected' : '' }}>Course</option>
-                    <option value="rh" {{ old('role') === 'rh' ? 'selected' : '' }}>RH</option>
-                    <option value="support" {{ old('role') === 'support' ? 'selected' : '' }}>Support</option>
+                    <option value="commande" {{ old('role') === 'commande' ? 'selected' : '' }}>Commande</option>
+                    <option value="juridique" {{ old('role') === 'juridique' ? 'selected' : '' }}>Juridique</option>
                 </select>
                 @error('role')
                     <small class="text-danger">{{ $message }}</small>

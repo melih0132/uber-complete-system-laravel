@@ -16,11 +16,16 @@ class LieuFavori extends Model
     protected $fillable = [
         'idclient',
         'idadresse',
-        'nomlieu',
+        'nomlieu'
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'idclient');
+    }
 
     public function adresse()
     {
-        return $this->belongsTo(Adresse::class, 'idadresse', 'idadresse');
+        return $this->belongsTo(Adresse::class, 'idadresse');
     }
 }

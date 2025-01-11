@@ -36,7 +36,8 @@
                             <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
                             <p class="text-muted" style="font-size: 1.2rem;">Aucune carte bancaire ajoutée pour l’instant.
                             </p>
-                            <a href="{{ route('carte-bancaire.create') }}" class="btn-compte text-decoration-none px-4 py-2">
+                            <a href="{{ route('carte-bancaire.create') }}"
+                                class="btn-compte text-decoration-none px-4 py-2">
                                 <i class="fas fa-plus me-2"></i>Ajouter une carte bancaire
                             </a>
                         </div>
@@ -55,7 +56,8 @@
                                                 {{ \Carbon\Carbon::parse($carte->dateexpirecb)->format('m/Y') }}
                                             </p>
                                             <p class="card-text">
-                                                <span class="badge bg-light text-dark px-2 py-1" style="font-size: 0.85rem;">
+                                                <span class="badge bg-light text-dark px-2 py-1"
+                                                    style="font-size: 0.85rem;">
                                                     {{ ucfirst($carte->typecarte) }}
                                                 </span>
                                                 <span class="badge bg-dark text-white px-2 py-1"
@@ -63,6 +65,15 @@
                                                     {{ ucfirst($carte->typereseaux) }}
                                                 </span>
                                             </p>
+                                            <form action="{{ route('carte-bancaire.destroy', $carte->id ?? $carte->idcb) }}"
+                                                method="POST" class="sup-item"
+                                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette carte ?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn sup-icon" title="Supprimer cette carte">
+                                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -70,14 +81,12 @@
                         </div>
 
                         <div class="text-center mt-5">
-                            <a href="{{ route('carte-bancaire.create') }}" class="btn-compte text-decoration-none px-4 py-2">Ajouter une carte
-                                bancaire
-                            </a>
+                            <a href="{{ route('carte-bancaire.create') }}"
+                                class="btn-compte text-decoration-none px-4 py-2">Ajouter une carte bancaire</a>
                         </div>
                     @endif
                 </div>
             </div>
         </div>
-    </div>
     </div>
 @endsection

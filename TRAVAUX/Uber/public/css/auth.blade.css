@@ -182,3 +182,30 @@ textarea {
 .link-login:hover {
     text-decoration: underline;
 }
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: #333;
+}
+
+.checkbox-input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #9a9a9a;
+}
+
+.checkbox-label {
+    margin-right: 1.5rem;
+    align-items: center;
+    user-select: none;
+}

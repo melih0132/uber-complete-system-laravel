@@ -25,7 +25,32 @@ class Client extends Model
         'motdepasseuser',
         'photoprofile',
         'souhaiterecevoirbonplan',
+        'mfa_activee',
+        'typeclient',
     ];
+
+    protected $casts = [
+        'mfa_activee' => 'boolean',
+    ];
+
+    public function otps()
+    {
+        return $this->hasMany(Otp::class, 'idclient', 'idclient');
+    }
+
+    public function hasMfaEnabled()
+    {
+        return $this->mfa_activee;
+    }
+
+    public function routeNotificationForMail()
+    {
+        return $this->emailuser;
+    }
+
+
+
+
 
     public function entreprise()
     {
@@ -52,10 +77,23 @@ class Client extends Model
         return $this->hasManyThrough(
             Course::class,
             Reservation::class,
-            'idclient',        // Foreign key on Reservation table...
-            'idreservation',   // Foreign key on Course table...
-            'idclient',        // Local key on Client table...
-            'idreservation'    // Local key on Reservation table...
+            'idclient',
+            'idreservation',
+            'idclient',
+            'idreservation'
         );
+    }
+
+
+
+
+    public function isUberClient()
+    {
+        return $this->typeclient === 'Uber';
+    }
+
+    public function isUberEatsClient()
+    {
+        return $this->typeclient === 'Uber Eats';
     }
 }

@@ -25,6 +25,16 @@ class Entreprise extends Model
         return $this->hasMany(Client::class, 'identreprise');
     }
 
+    public function coursiers()
+    {
+        return $this->hasMany(Coursier::class, 'identreprise');
+    }
+
+    public function livreurs()
+    {
+        return $this->hasMany(Livreur::class, 'identreprise');
+    }
+
     public function adresse()
     {
         return $this->belongsTo(Adresse::class, 'idadresse');

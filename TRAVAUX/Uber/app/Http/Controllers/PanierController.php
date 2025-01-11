@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 use App\Models\Client;
 use App\Models\Panier;
@@ -18,17 +17,14 @@ class PanierController extends Controller
         $userSession = $request->session()->get('user');
 
         if ($userSession && $userSession['role'] === 'client') {
-            // Récupérer le client connecté
+
             $client = Client::find($userSession['id']);
 
             if (!$client) {
                 return redirect()->route('login')->withErrors(['Client introuvable. Veuillez vous reconnecter.']);
             }
 
-            // Charger ou créer un panier pour le client
             $panierDb = Panier::firstOrCreate(['idclient' => $client->idclient]);
-
-            // Charger les produits du panier
             $produits = $panierDb->produits;
 
             return view('panier', [
@@ -37,7 +33,6 @@ class PanierController extends Controller
             ]);
         }
 
-        // Pour les utilisateurs non connectés, utiliser la session
         $panier = Session::get('panier', []);
         $idProduits = array_filter(array_keys($panier), 'is_numeric');
 
@@ -71,34 +66,39 @@ class PanierController extends Controller
             $client = Client::find($userSession['id']);
             $panierDb = Panier::firstOrCreate(['idclient' => $client->idclient]);
 
-            // Vérifier si le produit existe dans la table pivot
+            $idetablissement = DB::table('est_situe_a_2')
+                ->where('idproduit', $produit->idproduit)
+                ->value('idetablissement');
+
+            if (!$idetablissement) {
+                return redirect()->back()->withErrors(['error' => 'Le produit n\'est pas associé à un établissement.']);
+            }
+
             $exists = DB::table('contient_2')
                 ->where('idpanier', $panierDb->idpanier)
                 ->where('idproduit', $idProduit)
+                ->where('idetablissement', $idetablissement)
                 ->exists();
 
             if ($exists) {
-                // Incrémenter la quantité
                 DB::table('contient_2')
                     ->where('idpanier', $panierDb->idpanier)
                     ->where('idproduit', $idProduit)
+                    ->where('idetablissement', $idetablissement)
                     ->increment('quantite', $quantite);
             } else {
-                // Ajouter le produit avec la quantité initiale
                 DB::table('contient_2')->insert([
                     'idpanier' => $panierDb->idpanier,
                     'idproduit' => $idProduit,
+                    'idetablissement' => $idetablissement,
                     'quantite' => $quantite,
                 ]);
             }
 
-            $produits = DB::table('contient_2')
+            $montantTotal = DB::table('contient_2')
                 ->join('produit', 'contient_2.idproduit', '=', 'produit.idproduit')
                 ->where('contient_2.idpanier', $panierDb->idpanier)
-                ->select(DB::raw('SUM(produit.prixproduit * contient_2.quantite) as total'))
-                ->first();
-
-            $montantTotal = $produits->total ?? 0;
+                ->sum(DB::raw('produit.prixproduit * contient_2.quantite'));
 
             $panierDb->update(['prix' => $montantTotal]);
 
@@ -119,6 +119,11 @@ class PanierController extends Controller
         ]);
 
         $quantite = $request->input('quantite');
+
+        if ($quantite > 99) {
+            return redirect()->route('panier.index')->with('error', 'Pas assez de stock.');
+        }
+
         $userSession = $request->session()->get('user');
 
         if ($userSession && $userSession['role'] === 'client') {
@@ -168,23 +173,20 @@ class PanierController extends Controller
         return redirect()->route('panier.index')->with('success', 'Produit supprimé du panier avec succès!');
     }
 
-    public function viderPanier(Request $request)
+    public function viderPanier()
     {
-        $userSession = $request->session()->get('user');
-
-        if ($userSession && $userSession['role'] === 'client') {
-            // Client connecté : suppression du panier en base de données
-            $client = Client::find($userSession['id']);
-            $panierDb = Panier::firstOrCreate(['idclient' => $client->idclient]);
-
-            $panierDb->produits()->detach();
-
-            return redirect()->route('panier.index')->with('success', 'Le panier a été vidé!');
+        $sessionUser = session('user');
+        if (!$sessionUser) {
+            return redirect()->route('login')->withErrors(['message' => 'Vous devez être connecté pour continuer.']);
         }
 
-        // Utilisateur non connecté : suppression en session
-        Session::forget('panier');
+        $panier = Panier::where('idclient', $sessionUser['id'])->first();
+        if ($panier) {
+            DB::table('contient_2')
+                ->where('idpanier', $panier->idpanier)
+                ->delete();
+        }
 
-        return redirect()->route('panier.index')->with('success', 'Le panier a été vidé!');
+        return redirect()->route('panier.index')->with('success', 'Votre panier a été vidé.');
     }
 }

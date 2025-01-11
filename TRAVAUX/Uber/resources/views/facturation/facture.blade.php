@@ -119,7 +119,7 @@
         </div>
         <div class="info-row">
             <span><strong>{{ __('invoice.course_date') }}:</strong>
-                {{ \Carbon\Carbon::parse($datecourse)->format('d-m-Y') }}</span>
+                {{ $datecourse }}</span>
         </div>
         <div class="info-row">
             <span><strong>{{ __('invoice.course_time') }}:</strong>

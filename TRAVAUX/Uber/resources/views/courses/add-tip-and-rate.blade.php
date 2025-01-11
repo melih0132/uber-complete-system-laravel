@@ -4,6 +4,7 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/note-pourboire.blade.css') }}">
+
 @endsection
 
 @section('content')
@@ -15,8 +16,8 @@
             <h2 class="text-center mt-3">Merci d'avoir utilisé Uber !</h2>
 
             <div class="d-flex justify-content-center pt-3">
-                <form action="{{ route('invoice.view', ['idreservation' => $idreservation]) }}" method="POST"
-                    class="mx-3">
+                <form action="{{ route('invoice.view', ['idreservation' => $idreservation]) }}" target="_blank"
+                    method="POST" class="mx-3">
                     @csrf
                     <div class="rating-system mb-4">
                         <label for="note" class="form-label">Note de la course :</label>
@@ -27,7 +28,7 @@
                             <i class="fa fa-star" data-value="4"></i>
                             <i class="fa fa-star" data-value="5"></i>
                         </div>
-                        <input type="hidden" id="rating" name="notecourse" value="0">
+                        <input type='hidden' id="rating" name="notecourse" value="">
                     </div>
 
                     <div class="mb-4">
@@ -62,4 +63,20 @@
             </div>
         </div>
     </section>
+    <script>
+        document.querySelectorAll('.star-rating i').forEach(star => {
+    star.addEventListener('click', function () {
+        const rating = this.getAttribute('data-value');
+        document.getElementById('rating').value = rating;
+
+
+        document.querySelectorAll('.star-rating i').forEach(s => {
+            s.classList.remove('selected');
+            if (s.getAttribute('data-value') <= rating) {
+                s.classList.add('selected');
+            }
+        });
+    });
+});
+    </script>
 @endsection

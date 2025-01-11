@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class CategorieProduit extends Model
 {
     use HasFactory;
+
     protected $table = "categorie_produit";
-    protected $primaryKey = "idcategorieproduit";
+    protected $primaryKey = "idcategorie";
     public $timestamps = false;
+
+    protected $fillable = [
+        'nomcategorie',
+    ];
+
+    public function produits()
+    {
+        return $this->belongsToMany(Produit::class, 'a_3', 'idcategorie', 'idproduit');
+    }
 }

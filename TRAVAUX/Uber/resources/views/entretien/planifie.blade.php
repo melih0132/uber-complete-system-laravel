@@ -12,7 +12,7 @@
             <h1 class="text-center mb-4">Entretien Planifié</h1>
 
             <p class="p-coursier text-center">Votre entretien est planifié avec succès.</p>
-            <p class="p-coursier">Voici les détails de l'entretien :</p>
+            <p class="p-coursier text-center">Voici les détails de l'entretien :</p>
 
             <strong>Date du rendez-vous :</strong> {{ $entretien->dateentretien->format('d/m/Y H:i') }}<br>
             <strong>Lieu :</strong> À confirmer par le responsable RH.
@@ -28,7 +28,7 @@
                     @csrf
                     <button type="submit" class="btn-entretien">Annuler le rendez-vous</button>
                 </form>
-                <a href="{{ route('myaccount') }}" class="btn-entretien text-decoration-none mx-2">Retour à mon compte</a>
+                {{-- <a href="{{ route('myaccount') }}" class="btn-entretien text-decoration-none mx-2">Retour à mon compte</a> --}}
             </div>
 
 

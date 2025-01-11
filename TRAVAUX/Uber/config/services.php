@@ -31,6 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'free_mobile' => [
+        'user' => env('FREE_MOBILE_USER', '54633456'),
+        'api_key' => env('FREE_MOBILE_API_KEY', 'yjm5vZ52AAGXN7'),
+    ],
 ];
-
-

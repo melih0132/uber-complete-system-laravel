@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Ajouter une bannière')
+
 @section('content')
     <div class="container">
         <h1>Ajouter une bannière pour {{ $etablissement->nometablissement }}</h1>
@@ -23,7 +25,7 @@
                 <input type="file" name="banner_image" id="banner_image" class="form-control" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Ajouter la bannière</button>
+            <button type="submit" class="btn btn-primary">Ajouter l'établissement</button>
         </form>
     </div>
 @endsection

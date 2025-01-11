@@ -4,6 +4,10 @@
     padding: 20px;
 }
 
+label {
+    margin-top: 0.5rem;
+}
+
 .cart {
     background: white;
     border-radius: 16px;
@@ -27,17 +31,20 @@
 .item-img {
     flex: 0 0 80px;
     height: 80px;
-    margin-right: 16px;
+    margin-inline-end: 16px;
     border-radius: 8px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 10rem;
+    max-height: 10rem;
 }
 
 .item-img img {
-    max-width: 100%;
-    max-height: 100%;
-    margin-left: 0.5rem;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    display: block;
 }
 
 .item-name {
@@ -102,14 +109,15 @@
 }
 
 .delete-btn:hover {
-    background-color: #fee2e2;
+    background-color: rgb(247, 247, 247);
+    ;
 }
 
 .delete-btn svg {
     width: 20px;
     height: 20px;
     fill: none;
-    stroke: #ef4444;
+    stroke: rgb(0, 0, 0);
     stroke-width: 2;
 }
 
@@ -140,33 +148,20 @@
     gap: 16px;
 }
 
-.btn {
-    padding: 12px 24px;
-    border-radius: 12px;
-    border: none;
+.btn-panier {
     font-size: 14px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border: none;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary {
-    background: black;
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #333;
-}
-
-.btn-secondary {
-    background: #e5e5e5;
-    color: #666;
-}
-
-.btn-secondary:hover {
-    background: #d4d4d4;
+.btn-panier:hover {
+    background: #282828;
+    color: #fff;
 }
 
 .empty-cart {
@@ -346,4 +341,20 @@
     margin-bottom: 15px;
     border-radius: 5px;
     font-size: 0.9rem;
+}
+
+.form-inline {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+}
+
+.form-inline .form-group {
+    flex: 0.5;
+}
+
+
+.new-card-form {
+    display: block;
 }

@@ -26,23 +26,83 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 
 <body>
     <nav data-baseweb="header-navigation" role="navigation" class="nav-uber">
         <div class="d-flex align-items-center w-100 justify-content-between">
-            <!-- Logo Section -->
-            <ul class="px-4">
-                <li>
-                    <a data-baseweb="link" href="{{ url('./UberEats') }}" target="_self" class="header-links">
-                        <img src="/img/UberEats.png" alt="Uber Eats Logo" class="logo-image">
-                    </a>
-                </li>
-            </ul>
+            @php
+                $user = session('user');
+            @endphp
+            <div class="d-flex align-items-center w-100">
+                <!-- Logo Section -->
+                <ul class="px-4">
+                    <li>
+                        <a data-baseweb="link" href="{{ url('/UberEats') }}" target="_self" class="header-links">
+                            <img src="/img/UberEats.png" alt="Uber Eats Logo" class="logo-image">
+                        </a>
+                    </li>
+                </ul>
+                <ul class="ul-links">
+
+                    @if ($user && $user['role'] === 'livreur')
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Accéder aux courses"
+                                href="{{ route('coursier.livraisons.index') }}" target="_self"
+                                class="header-link">Livraisons
+                                en
+                                attente</a>
+                        </li>
+                    @endif
+
+                    @if ($user && $user['role'] === 'restaurateur')
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Ajouter un établissement"
+                                href="{{ route('etablissement.create') }}" target="_self" class="header-link">Ajouter
+                                Établissement</a>
+                        </li>
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Ajouter un produit"
+                                href="{{ route('manager.produits.create') }}" target="_self" class="header-link">Ajouter
+                                Produit</a>
+                        </li>
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Voir tous les produits"
+                                href="{{ route('manager.produits.index') }}" target="_self" class="header-link">Liste
+                                des
+                                Produits</a>
+                        </li>
+                    @endif
+
+                    @if ($user && $user['role'] === 'responsable')
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Commandes à livrer dans la prochaine heure"
+                                href="{{ route('responsable.commandes') }}" target="_self"
+                                class="header-link">Commandes
+                                Urgentes</a>
+                        </li>
+                    @endif
+
+                    @if ($user && $user['role'] === 'commande')
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Voir les courses demandées"
+                                href="{{ route('commandes.index') }}" target="_self" class="header-link">Commandes
+                                Refusées</a>
+                        </li>
+                    @endif
+
+                    @if (!$user || ($user['role'] === 'client' && $user['typeclient'] === 'Uber Eats'))
+                        <li class="pr-1">
+                            <a href="{{ route('commande.mesCommandes') }}" class="header-link">Mes Commandes</a>
+                        </li>
+                    @endif
+                </ul>
+            </div>
             <!-- Navigation Links -->
             <ul class="ul-links">
-                <div class="d-flex justify-content-center align-items-center">
+                <div class="d-flex justify-content-start align-items-center">
                     <!-- Panier -->
                     <li class="mx-3">
                         <a href="{{ url('/panier') }}" aria-label="Panier">
@@ -50,20 +110,17 @@
                         </a>
                     </li>
                     <!-- Help -->
-                    <li class="li-links mx-2">
+                    <li class="li-links header-links mx-2">
                         <a class="a-login" href="{{ url('/UberEats/guide') }}">Aide</a>
                     </li>
                     <!-- Authentication Links -->
-                    @php
-                        $user = session('user');
-                    @endphp
                     @if ($user)
                         <!-- Mon Compte -->
-                        <li class="li-links mx-2">
+                        <li class="li-links header-links mx-2">
                             <a class="a-login" href="{{ url('/myaccount') }}">Mon Compte</a>
                         </li>
                         <!-- Logout -->
-                        <li class="css-fyrSIO mx-2">
+                        <li class="css-fyrSIO header-links mx-2">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button class="a-register" type="submit">Se déconnecter</button>
@@ -71,11 +128,11 @@
                         </li>
                     @else
                         <!-- Connexion -->
-                        <li class="li-links mx-2">
+                        <li class="li-links header-links mx-2">
                             <a class="a-login" href="{{ url('/interface-connexion') }}">Connexion</a>
                         </li>
                         <!-- Inscription -->
-                        <li class="css-fyrSIO mx-2">
+                        <li class="css-fyrSIO header-links mx-2">
                             <a class="a-register" href="{{ url('/interface-inscription') }}">Inscription</a>
                         </li>
                     @endif
@@ -88,9 +145,9 @@
         @yield('content')
     </div>
 
-    <footer class="footer-container">
+    <footer class="footer-container mt-5">
         <div class="footer-links">
-            <a href="{{ url('/Cookies') }}">Politique de Confidentialité</a>
+            <a href="{{ route('juridique.index') }}">Politique de Confidentialité</a>
         </div>
         <div class="footer-info">
             <p>&copy; {{ date('Y') }} Uber Eats. Tous droits réservés.</p>

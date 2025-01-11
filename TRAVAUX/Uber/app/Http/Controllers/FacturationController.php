@@ -7,6 +7,7 @@ use App\Models\Coursier;
 use App\Models\Course;
 use App\Models\Entretien;
 use App\Models\Vehicule;
+use App\Models\Facture;
 use Mpdf\Mpdf as PDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -123,15 +124,17 @@ class FacturationController extends Controller
             ->header('Content-Type', 'application/pdf');
     }
 
-    // je l'ai mis là AMIR BEKHOCUJEMNZNQC
+
     public function generateInvoiceCourse(Request $request, $idreservation)
     {
         $validated = $request->validate([
             'pourboire' => 'nullable|numeric|min:0|max:80',
+            'notecourse' =>'nullable|numeric|min:0|max:5'
         ]);
 
         // ceci fonctionne mais dès qu'on l'enlève, elle ne marche plus
         $pourboire = $validated['pourboire'] ?? 0;
+        $note = $validated['notecourse'] ?? null;
 
         $locale = $request->input('locale', 'fr');
         app()->setLocale($locale);
@@ -157,7 +160,10 @@ class FacturationController extends Controller
                 'tp.libelleprestation',
                 'r.datereservation',
                 'r.heurereservation',
-                'cl.*'
+                'cl.*',
+                'cou.idcoursier',
+                'cou.notemoyenne'
+
             )
             ->where('c.idreservation', $idreservation)
             ->first();
@@ -178,24 +184,55 @@ class FacturationController extends Controller
         $duree_course = Carbon::parse($course->temps)->format('H:i:s');
 
         $data = [
+            'idclient' => $course->idclient,
+            'idcoursier' => $course->idcoursier,
             'company_name' => "Uber",
             'idcourse' => $course->idcourse,
             'chauffeur' => $course->chauffeur,
             'startAddress' => $course->startAddress,
             'endAddress' => $course->endAddress,
             'prixcourse' => $course->prixcourse,
-            'pourboire' => $course->pourboire,
             'datecourse' => $datecourse,
             'duree_course' => $duree_course,
             'pourboire' => $pourboire,
             'datereservation' => $course->datereservation,
             'heurereservation' => $course->heurereservation,
-            'datecourse' => $course->datecourse,
             'heurecourse' => $course->heurecourse,
             'libelleprestation' => $course->libelleprestation,
             'pourcentagetva' => $TVA->pourcentagetva,
             'monnaie' => '€'
         ];
+
+
+
+        if ($note != null) {
+            DB::table('coursier')->where('idcoursier',$data['idcoursier'] )
+            ->update( ['notemoyenne' => ($note+ $course->notemoyenne)/2]);
+
+
+            DB::table('course')->where('idreservation',$idreservation )
+            ->update( ['notecourse' => $note]);
+        }
+
+
+        if ($pourboire != 0){
+            DB::table('course')->where('idreservation',$idreservation )
+            ->update( ['pourboire' => $data['pourboire']]);
+
+        }
+
+        $datefacture = Carbon::now('Europe/Paris');
+
+
+            Facture::updateOrCreate([
+                'idreservation' => $idreservation,
+                'idpays' => 1,
+                'idclient' => $data['idclient'] ,
+                'datefacture' => $datefacture,
+                'montantreglement' => $data['prixcourse'] * 20 / 100 + $data['prixcourse'] + $pourboire
+            ]);
+
+
 
         $html = view('facturation.facture', $data)->render();
 

@@ -16,6 +16,7 @@ class Commande extends Model
     protected $fillable = [
         'idpanier',
         'idcoursier',
+        'idcb',
         'idadresse',
         'prixcommande',
         'tempscommande',
@@ -29,20 +30,35 @@ class Commande extends Model
         return $this->belongsTo(Panier::class, 'idpanier');
     }
 
-    public function client()
-    {
-        return $this->belongsTo(Client::class, 'idclient', 'idclient');
-    }
-
     public function adresseDestination()
     {
         return $this->belongsTo(Adresse::class, 'idadresse');
     }
 
-    public function coursier()
+    public function livreur()
     {
-        return $this->belongsTo(Coursier::class, 'idcoursier');
+        return $this->belongsTo(Livreur::class, 'idlivreur');
     }
+
+    public function carteBancaire()
+    {
+        return $this->belongsTo(CarteBancaire::class, 'idcb');
+    }
+
+    public function client()
+    {
+        return $this->hasOneThrough(
+            Client::class,
+            Panier::class,
+            'idpanier',
+            'idclient',
+            'idpanier',
+            'idclient'
+        );
+    }
+
+
+
 
     public function scopeLivraison($query)
     {
@@ -52,5 +68,12 @@ class Commande extends Model
     public function scopeEnAttente($query)
     {
         return $query->where('statutcommande', 'En attente');
+    }
+
+    public function scopeParClient($query, $clientId)
+    {
+        return $query->whereHas('panier', function ($q) use ($clientId) {
+            $q->where('idclient', $clientId);
+        });
     }
 }

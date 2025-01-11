@@ -3,23 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-use App\Models\Coursier;
-
+use App\Models\Livreur;
 use App\Models\Etablissement;
 use App\Models\Horaires;
 use App\Models\CategoriePrestation;
+use App\Models\CategorieProduit;
 use App\Models\Commande;
+use App\Models\Produit;
 
 use App\Models\Adresse;
 use App\Models\Ville;
 use App\Models\Code_postal;
 
+use App\Models\ResponsableEnseigne;
+use App\Models\GestionEtablissement;
 use Carbon\Carbon;
-// use Illuminate\Support\Facades\DB;
 
 class ResponsableEnseigneController extends Controller
 {
+    /* PARTIE RESTAURATEUR */
     public function add()
     {
         $categories = CategoriePrestation::all();
@@ -45,15 +49,16 @@ class ResponsableEnseigneController extends Controller
                 'ferme.*' => 'nullable|boolean',
             ]);
 
-            $idresponsable = session('user.id');
-            if (!$idresponsable) {
-                return back()->withErrors(['error' => 'Identifiant du responsable introuvable. Veuillez vous reconnecter.']);
+            $idrestaurateur = session('user.id');
+
+            if (!$idrestaurateur) {
+                return back()->withErrors(['error' => 'Identifiant du restaurateur introuvable. Veuillez vous reconnecter.']);
             }
 
             $idadresse = $this->getOrCreateAdresse($request);
 
             $etablissement = Etablissement::create([
-                'idresponsable' => $idresponsable,
+                'idrestaurateur' => $idrestaurateur,
                 'idadresse' => $idadresse->idadresse,
                 'typeetablissement' => $validatedData['typeetablissement'],
                 'nometablissement' => $validatedData['nometablissement'],
@@ -80,16 +85,15 @@ class ResponsableEnseigneController extends Controller
             return redirect()->route('etablissement.banner.create', ['id' => $etablissement->idetablissement])
                 ->with('success', 'Établissement créé avec succès. Vous pouvez maintenant ajouter une bannière.');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la création de l’établissement : ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création de l’établissement : ' . $e->getMessage()
+            ], 500);
         }
     }
 
     public function addBanner($id)
     {
-        if (!is_numeric($id)) {
-            abort(400, "Invalid ID provided: $id");
-        }
-
         $etablissement = Etablissement::findOrFail($id);
         return view('etablissements.banner.create', ['etablissement' => $etablissement]);
     }
@@ -119,13 +123,111 @@ class ResponsableEnseigneController extends Controller
         }
     }
 
+    public function createProduit()
+    {
+        $categories = CategorieProduit::all();
+        $etablissements = Etablissement::getByRestaurateur(session('user.id'));
+
+        return view('manager.produits.create', compact('categories', 'etablissements'));
+    }
+
+    public function storeProduit(Request $request)
+    {
+        $validatedData = $request->validate([
+            'idetablissement' => 'required|exists:etablissement,idetablissement',
+            'nomproduit' => 'required|string|max:200',
+            'prixproduit' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+            'imageproduit' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'idcategorie' => 'required|exists:categorie_produit,idcategorie',
+        ]);
+
+        try {
+            $imagePath = null;
+            if ($request->hasFile('imageproduit')) {
+                $imagePath = $request->file('imageproduit')->store('produits', 'public');
+            }
+
+            $produit = Produit::create([
+                'nomproduit' => $validatedData['nomproduit'],
+                'prixproduit' => $validatedData['prixproduit'],
+                'description' => $validatedData['description'],
+                'imageproduit' => $imagePath,
+            ]);
+
+            // Relation avec la catégorie de produit
+            DB::table('a_3')->insert([
+                'idproduit' => $produit->idproduit,
+                'idcategorie' => $validatedData['idcategorie'],
+            ]);
+
+            // Relation avec l’établissement
+            DB::table('est_situe_a_2')->insert([
+                'idproduit' => $produit->idproduit,
+                'idetablissement' => $validatedData['idetablissement'],
+            ]);
+
+            return redirect()->route('manager.produits.index')
+                ->with('success', 'Produit ajouté avec succès.');
+        } catch (\Exception $e) {
+            report($e);
+            return back()->withErrors(['error' => 'Erreur lors de l’ajout du produit : ' . $e->getMessage()]);
+        }
+    }
+
+    public function indexProduits()
+    {
+        $etablissements = Etablissement::getByRestaurateur(session('user.id'));
+
+        $produits = Produit::whereExists(function ($query) use ($etablissements) {
+            $query->select(DB::raw(1))
+                ->from('est_situe_a_2')
+                ->whereRaw('produit.idproduit = est_situe_a_2.idproduit')
+                ->whereIn('est_situe_a_2.idetablissement', $etablissements->pluck('idetablissement'));
+        })->get();
+
+        return view('manager.produits.index', compact('produits', 'etablissements'));
+    }
+
+
+
+
+    /* PARTIE RESPONSABLE ENSEIGNE */
+    public function commandes(Request $request)
+    {
+        $sessionUser = session('user');
+
+        if (!$sessionUser) {
+            return redirect()->route('login-manager')->with('error', 'Accès refusé.');
+        }
+
+        if ($sessionUser['role'] === 'responsable') {
+            $responsable = ResponsableEnseigne::find($sessionUser['id']);
+            if (!$responsable) {
+                return redirect()->route('login-manager')->with('error', 'Données du responsable introuvables.');
+            }
+
+            $etablissements = GestionEtablissement::where('idresponsable', $responsable->idresponsable)
+                ->pluck('idetablissement');
+
+            if ($etablissements->isEmpty()) {
+                return redirect()->route('login-manager')->with('error', 'Aucun établissement associé.');
+            }
+
+            return redirect()->route('responsable.ordernextHour', ['id' => $etablissements->first()]);
+        }
+
+        return redirect()->route('login-manager')->with('error', 'Rôle utilisateur inconnu.');
+    }
+
     public function commandesProchaineHeure($idetablissement)
     {
         try {
+            $etablissement = Etablissement::findOrFail($idetablissement);
+
             $commandes = Commande::query()
-                ->livraison()
-                ->enAttente()
-                ->whereNull('idcoursier')
+                ->where('statutcommande', 'Paiement validé')
+                ->whereNull('idlivreur')
                 ->where('heurecommande', '>=', Carbon::now()->subHour())
                 ->whereHas('panier.produits.etablissements', function ($query) use ($idetablissement) {
                     $query->where('est_situe_a_2.idetablissement', $idetablissement);
@@ -146,19 +248,7 @@ class ResponsableEnseigneController extends Controller
                     ];
                 });
 
-            $coursiers = Coursier::whereHas('entretien', function ($query) {
-                $query->where('resultat', 'Retenu');
-            })
-                ->whereHas('vehicules', function ($query) {
-                    $query->where('statusprocessuslogistique', 'Validé');
-                })
-                ->get(['idcoursier', 'nomuser', 'prenomuser']);
-
-            if ($coursiers->isEmpty()) {
-                session()->flash('info', 'Aucun coursier valide trouvé.');
-            }
-
-            return view('manager.ordernexthour', compact('commandes', 'coursiers'));
+            return view('responsable.ordernexthour', compact('commandes'));
         } catch (\Exception $e) {
             report($e);
             return back()->withErrors(['error' => 'Erreur lors de la récupération des commandes : ' . $e->getMessage()]);
@@ -167,39 +257,72 @@ class ResponsableEnseigneController extends Controller
 
     public function assignerLivreur(Request $request, $idcommande)
     {
-        $request->validate([
-            'idcoursier' => 'required|exists:coursier,idcoursier',
+        $validatedData = $request->validate([
+            'idlivreur' => 'required|exists:livreur,idlivreur',
         ]);
 
         try {
             $commande = Commande::findOrFail($idcommande);
 
-            $commande->update([
-                'idcoursier' => $request->idcoursier,
-                'statutcommande' => 'En cours',
-            ]);
+            if (!is_null($commande->idlivreur)) {
+                return back()->with('info', 'Un livreur est déjà assigné à cette commande.');
+            }
 
-            return back()->with('success', 'Coursier assigné avec succès à la commande ID ' . $idcommande);
+            $commande->idlivreur = $validatedData['idlivreur'];
+            $commande->statutcommande = 'En cours';
+            $commande->save();
+
+            return back()->with('success', 'Livreur assigné avec succès à la commande ID ' . $idcommande);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de l’affectation du coursier : ' . $e->getMessage()]);
+            report($e);
+            return back()->withErrors(['error' => 'Erreur lors de l’affectation du livreur : ' . $e->getMessage()]);
         }
     }
 
-    public function searchCoursiers(Request $request)
+    public function searchLivreurs(Request $request)
     {
         $query = $request->query('query');
 
         if (strlen($query) < 3) {
-            return response()->json([]);
+            return response()->json(['message' => 'Veuillez entrer au moins 3 caractères pour effectuer une recherche.'], 400);
         }
 
-        $coursiers = Coursier::where('nomuser', 'like', "%{$query}%")
+        $livreurs = Livreur::query()
+            ->where('nomuser', 'like', "%{$query}%")
             ->orWhere('prenomuser', 'like', "%{$query}%")
-            ->orWhere('idcoursier', 'like', "%{$query}%")
-            ->get(['idcoursier', 'nomuser', 'prenomuser']);
+            ->orWhere('idlivreur', 'like', "%{$query}%")
+            ->limit(10) // Limiter les résultats pour optimiser la requête
+            ->get(['idlivreur', 'nomuser', 'prenomuser']);
 
-        return response()->json($coursiers);
+        if ($livreurs->isEmpty()) {
+            return response()->json(['message' => 'Aucun livreur trouvé pour votre recherche.'], 404);
+        }
+
+        return response()->json($livreurs, 200);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private function getOrCreateAdresse(Request $request)
     {

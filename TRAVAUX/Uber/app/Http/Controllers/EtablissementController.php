@@ -69,7 +69,7 @@ class EtablissementController extends Controller
 
     public function index(Request $request)
     {
-        $searchVille       = $request->input('recherche_ville');
+        $searchVille = $request->input('recherche_ville');
         $selectedJour = $request->input('selected_jour');
         $selectedJour = $selectedJour
             ? \Carbon\Carbon::createFromFormat('d/m/Y', $selectedJour)->format('Y-m-d')

@@ -14,7 +14,7 @@ class Etablissement extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idresponsable',
+        'idrestaurateur',
         'typeetablissement',
         'idadresse',
         'nometablissement',
@@ -24,9 +24,19 @@ class Etablissement extends Model
         'aemporter',
     ];
 
-    public function responsable()
+    public static function getByRestaurateur($restaurateurId)
     {
-        return $this->belongsTo(ResponsableEnseigne::class, 'idresponsable');
+        return self::where('idrestaurateur', $restaurateurId)->get();
+    }
+
+    public function responsables()
+    {
+        return $this->belongsToMany(
+            ResponsableEnseigne::class,
+            'gestion_etablissement',
+            'idetablissement',
+            'idresponsable'
+        );
     }
 
     public function adresse()
@@ -49,8 +59,15 @@ class Etablissement extends Model
         return $this->belongsToMany(Produit::class, 'est_situe_a_2', 'idetablissement', 'idproduit');
     }
 
-    public static function getByResponsable($responsableId)
+    public function commandes()
     {
-        return self::where('idresponsable', $responsableId)->get();
+        return $this->hasManyThrough(
+            Commande::class,
+            Panier::class,
+            'idetablissement',
+            'idpanier',
+            'idetablissement',
+            'idpanier'
+        );
     }
 }

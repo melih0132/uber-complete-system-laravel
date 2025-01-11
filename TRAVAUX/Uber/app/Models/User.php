@@ -47,23 +47,15 @@ class User extends Authenticatable
                 break;
 
             case 'logistique':
-
                 break;
 
             case 'facturation':
-
                 break;
 
-            case 'administratif':
-
+            case 'juridique':
                 break;
 
             case 'rh':
-
-                break;
-
-            case 'support':
-
                 break;
 
             default:

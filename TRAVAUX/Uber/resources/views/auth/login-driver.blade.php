@@ -34,14 +34,24 @@
                 @enderror
             </div>
 
+            <div class="mb-3">
+                <label for="role" class="form-label">Rôle</label>
+                <select name="role" id="role" class="form-control" required>
+                    <option value="" disabled selected>Choisissez un rôle</option>
+                    <option value="coursier">Coursier</option>
+                    <option value="livreur">Livreur</option>
+                </select>
+                @error('role')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
             @if (session('success') || session('error'))
                 <div class="alert-message @if (session('success')) success @elseif(session('error')) error @endif"
                     role="alert">
                     {{ session('success') ?? session('error') }}
                 </div>
             @endif
-
-            <input type="hidden" name="role" value="coursier">
 
             <button type="submit" class="btn-login">Connexion</button>
 

@@ -5,20 +5,30 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
 
+use App\Models\User;
 use App\Models\Client;
+
+use App\Models\Favoris;
 
 use App\Models\Coursier;
 use App\Models\Vehicule;
 use App\Models\Entretien;
 
+use App\Models\Livreur;
+use App\Models\Commande;
+
 use App\Models\ResponsableEnseigne;
+use App\Models\Restaurateur;
+use App\Models\GestionEtablissement;
+
 use App\Models\Etablissement;
 
 use App\Models\Adresse;
 use App\Models\Ville;
 use App\Models\Code_postal;
+
+use GPBMetadata\Google\Cloud\Dialogflow\V2\Session;
 
 // use Illuminate\Support\Facades\Auth;
 
@@ -33,10 +43,6 @@ class LoginController extends Controller
             'email' => 'facturation@uber.com',
             'password' => 'facturation123',
         ],
-        'administratif' => [
-            'email' => 'administratif@uber.com',
-            'password' => 'admin123',
-        ],
         'rh' => [
             'email' => 'rh@uber.com',
             'password' => 'ressourceh123',
@@ -45,9 +51,13 @@ class LoginController extends Controller
             'email' => 'course@uber.com',
             'password' => 'course123',
         ],
-        'support' => [
-            'email' => 'support@uber.com',
-            'password' => 'support123',
+        'juridique' => [
+            'email' => 'juridique@uber.com',
+            'password' => 'juridique123',
+        ],
+        'commande' => [
+            'email' => 'commande@uber.com',
+            'password' => 'commande123',
         ],
     ];
 
@@ -56,39 +66,77 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:client,coursier,responsable,logistique,facturation,course,administratif,rh,support'],
+            'role' => ['required', 'in:client,coursier,livreur,responsable,restaurateur,rh,logistique,facturation,course,commande,juridique'],
         ]);
 
-        if (in_array($credentials['role'], ['client', 'coursier', 'responsable'])) {
-            $user = null;
+        if ($credentials['role'] === 'client') {
+            $user = Client::where('emailuser', $credentials['email'])->first();
 
-            if ($credentials['role'] === 'responsable') {
-                $user = new ResponsableEnseigne();
-            } else {
-                $user = new User();
-                $user->setRole($credentials['role']);
-            }
-
-            $userRecord = $user->where('emailuser', $credentials['email'])->first();
-
-            if (!$userRecord || !Hash::check($credentials['password'], $userRecord->motdepasseuser)) {
-                return back()->withErrors([
-                    'email' => 'Les informations de connexion sont incorrectes.',
-                ])->withInput($request->only('email', 'role'));
+            if (!$user || !Hash::check($credentials['password'], $user->motdepasseuser)) {
+                return back()->withErrors(['email' => 'Les informations de connexion sont incorrectes.'])
+                    ->withInput($request->only('email', 'role'));
             }
 
             $request->session()->put('user', [
-                'id' => $userRecord->{$user->getKeyName()},
+                'id' => $user->idclient,
+                'role' => $credentials['role'],
+                'typeclient' => $user->typeclient,
+            ]);
+
+            // Redirection basée sur le type de client
+            if ($user->isUberClient()) {
+                return redirect()->route('accueil')->with('success', 'Connexion réussie.');
+            } elseif ($user->isUberEatsClient()) {
+                return redirect()->route('etablissement.accueilubereats')->with('success', 'Connexion réussie.');
+            }
+
+            return redirect('/')->with('success', 'Connexion réussie.');
+        }
+
+        return $this->handleOtherRoles($credentials, $request);
+    }
+
+    private function handleOtherRoles($credentials, Request $request)
+    {
+        if (in_array($credentials['role'], ['coursier', 'livreur', 'responsable', 'restaurateur'])) {
+            $userModel = match ($credentials['role']) {
+                'responsable' => ResponsableEnseigne::class,
+                'restaurateur' => Restaurateur::class,
+                'coursier' => Coursier::class,
+                'livreur' => Livreur::class,
+            };
+
+            $user = $userModel::where('emailuser', $credentials['email'])->first();
+
+            if (!$user) {
+                return redirect()->back()->with('error', 'Utilisateur introuvable. Vérifiez vos informations.');
+            }
+
+            $request->session()->put('user', [
+                'id' => match ($credentials['role']) {
+                    'responsable' => $user->idresponsable,
+                    'restaurateur' => $user->idrestaurateur,
+                    'coursier' => $user->idcoursier,
+                    'livreur' => $user->idlivreur,
+                    default => $user->iduser,
+                },
                 'role' => $credentials['role'],
             ]);
 
-            if ($credentials['role'] === 'client') {
-                return redirect('/')->with('success', 'Connexion réussie.');
-            }
-
-            return redirect()->route('myaccount')->with('success', 'Connexion réussie.');
+            return match ($credentials['role']) {
+                'coursier' => redirect()->route('coursier.courses.index')->with('success', 'Connexion réussie.'),
+                'livreur' => redirect()->route('coursier.livraisons.index')->with('success', 'Connexion réussie.'),
+                'responsable' => redirect()->route('myaccount')->with('success', 'Connexion réussie.'),
+                'restaurateur' => redirect()->route('myaccount')->with('success', 'Connexion réussie.'),
+                default => redirect()->route('accueil')->with('success', 'Connexion réussie.'),
+            };
         }
 
+        return $this->handleServiceAccounts($credentials, $request);
+    }
+
+    private function handleServiceAccounts($credentials, Request $request)
+    {
         if (isset($this->serviceAccounts[$credentials['role']])) {
             $account = $this->serviceAccounts[$credentials['role']];
 
@@ -103,7 +151,23 @@ class LoginController extends Controller
                 'role' => $credentials['role'],
             ]);
 
-            return redirect()->route('myaccount')->with('success', 'Connexion réussie.');
+            // Redirige en fonction du rôle
+            switch ($credentials['role']) {
+                case 'logistique':
+                    return redirect()->route('logistique.vehicules')->with('success', 'Connexion réussie.');
+                case 'facturation':
+                    return redirect()->route('facturation.index')->with('success', 'Connexion réussie.');
+                case 'rh':
+                    return redirect()->route('entretiens.index')->with('success', 'Connexion réussie.');
+                case 'juridique':
+                    return redirect()->route('juridique.index')->with('success', 'Connexion réussie.');
+                case 'course':
+                    return redirect()->route('dashboard.course')->with('success', 'Connexion réussie.');
+                case 'commande':
+                    return redirect()->route('commandes.index')->with('success', 'Connexion réussie.');
+                default:
+                    return back()->withErrors(['role' => 'Rôle inconnu.']);
+            }
         }
 
         return back()->withErrors(['role' => 'Rôle invalide.']);
@@ -129,50 +193,44 @@ class LoginController extends Controller
         switch ($sessionUser['role']) {
             case 'responsable':
                 $user = ResponsableEnseigne::find($sessionUser['id']);
-                if ($user) {
-                    $etablissements = Etablissement::with('categories')
-                        ->where('idresponsable', $user->idresponsable)
-                        ->get();
-                }
+                $etablissements = Etablissement::whereIn(
+                    'idetablissement',
+                    GestionEtablissement::where('idresponsable', $user->idresponsable)
+                        ->pluck('idetablissement')
+                )->with('categories')->get();
+                break;
+
+            case 'restaurateur':
+                $user = Restaurateur::find($sessionUser['id']);
+                $etablissements = Etablissement::where('idrestaurateur', $user->idrestaurateur)
+                    ->with('categories')
+                    ->get();
                 break;
 
             case 'client':
                 $user = Client::find($sessionUser['id']);
+
                 if ($user) {
-                    $courses = DB::table('course')
-                        ->join('reservation', 'course.idreservation', '=', 'reservation.idreservation')
-                        ->join('client', 'reservation.idclient', '=', 'client.idclient')
-                        ->join('adresse as start_address', 'course.adr_idadresse', '=', 'start_address.idadresse')
-                        ->join('adresse as end_address', 'course.idadresse', '=', 'end_address.idadresse')
-                        ->select(
-                            'course.idcourse',
-                            'client.idclient',
-                            'client.nomuser',
-                            'client.prenomuser',
-                            'course.datecourse',
-                            'course.heurecourse',
-                            'course.prixcourse',
-                            'course.statutcourse',
-                            'course.notecourse',
-                            'course.commentairecourse',
-                            'course.distance',
-                            'course.temps',
-                            'start_address.libelleadresse as start_address',
-                            'end_address.libelleadresse as end_address'
-                        )
-                        ->whereIn('course.statutcourse', ['Terminée', 'Annulée'])
-                        ->where('reservation.idclient', $user->idclient)
-                        ->orderBy('course.datecourse', 'desc')
-                        ->orderBy('course.heurecourse', 'desc')
+                    $courses = $user->courses()
+                        ->with([
+                            'startAddress:idadresse,libelleadresse',
+                            'endAddress:idadresse,libelleadresse',
+                        ])
+                        ->whereIn('statutcourse', ['Terminée', 'Annulée'])
+                        ->orderBy('datecourse', 'desc')
+                        ->orderBy('heurecourse', 'desc')
                         ->get();
 
-                    $favorites = DB::table('lieu_favori')
-                        ->join('adresse', 'lieu_favori.idadresse', '=', 'adresse.idadresse')
-                        ->select('lieu_favori.idlieufavori', 'lieu_favori.nomlieu', 'adresse.libelleadresse')
-                        ->where('lieu_favori.idclient', $user->idclient)
+                    $favorites = $user->lieuFavoris()
+                        ->with([
+                            'adresse:idville,idadresse,libelleadresse',
+                            'adresse.ville:idville,nomville',
+                        ])
                         ->get();
 
-                    $villes = Ville::orderBy('nomville', 'asc')->get();
+                    $villes = Ville::select(['idville', 'nomville'])
+                        ->orderBy('nomville', 'asc')
+                        ->get();
                 }
                 break;
 
@@ -185,12 +243,25 @@ class LoginController extends Controller
                 }
                 break;
 
+            case 'livreur':
+                $user = Livreur::find($sessionUser['id']);
+                if ($user) {
+                    $commandes = Commande::where('idlivreur', $user->idlivreur)
+                        ->with([
+                            'adresseDestination:idadresse,libelleadresse',
+                            'panier.client:idclient,nomuser,prenomuser',
+                        ])
+                        ->orderBy('heurecommande', 'desc')
+                        ->get();
+                }
+                break;
+
             case 'logistique':
             case 'facturation':
-            case 'administratif':
+            case 'commande':
             case 'rh':
             case 'course':
-            case 'support':
+            case 'juridique':
                 $user = [
                     'email' => $sessionUser['email'],
                     'role' => $sessionUser['role'],
@@ -206,8 +277,16 @@ class LoginController extends Controller
             return redirect()->route('login')->withErrors(['Utilisateur introuvable. Veuillez vous reconnecter.']);
         }
 
+        $ubereatsRoles = ['livreur', 'restaurateur', 'responsable', 'commande'];
+        $isUberEatsClient = ($sessionUser['role'] === 'client' && isset($sessionUser['typeclient']) && $sessionUser['typeclient'] === 'Uber Eats');
+        $isUberEatsUser = in_array($sessionUser['role'], $ubereatsRoles) || $isUberEatsClient;
+
+        $layout = $isUberEatsUser ? 'layouts.ubereats' : 'layouts.app';
+
         return view('myaccount', [
             'user' => $user,
+            'layout' => $layout,
+            'isUberEatsUser' => $isUberEatsUser,
             'role' => $sessionUser['role'],
             'etablissements' => $etablissements,
             'courses' => $courses,

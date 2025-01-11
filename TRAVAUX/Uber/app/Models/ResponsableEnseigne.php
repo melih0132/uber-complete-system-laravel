@@ -23,6 +23,11 @@ class ResponsableEnseigne extends Model
 
     public function etablissements()
     {
-        return $this->hasMany(Etablissement::class, 'idresponsable', 'idresponsable');
+        return $this->belongsToMany(
+            Etablissement::class,
+            'gestion_etablissement',
+            'idresponsable',
+            'idetablissement'
+        );
     }
 }

@@ -10,7 +10,7 @@
     <section>
         <div class="section-header text-center">
             <h1>Votre trajet touche à sa fin !</h1>
-            <p class="subtitle">Merci de confirmer votre satisfaction ci-dessous.</p>
+            <p class="subtitle">Merci de confirmer votre fin de course ci-dessous.</p>
         </div>
 
         <div class="d-flex flex-column justify-content-center align-items-center mt-4">
@@ -34,14 +34,11 @@
             </p>
         </div>
 
+        @if ($statutcourse == 'Terminée')
+
+
+
         <div class="d-flex justify-content-center mt-3">
-            <form method="POST" class="mx-2" action="{{ route('course.cancel') }}" id="cancel-course-form">
-                @csrf
-                <input type="hidden" name="idreservation" value="{{ $course['idreservation'] }}">
-                <button type="submit" class="btn-annuler">
-                    <i class="fas fa-times-circle"></i> Annuler la Course
-                </button>
-            </form>
 
             <form method="POST" class="mx-2" action="{{ route('course.addTipRate') }}" id="complete-course-form">
                 @csrf
@@ -51,6 +48,7 @@
                 </button>
             </form>
         </div>
+        @endif
     </section>
 @endsection
 

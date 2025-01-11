@@ -21,13 +21,20 @@ class Produit extends Model
         'description'
     ];
 
+    public function categories()
+    {
+        return $this->belongsToMany(CategorieProduit::class, 'a_3', 'idproduit', 'idcategorie');
+    }
+
     public function etablissements()
     {
         return $this->belongsToMany(Etablissement::class, 'est_situe_a_2', 'idproduit', 'idetablissement');
     }
 
-    public function produits()
+    public function paniers()
     {
-        return $this->belongsToMany(Produit::class, 'contient_2', 'idpanier', 'idproduit');
+        return $this->belongsToMany(Panier::class, 'contient_2', 'idproduit', 'idpanier')
+            ->withPivot('quantite', 'idetablissement')
+            ->as('pivot');
     }
 }

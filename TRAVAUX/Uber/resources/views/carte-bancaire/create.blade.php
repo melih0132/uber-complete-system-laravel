@@ -50,8 +50,9 @@
                             <label for="numerocb" class="form-label">Numéro de la carte</label>
                             <input type="text" id="numerocb" name="numerocb"
                                 class="form-control @error('numerocb') is-invalid @enderror" value="{{ old('numerocb') }}"
-                                placeholder="1234 5678 9012 3456" maxlength="16" required>
-                            <small>Ne mettez pas d'espaces</small>
+                                placeholder="1234 5678 9012 3456" maxlength="19" required
+                                pattern="\d{4}\s\d{4}\s\d{4}\s\d{4}" inputmode="numeric">
+                            <small>Exemple : 1234 5678 9012 3456</small>
                             @error('numerocb')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -74,7 +75,8 @@
                             <label for="cryptogramme" class="form-label">Cryptogramme (3 chiffres)</label>
                             <input type="text" id="cryptogramme" name="cryptogramme"
                                 class="form-control @error('cryptogramme') is-invalid @enderror"
-                                value="{{ old('cryptogramme') }}" placeholder="123" maxlength="3" required>
+                                value="{{ old('cryptogramme') }}" placeholder="123" maxlength="3" required pattern="\d{3}"
+                                inputmode="numeric">
                             @error('cryptogramme')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -94,21 +96,6 @@
                             @enderror
                         </div>
 
-                        <!-- Type de Réseau -->
-                        <div class="mb-3">
-                            <label for="typereseaux" class="form-label">Type de réseau</label>
-                            <select id="typereseaux" name="typereseaux"
-                                class="form-select @error('typereseaux') is-invalid @enderror" required>
-                                <option value="" disabled selected>Choisissez le réseau</option>
-                                <option value="Visa" {{ old('typereseaux') == 'Visa' ? 'selected' : '' }}>Visa</option>
-                                <option value="MasterCard" {{ old('typereseaux') == 'MasterCard' ? 'selected' : '' }}>
-                                    MasterCard</option>
-                            </select>
-                            @error('typereseaux')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
                         <div class="mt-4 text-center">
                             <button class="btn-cb" type="submit">Ajouter la carte</button>
                             <a href="{{ route('carte-bancaire.index') }}" class="btn-cb text-decoration-none">Annuler</a>
@@ -124,4 +111,25 @@
             🎉 {{ session('success') }}
         </div>
     @endif
+@endsection
+
+@section('js')
+    <script>
+        document.getElementById('numerocb').addEventListener('input', function(e) {
+            // Supprime tous les espaces existants
+            let input = e.target.value.replace(/\s+/g, '');
+            // Regroupe les chiffres par groupes de 4
+            e.target.value = input.match(/.{1,4}/g)?.join(' ') || input;
+        });
+    </script>
+    <script>
+        document.getElementById('numerocb').addEventListener('input', function(e) {
+            let input = e.target.value.replace(/\D+/g, ''); // Supprime tout sauf les chiffres
+            e.target.value = input.match(/.{1,4}/g)?.join(' ') || input; // Formate par groupes de 4 chiffres
+        });
+
+        document.getElementById('cryptogramme').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D+/g, ''); // Supprime tout sauf les chiffres
+        });
+    </script>
 @endsection

@@ -83,7 +83,7 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <h4>Total : {{ number_format($totalAmount, 2) }} €</h4>
-                        <form method="POST" action="{{ route('facturation.generate') }}">
+                        <form method="POST" action="{{ route('facturation.generate') }}" target="_blank">
                             @csrf
                             <input type="hidden" name="idcoursier" value="{{ $idcoursier }}">
                             <input type="hidden" name="start_date" value="{{ $start_date }}">
