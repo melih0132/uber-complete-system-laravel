@@ -5125,7 +5125,7 @@ INSERT INTO LIVREUR (
 VALUES (
         1,
         20,
-        160,
+        8,
         'Monsieur',
         'Dupont',
         'Jean',
