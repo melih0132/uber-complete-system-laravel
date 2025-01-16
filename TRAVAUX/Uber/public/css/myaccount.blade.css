@@ -1,6 +1,5 @@
 /* Global Styles */
 body {
-    font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: #fff;
     color: #000;
     margin: 0;
@@ -134,6 +133,7 @@ h5 {
 
 /* Buttons */
 .btn-cb,
+.btn-details,
 .btn-compte {
     font-size: 14px;
     font-weight: 600;

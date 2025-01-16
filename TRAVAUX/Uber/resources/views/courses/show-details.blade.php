@@ -8,6 +8,19 @@
 
 @section('content')
     <section class="py-5">
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="container">
             <h1 class="text-center mb-4 fw-bold">Détails de la réservation</h1>
             <div class="details-wrapper row gx-5 gy-4 align-items-center">
@@ -77,4 +90,18 @@
             </div>
         </div>
     </section>
+    <script>
+        var botmanWidget = {
+            frameEndpoint: '/botman/chat',
+            introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
+            chatServer: '/botman',
+            mainColor: '#000000',
+            bubbleBackground: '#FFFFFF',
+            bubbleAvatarUrl: '../img/UberLogo.png',
+            title: 'Assistant Uber',
+            headerTextColor: '#FFFFFF',
+            placeholderText: 'Écrivez votre message ici...',
+        };
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 @endsection

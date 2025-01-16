@@ -7,7 +7,7 @@
     <title>Règlement Salaire Uber - {{ $coursier->nomuser }} {{ $coursier->prenomuser }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+
             color: #333;
             line-height: 1.6;
             margin: 0;

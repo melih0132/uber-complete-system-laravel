@@ -15,7 +15,7 @@ use App\Models\Produit;
 
 use App\Models\Adresse;
 use App\Models\Ville;
-use App\Models\Code_postal;
+use App\Models\CodePostal;
 
 use App\Models\ResponsableEnseigne;
 use App\Models\GestionEtablissement;
@@ -268,6 +268,10 @@ class ResponsableEnseigneController extends Controller
                 return back()->with('info', 'Un livreur est déjà assigné à cette commande.');
             }
 
+            if (!$commande->estlivraison) {
+                return back()->with('error', 'La commande ne peut pas être assignée à un livreur');
+            }
+
             $commande->idlivreur = $validatedData['idlivreur'];
             $commande->statutcommande = 'En cours';
             $commande->save();
@@ -278,6 +282,7 @@ class ResponsableEnseigneController extends Controller
             return back()->withErrors(['error' => 'Erreur lors de l’affectation du livreur : ' . $e->getMessage()]);
         }
     }
+
 
     public function searchLivreurs(Request $request)
     {
@@ -326,12 +331,12 @@ class ResponsableEnseigneController extends Controller
 
     private function getOrCreateAdresse(Request $request)
     {
-        $codePostal = Code_postal::where('codepostal', $request->codepostal)
+        $codePostal = CodePostal::where('codepostal', $request->codepostal)
             ->where('idpays', 1)
             ->first();
 
         if (!$codePostal) {
-            $codePostal = Code_postal::create([
+            $codePostal = CodePostal::create([
                 'idpays' => 1,
                 'codepostal' => $request->codepostal
             ]);

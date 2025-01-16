@@ -2,10 +2,15 @@
 
 @section('title', 'Mes Commandes')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/myaccount.blade.css') }}">
+@endsection
+
 @section('content')
     <div class="container">
         <h1>Mes Commandes</h1>
 
+        <!-- Affichage des messages de succès ou d'erreur -->
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -18,8 +23,9 @@
             </div>
         @endif
 
-        <table class="table table-striped">
-            <thead>
+        <!-- Tableau des commandes -->
+        <table class="table table-striped mt-5">
+            <thead class="table-uber">
                 <tr>
                     <th>ID</th>
                     <th>Date</th>
@@ -43,14 +49,15 @@
                                 Voir détails
                             </button>
 
-                            <!-- Modal pour afficher les détails -->
-                            <div class="modal fade mt-5" id="commandeDetailModal{{ $commande->idcommande }}" tabindex="-1"
+                            <!-- Modal pour les détails de la commande -->
+                            <div class="modal fade" id="commandeDetailModal{{ $commande->idcommande }}" tabindex="-1"
                                 aria-labelledby="commandeDetailModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="commandeDetailModalLabel">Détails de la commande
-                                                #{{ $commande->idcommande }}</h5>
+                                            <h5 class="modal-title" id="commandeDetailModalLabel">
+                                                Détails de la commande #{{ $commande->idcommande }}
+                                            </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
@@ -59,30 +66,35 @@
                                             <p><strong>Date de création :</strong>
                                                 {{ \Carbon\Carbon::parse($commande->heurecreation)->format('d/m/Y H:i') }}
                                             </p>
-                                            <p><strong>Prix :</strong> {{ number_format($commande->prixcommande, 2) }} €
-                                            </p>
+                                            <p><strong>Prix :</strong> {{ number_format($commande->prixcommande, 2) }} €</p>
                                             <p><strong>Statut :</strong> {{ $commande->statutcommande }}</p>
-                                            <p><strong>Livraison :</strong> {{ $commande->estlivraison ? 'Oui' : 'Non' }}
-                                            </p>
-                                            @if ($commande->adresseDestination)
+                                            <p><strong>Livraison :</strong> {{ $commande->estlivraison ? 'Oui' : 'Non' }}</p>
+                                            @if ($commande->adresse)
                                                 <p><strong>Adresse de livraison :</strong>
-                                                    {{ $commande->adresseDestination->libelleadresse }}</p>
+                                                    {{ $commande->adresse->libelleadresse }}</p>
                                             @endif
-                                            <p><strong>Remboursement :</strong>
-                                                {{ $commande->remboursement_effectue ? 'Oui' : 'Non' }}</p>
+                                            <p><strong>Produits :</strong></p>
+                                            <ul>
+                                                @foreach ($commande->panier->produits as $produit)
+                                                    <li>
+                                                        {{ $produit->nomproduit }} x{{ $produit->pivot->quantite ?? 1 }}
+                                                        ({{ number_format($produit->prixproduit, 2) }} €)
+                                                    </li>
+                                                @endforeach
+                                            </ul>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Fermer</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Fermer
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            @if ($commande->statutcommande === 'En cours')
+                            @if ($commande->statutcommande === 'Livrée')
                                 @if (!$commande->refus_demandee)
-                                    <!-- Formulaire pour informer le service commande -->
                                     <form method="POST"
                                         action="{{ route('commande.informerRefus', $commande->idcommande) }}">
                                         @csrf
@@ -108,6 +120,5 @@
         <div class="d-flex justify-content-center mt-4">
             {{ $commandes->appends(request()->except('page'))->onEachSide(1)->links('pagination::bootstrap-4') }}
         </div>
-
     </div>
 @endsection

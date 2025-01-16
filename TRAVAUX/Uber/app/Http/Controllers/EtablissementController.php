@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Etablissement;
+use App\Models\Produit;
 
 use App\Models\Ville;
 use App\Models\Adresse;
-use App\Models\Code_postal;
 
 use App\Models\CategoriePrestation;
 use App\Models\CategorieProduit;
@@ -21,41 +21,38 @@ class EtablissementController extends Controller
 {
     public function accueilubereats(Request $request)
     {
+        // Validation des entrées
         $request->validate([
             'selected_jour' => 'nullable|date_format:d/m/Y',
             'selected_horaires' => 'nullable|string',
+            'recherche_ville' => 'nullable|string|max:255',
         ]);
 
+        // Récupérer les valeurs de la requête
         $searchVille = $request->input('recherche_ville');
         $inputDate = $request->input('selected_jour');
-        $selectedJour = $inputDate
-            ? Carbon::createFromFormat('d/m/Y', $inputDate, 'Europe/Paris')->format('Y-m-d')
-            : Carbon::now('Europe/Paris')->format('Y-m-d');
-
-        $selectedJour = Carbon::parse($selectedJour, 'Europe/Paris')->isBefore(Carbon::today('Europe/Paris'))
-            ? Carbon::today('Europe/Paris')->format('Y-m-d')
-            : $selectedJour;
-
         $selectedHoraire = $request->input('selected_horaires');
 
-        $slots = [];
-        $period = CarbonPeriod::create('00:00', '30 minutes', '23:59');
-        foreach ($period as $time) {
-            $slotStart = $time->format('H:i');
-            $slotEnd = $time->copy()->addMinutes(30)->format('H:i');
-            if ($slotEnd !== '00:00') {
-                $slots[] = "$slotStart - $slotEnd";
-            }
-        }
+        // Gérer la date sélectionnée
+        $selectedJour = $inputDate
+            ? $this->parseInputDate($inputDate)
+            : Carbon::now('Europe/Paris')->format('Y-m-d');
 
+        // Vérifier si la date est antérieure à aujourd'hui
+        $selectedJour = Carbon::parse($selectedJour)->isBefore(Carbon::today())
+            ? Carbon::today()->format('Y-m-d')
+            : $selectedJour;
+
+        // Générer les créneaux horaires
+        $slots = $this->generateTimeSlots();
         if (empty($slots)) {
             abort(500, 'Aucun créneau horaire disponible.');
         }
 
-        $heureActuelle = Carbon::now('Europe/Paris')->format('H:i');
-        $defaultHoraire = collect($slots)->first(fn($slot) => $heureActuelle >= explode(' - ', $slot)[0] && $heureActuelle < explode(' - ', $slot)[1])
-            ?? $slots[0] ?? null;
+        // Déterminer l'horaire par défaut (selon l'heure actuelle)
+        $defaultHoraire = $this->getDefaultTimeSlot($slots);
 
+        // Utiliser l'horaire sélectionné ou par défaut
         $selectedHoraire = $selectedHoraire ?: $defaultHoraire;
 
         return view('accueil-uber-eat', [
@@ -70,149 +67,95 @@ class EtablissementController extends Controller
     public function index(Request $request)
     {
         $searchVille = $request->input('recherche_ville');
-        $selectedJour = $request->input('selected_jour');
-        $selectedJour = $selectedJour
-            ? \Carbon\Carbon::createFromFormat('d/m/Y', $selectedJour)->format('Y-m-d')
-            : \Carbon\Carbon::now('Europe/Paris')->format('Y-m-d');
-        $selectedHoraire   = $request->input('selected_horaires');
+        $inputDate = $request->input('selected_jour');
+        $selectedJour = $this->parseInputDate($inputDate) ?? Carbon::today()->format('Y-m-d');
+        $selectedHoraire = $request->input('selected_horaires');
 
-        $selectedTypeAffichage       = $request->input('type_affichage', 'all'); // "etablissements" ou "produits" ou "all"
+        $selectedTypeAffichage       = $request->input('type_affichage', 'all');
 
         $selectedTypeEtablissement   = $request->input('type_etablissement');
         $selectedTypeLivraison       = $request->input('type_livraison');
         $selectedCategoriePrestation = $request->input('categorie_restaurant');
         $selectedCategorieProduit    = $request->input('categorie_produit');
 
-        // Texte de recherche (nom de produit, etc.)
         $searchTexte = $request->input('recherche_produit');
 
-        // Conversion du jour sélectionné en jour de semaine (lundi, mardi, etc.)
-        $jourSemaine = null;
-        if (!empty($selectedJour)) {
-            $jourSemaine = $this->getJourSemaine($selectedJour);
-        }
+        $jourSemaine = $selectedJour ? $this->getJourSemaine($selectedJour) : null;
 
-        // ------------------------------------------------------------------
-        // 1. Préparation de la requête des établissements
-        // ------------------------------------------------------------------
-        $etablissementsQuery = DB::table('etablissement as e')
-            ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
-            ->join('ville as v', 'a.idville', '=', 'v.idville')
-            ->leftJoin('a_comme_categorie as acc', 'e.idetablissement', '=', 'acc.idetablissement')
-            ->leftJoin('categorie_prestation as cp', 'acc.idcategorieprestation', '=', 'cp.idcategorieprestation')
-            ->select('e.*', 'a.libelleadresse as adresse', 'v.nomville as ville')
-            ->distinct();
+        // Étape 1 : Filtrage des établissements
+        $etablissementsQuery = Etablissement::with(['adresse.ville'])
+            ->when($searchVille, function ($query, $searchVille) {
+                $query->whereHas('adresse.ville', function ($q) use ($searchVille) {
+                    $q->whereRaw('LOWER(ville.nomville) LIKE LOWER(?)', ["%{$searchVille}%"]);
+                });
+            })
+            ->when($selectedTypeEtablissement, function ($query, $type) {
+                $query->where('typeetablissement', ucfirst($type));
+            })
+            ->when($selectedTypeLivraison, function ($query, $type) {
+                if ($type === 'retrait') {
+                    $query->where('aemporter', true);
+                } elseif ($type === 'livraison') {
+                    $query->where('livraison', true);
+                }
+            }, function ($query) {
+                $query->where('livraison', true); // Par défaut, filtrer par livraison
+            })
+            ->when($selectedCategoriePrestation, function ($query, $categorie) {
+                $query->whereHas('categories', function ($q) use ($categorie) {
+                    $q->where('idcategorieprestation', $categorie);
+                });
+            });
 
-        // Si on veut filtrer par créneau horaire/jour
         if (!empty($jourSemaine) && !empty($selectedHoraire)) {
             try {
                 [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
+                $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s');
+                $heureFin = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s');
 
-                // On reformate en H:i:s+01:00 pour coller aux formats en DB
-                $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s+01:00');
-                $heureFin   = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
-
-                // On recherche les établissements dont les horaires couvrent le créneau sélectionné
-                $horairesQuery = DB::table('horaires as h')
-                    ->select('h.idetablissement')
-                    ->where('h.joursemaine', '=', $jourSemaine)
-                    ->where(function ($query) use ($heureDebut, $heureFin) {
-                        $query->where('h.horairesouverture', '<=', $heureDebut)
-                            ->where('h.horairesfermeture', '>=', $heureFin);
-                    })
-                    ->pluck('h.idetablissement');
-
-                $etablissementsQuery->whereIn('e.idetablissement', $horairesQuery);
+                $etablissementsQuery->whereHas('horaires', function ($query) use ($jourSemaine, $heureDebut, $heureFin) {
+                    $query->where('joursemaine', $jourSemaine)
+                        ->where('heuredebut', '<=', $heureDebut)
+                        ->where('heurefin', '>=', $heureFin);
+                });
             } catch (\Exception $e) {
                 return back()->withErrors(['selected_horaires' => 'Les horaires sélectionnés sont invalides.']);
             }
         }
 
-        // Optionnel : si vous voulez filtrer par ville dans index()
-        if (!empty($searchVille)) {
-            $etablissementsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
-        }
+        // Pagination des établissements
+        $etablissements = $selectedTypeAffichage !== 'produits'
+            ? $etablissementsQuery->paginate(6)
+            : collect();
 
-        // Vous pouvez mettre d'autres filtres basiques ici, selon vos besoins,
-        // par ex. type d’établissement, type de livraison, etc.
+        // Étape 2 : Filtrage des produits
+        $produitsQuery = Produit::with(['categories', 'etablissements.adresse.ville'])
+            ->when($selectedCategorieProduit, function ($query, $categorie) {
+                $query->whereHas('categories', function ($q) use ($categorie) {
+                    $q->where('categorie_produit.idcategorie', $categorie);
+                });
+            })
+            ->when($searchTexte, function ($query, $texte) {
+                $query->whereRaw('LOWER(produit.nomproduit) LIKE LOWER(?)', ["%{$texte}%"]);
+            })
+            ->whereHas('etablissements', function ($query) use ($etablissements) {
+                $query->whereIn('etablissement.idetablissement', $etablissements->pluck('idetablissement'));
+            });
 
-        // Finalement, on récupère réellement les établissements (pagination par exemple)
-        $etablissements = $etablissementsQuery->paginate(6);
+        // Pagination des produits
+        $produits = $selectedTypeAffichage !== 'etablissements'
+            ? $produitsQuery->paginate(6)
+            : collect();
 
-        // ------------------------------------------------------------------
-        // 2. Préparation de la requête des produits
-        // ------------------------------------------------------------------
-        $produitsQuery = DB::table('produit as p')
-            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
-            ->join('etablissement as e', 'e.idetablissement', '=', 'es.idetablissement')
-            ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
-            ->join('ville as v', 'a.idville', '=', 'v.idville')
-            ->join('a_3 as a3', 'a3.idproduit', '=', 'p.idproduit')
-            ->join('categorie_produit as cat_prod', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
-            ->select('p.*', 'e.nometablissement', 'v.nomville', 'cat_prod.nomcategorie')
-            ->distinct();
+        // Étape 3 : Récupération des catégories
+        $categoriesPrestation = CategoriePrestation::whereHas('etablissements', function ($query) use ($etablissements) {
+            $query->whereIn('etablissement.idetablissement', $etablissements->pluck('idetablissement'));
+        })->distinct()->get();
 
-        // Filtrage horaires produits (mêmes conditions que pour les établissements)
-        if (!empty($jourSemaine) && !empty($selectedHoraire)) {
-            try {
-                [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
-                $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s+01:00');
-                $heureFin   = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
+        $categoriesProduit = CategorieProduit::whereHas('produits', function ($query) use ($produits) {
+            $query->whereIn('produit.idproduit', $produits->pluck('idproduit'));
+        })->distinct()->get();
 
-                $horairesQuery = DB::table('horaires as h')
-                    ->select('h.idetablissement')
-                    ->where('h.joursemaine', '=', $jourSemaine)
-                    ->where(function ($query) use ($heureDebut, $heureFin) {
-                        $query->where('h.horairesouverture', '<=', $heureDebut)
-                            ->where('h.horairesfermeture', '>=', $heureFin);
-                    })
-                    ->pluck('h.idetablissement');
-
-                $produitsQuery->whereIn('e.idetablissement', $horairesQuery);
-            } catch (\Exception $e) {
-                return back()->withErrors(['selected_horaires' => 'Les horaires sélectionnés sont invalides.']);
-            }
-        }
-
-        // Filtrage par ville
-        if (!empty($searchVille)) {
-            $produitsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
-        }
-
-        // Filtrage par texte saisi (nom de produit par exemple)
-        if (!empty($searchTexte)) {
-            $produitsQuery->whereRaw("LOWER(p.nomproduit) LIKE LOWER(?)", ["%{$searchTexte}%"]);
-        }
-
-        // Récupération (pagination ou non)
-        $produits = $produitsQuery->paginate(6);
-
-        // ------------------------------------------------------------------
-        // 3. Récupération des catégories associées aux établissements filtrés
-        // ------------------------------------------------------------------
-        // Pour éviter de charger des catégories qui ne correspondent pas
-        // aux établissements réellement filtrés, on récupère la liste ID:
-        $filteredEtablissements = $etablissementsQuery->pluck('e.idetablissement');
-
-        $categoriesPrestation = DB::table('categorie_prestation as cp')
-            ->join('a_comme_categorie as acc', 'cp.idcategorieprestation', '=', 'acc.idcategorieprestation')
-            ->whereIn('acc.idetablissement', $filteredEtablissements)
-            ->distinct()
-            ->select('cp.idcategorieprestation', 'cp.libellecategorieprestation', 'cp.imagecategorieprestation')
-            ->get();
-
-        $categoriesProduit = DB::table('categorie_produit as cat_prod')
-            ->join('a_3 as a3', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
-            ->join('produit as p', 'p.idproduit', '=', 'a3.idproduit')
-            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
-            ->whereIn('es.idetablissement', $filteredEtablissements)
-            ->distinct()
-            ->select('cat_prod.idcategorie', 'cat_prod.nomcategorie')
-            ->get();
-
-        // ------------------------------------------------------------------
-        // 4. Retourner la vue avec toutes les variables nécessaires
-        // ------------------------------------------------------------------
         return view('etablissements.etablissement', [
             'etablissements'              => $etablissements,
             'produits'                    => $produits,
@@ -233,150 +176,112 @@ class EtablissementController extends Controller
 
     public function filtrageEtablissements(Request $request)
     {
-        // On récupére la ville et les créneaux horaires
         $searchVille = $request->input('recherche_ville');
-        $selectedJour    = $request->input('selected_jour');
+        $inputDate = $request->input('selected_jour');
+        $selectedJour = $this->parseInputDate($inputDate) ?? Carbon::today()->format('Y-m-d');
         $selectedHoraire = $request->input('selected_horaires');
-        $jourSemaine     = (!empty($selectedJour)) ? $this->getJourSemaine($selectedJour) : null;
 
-        $categoriePrestationFiltrees = $request->input('prestations_filtrees', []);
-        $categoriesProduitFiltrees = $request->input('categories_produit_filtrees', []);
+        $selectedTypeAffichage = $request->input('type_affichage', 'all');
+        $selectedTypeEtablissement = $request->input('type_etablissement');
+        $selectedTypeLivraison = $request->input('type_livraison');
+        $selectedCategoriePrestation = $request->input('categorie_restaurant');
+        $selectedCategorieProduit = $request->input('categorie_produit');
 
-        // Récupération des champs du formulaire (recherche produit, types, etc.)
         $searchTexte = $request->input('recherche_produit');
 
-        $selectedTypeAffichage       = $request->input('type_affichage', 'all');
-        $selectedTypeEtablissement   = $request->input('type_etablissement');
-        $selectedTypeLivraison       = $request->input('type_livraison');
-        $selectedCategoriePrestation = $request->input('categorie_restaurant');
-        $selectedCategorieProduit    = $request->input('categorie_produit');
+        $prestationsFiltrees = $request->input('prestations_filtrees', []);
+        $categoriesProduitFiltrees = $request->input('categories_produit_filtrees', []);
 
-        // ------------------------------------------------------------------
-        // 1. Préparation de la requête "établissements"
-        // ------------------------------------------------------------------
-        $etablissementsQuery = DB::table('etablissement as e')
-            ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
-            ->join('ville as v', 'a.idville', '=', 'v.idville')
-            ->leftJoin('a_comme_categorie as acc', 'e.idetablissement', '=', 'acc.idetablissement')
-            ->leftJoin('categorie_prestation as cp', 'acc.idcategorieprestation', '=', 'cp.idcategorieprestation')
-            ->select('e.*', 'a.libelleadresse as adresse', 'v.nomville as ville')
-            ->distinct();
+        $jourSemaine = $selectedJour ? $this->getJourSemaine($selectedJour) : null;
 
-        // Filtrage par ville
-        if (!empty($searchVille)) {
-            $etablissementsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
-        }
-
-        // Filtrage basique (recherche sur le nom établissement) ou ce que vous souhaitez
-        $etablissementsQuery
-            ->when(!empty($searchTexte), function ($query) use ($searchTexte) {
-                return $query->whereRaw("LOWER(e.nometablissement) LIKE LOWER(?)", ["%{$searchTexte}%"]);
+        $etablissementsQuery = Etablissement::with(['adresse.ville', 'categories'])
+            ->when($searchVille, function ($query, $searchVille) {
+                $query->whereHas('adresse.ville', function ($q) use ($searchVille) {
+                    $q->whereRaw('LOWER(nomville) LIKE LOWER(?)', ["%{$searchVille}%"]);
+                });
             })
-            ->when(!empty($selectedTypeEtablissement), function ($query) use ($selectedTypeEtablissement) {
-                if ($selectedTypeEtablissement === 'restaurant') {
-                    return $query->where('e.typeetablissement', "Restaurant");
-                } elseif ($selectedTypeEtablissement === 'epicerie') {
-                    return $query->where('e.typeetablissement', "Épicerie");
+            ->when($selectedTypeEtablissement, function ($query, $type) {
+                $query->where('typeetablissement', ucfirst($type));
+            })
+            ->when($selectedTypeLivraison, function ($query, $type) {
+                if ($type === 'retrait') {
+                    $query->where('aemporter', true);
+                } elseif ($type === 'livraison') {
+                    $query->where('livraison', true);
                 }
-                return $query;
+            }, function ($query) {
+                $query->where('livraison', true);
             })
-            ->when(!empty($selectedTypeLivraison), function ($query) use ($selectedTypeLivraison) {
-                if ($selectedTypeLivraison === 'retrait') {
-                    return $query->where('e.aemporter', true);
-                } elseif ($selectedTypeLivraison === 'livraison') {
-                    return $query->where('e.livraison', true);
-                }
-                return $query;
+            ->when($selectedCategoriePrestation, function ($query, $categorie) {
+                $query->whereHas('categories', function ($q) use ($categorie) {
+                    $q->where('a_comme_categorie.idcategorieprestation', $categorie);
+                });
             })
-            // Si aucun type de livraison n'est sélectionné,
-            // on applique par exemple la livraison en "true" par défaut
-            ->when(empty($selectedTypeLivraison), function ($query) {
-                return $query->where('e.livraison', true);
+            ->when($jourSemaine && $selectedHoraire, function ($query) use ($jourSemaine, $selectedHoraire) {
+                [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
+                $query->whereHas('horaires', function ($q) use ($jourSemaine, $heureDebut, $heureFin) {
+                    $q->where('horaires.joursemaine', $jourSemaine)
+                        ->where('horaires.heuredebut', '<=', Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s'))
+                        ->where('horaires.heurefin', '>=', Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s'));
+                });
             })
-            ->when($selectedCategoriePrestation, function ($query) use ($selectedCategoriePrestation) {
-                return $query->where('cp.idcategorieprestation', $selectedCategoriePrestation);
+            ->when($searchTexte, function ($query, $texte) {
+                $query->where(function ($subQuery) use ($texte) {
+                    $subQuery->whereRaw('LOWER(nometablissement) LIKE LOWER(?)', ["%{$texte}%"])
+                        ->orWhereHas('produits', function ($q) use ($texte) {
+                            $q->whereRaw('LOWER(nomproduit) LIKE LOWER(?)', ["%{$texte}%"]);
+                        });
+                });
             });
 
-        // Ici, selon le type d'affichage, on charge ou pas les établissements
-        // (exemple : si "produits", on met un tableau vide pour `$etablissements`)
-        $etablissements = ($selectedTypeAffichage === 'produits')
-            ? collect()
-            : $etablissementsQuery->paginate(6);
 
-        // ------------------------------------------------------------------
-        // 2. Requête "produits"
-        // ------------------------------------------------------------------
-        $produitsQuery = DB::table('produit as p')
-            ->join('est_situe_a_2 as es', 'p.idproduit', '=', 'es.idproduit')
-            ->join('etablissement as e', 'e.idetablissement', '=', 'es.idetablissement')
-            ->join('adresse as a', 'e.idadresse', '=', 'a.idadresse')
-            ->join('ville as v', 'a.idville', '=', 'v.idville')
-            ->join('a_3 as a3', 'a3.idproduit', '=', 'p.idproduit')
-            ->join('categorie_produit as cat_prod', 'cat_prod.idcategorie', '=', 'a3.idcategorie')
-            ->select('p.*', 'e.nometablissement', 'v.nomville', 'cat_prod.nomcategorie')
-            ->distinct();
-
-        // Filtre par ville si besoin
-        if (!empty($searchVille)) {
-            $produitsQuery->whereRaw("LOWER(v.nomville) LIKE LOWER(?)", ["%{$searchVille}%"]);
-        }
-
-        // Filtrage horaires
         if (!empty($jourSemaine) && !empty($selectedHoraire)) {
             try {
                 [$heureDebut, $heureFin] = explode(' - ', $selectedHoraire);
-                $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s+01:00');
-                $heureFin   = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s+01:00');
+                $heureDebut = Carbon::createFromFormat('H:i', $heureDebut)->format('H:i:s');
+                $heureFin = Carbon::createFromFormat('H:i', $heureFin)->format('H:i:s');
 
-                $horairesQuery = DB::table('horaires as h')
-                    ->select('h.idetablissement')
-                    ->where('h.joursemaine', '=', $jourSemaine)
-                    ->where(function ($query) use ($heureDebut, $heureFin) {
-                        $query->where('h.horairesouverture', '<=', $heureDebut)
-                            ->where('h.horairesfermeture', '>=', $heureFin);
-                    })
-                    ->pluck('h.idetablissement');
-
-                $produitsQuery->whereIn('e.idetablissement', $horairesQuery);
+                $etablissementsQuery->whereHas('horaires', function ($query) use ($jourSemaine, $heureDebut, $heureFin) {
+                    $query->where('joursemaine', $jourSemaine)
+                        ->where('heuredebut', '<=', $heureDebut)
+                        ->where('heurefin', '>=', $heureFin);
+                });
             } catch (\Exception $e) {
                 return back()->withErrors(['selected_horaires' => 'Les horaires sélectionnés sont invalides.']);
             }
         }
 
-        // Filtre par nom de produit
-        $produitsQuery->when(!empty($searchTexte), function ($query) use ($searchTexte) {
-            return $query->whereRaw("LOWER(p.nomproduit) LIKE LOWER(?)", ["%{$searchTexte}%"]);
-        });
+        // Pagination des établissements
+        $etablissements = ($selectedTypeAffichage !== 'produits')
+            ? $etablissementsQuery->paginate(6)
+            : collect();
 
-        // Filtre par catégorie
-        $produitsQuery->when($selectedCategorieProduit, function ($query) use ($selectedCategorieProduit) {
-            return $query->where('cat_prod.idcategorie', $selectedCategorieProduit);
-        });
 
-        // Ici, selon type d'affichage, on charge ou pas les produits
-        $produits = ($selectedTypeAffichage === 'etablissements')
-            ? collect()
-            : $produitsQuery->paginate(6);
+        // Étape 2 : Filtrage des produits
+        $produitsQuery = Produit::with(['categories', 'etablissements.adresse.ville'])
+            ->when($searchTexte, function ($query, $texte) {
+                $query->whereRaw('LOWER(nomproduit) LIKE LOWER(?)', ["%{$texte}%"]);
+            })
+            ->whereHas('etablissements', function ($query) use ($etablissements) {
+                $query->whereIn('etablissement.idetablissement', $etablissements->pluck('idetablissement'));
+            });
 
-        // ------------------------------------------------------------------
-        // 3. Catégories prestation et produit (pour les filtres)
-        // ------------------------------------------------------------------
-        $categoriesPrestation = DB::table('categorie_prestation as cp')
-            ->whereIn('cp.idcategorieprestation', $categoriePrestationFiltrees)
+        // Pagination des produits
+        $produits = ($selectedTypeAffichage !== 'etablissements')
+            ? $produitsQuery->paginate(6)
+            : collect();
+
+
+        // Étape 3 : Filtrage des catégories
+        $categoriesPrestation = CategoriePrestation::whereIn('idcategorieprestation', $prestationsFiltrees)
             ->distinct()
-            ->select('cp.idcategorieprestation', 'cp.libellecategorieprestation', 'cp.imagecategorieprestation')
             ->get();
 
-        $categoriesProduit = DB::table('categorie_produit as cat_prod')
-            ->whereIn('cat_prod.idcategorie', $categoriesProduitFiltrees)
+        $categoriesProduit = CategorieProduit::whereIn('idcategorie', $categoriesProduitFiltrees)
             ->distinct()
-            ->select('cat_prod.idcategorie', 'cat_prod.nomcategorie')
             ->get();
 
 
-        // ------------------------------------------------------------------
-        // 4. Retour de la vue filtrée
-        // ------------------------------------------------------------------
         return view('etablissements.etablissement', [
             'etablissements'              => $etablissements,
             'produits'                    => $produits,
@@ -393,6 +298,7 @@ class EtablissementController extends Controller
             'categoriesProduit'           => $categoriesProduit
         ]);
     }
+
 
     public function detail($idetablissement)
     {
@@ -458,6 +364,43 @@ class EtablissementController extends Controller
             'groupedHoraires'     => $groupedHoraires,
             'categoriesPrestations' => $categoriesPrestations,
         ]);
+    }
+
+    private function parseInputDate($date)
+    {
+        try {
+            return $date
+                ? Carbon::createFromFormat('d/m/Y', $date, 'Europe/Paris')->format('Y-m-d')
+                : null;
+        } catch (\Exception $e) {
+            return null; // Return null for invalid dates
+        }
+    }
+
+    private function generateTimeSlots()
+    {
+        $slots = [];
+        $period = CarbonPeriod::create('00:00', '30 minutes', '23:59');
+        foreach ($period as $time) {
+            $slotStart = $time->format('H:i');
+            $slotEnd = $time->copy()->addMinutes(30)->format('H:i');
+            if ($slotEnd !== '00:00') {
+                $slots[] = "$slotStart - $slotEnd";
+            }
+        }
+        return $slots;
+    }
+
+    private function getDefaultTimeSlot(array $slots)
+    {
+        $heureActuelle = Carbon::now('Europe/Paris')->format('H:i');
+        foreach ($slots as $slot) {
+            [$debut, $fin] = explode(' - ', $slot);
+            if ($heureActuelle >= $debut && $heureActuelle < $fin) {
+                return $slot;
+            }
+        }
+        return $slots[0] ?? null; // Retourner le premier créneau si aucun ne correspond
     }
 
     private function getJourSemaine($dateString)

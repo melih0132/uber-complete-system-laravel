@@ -31,6 +31,32 @@ class Course extends Model
         'temps',
     ];
 
+    protected $casts = [
+        'datecourse' => 'date:Y-m-d',
+        'heurecourse' => 'string',
+        'temps' => 'integer',
+    ];
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'idreservation', 'idreservation');
+    }
+
+    public function prestations()
+    {
+        return $this->belongsTo(TypePrestation::class, 'idprestation');
+    }
+
+    public function coursier()
+    {
+        return $this->belongsTo(Coursier::class, 'idcoursier', 'idcoursier');
+    }
+
+    public function carteBancaire()
+    {
+        return $this->belongsTo(CarteBancaire::class, 'idcb', 'idcb');
+    }
+
     public function startAddress()
     {
         return $this->belongsTo(Adresse::class, 'idadresse', 'idadresse');
@@ -39,15 +65,5 @@ class Course extends Model
     public function endAddress()
     {
         return $this->belongsTo(Adresse::class, 'adr_idadresse', 'idadresse');
-    }
-
-    public function reservation()
-    {
-        return $this->belongsTo(Reservation::class, 'idreservation');
-    }
-
-    public function prestations()
-    {
-        return $this->belongsTo(Prestation::class, 'idprestation');
     }
 }

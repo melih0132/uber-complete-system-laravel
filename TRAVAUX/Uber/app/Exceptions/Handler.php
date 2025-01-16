@@ -27,4 +27,17 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            return response()->json(['error' => 'Validation error'], 422);
+        }
+
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return parent::render($request, $exception);
+    }
 }

@@ -33,18 +33,23 @@
                     <td>{{ $commande['telephone'] }}</td>
                     <td>{{ $commande['heure_prev'] }}</td>
                     <td>
-                        <form action="{{ route('responsable.assignerlivreur', $commande['id_commande']) }}" method="POST">
-                            @csrf
-                            <div class="position-relative">
-                                <input type="text" class="form-control search-livreur"
-                                    data-command-id="{{ $commande['id_commande'] }}" placeholder="Rechercher un livreur">
-                                <input type="hidden" name="idlivreur" id="idlivreur-{{ $commande['id_commande'] }}">
-                                <ul id="suggestions-{{ $commande['id_commande'] }}"
-                                    class="list-group position-absolute w-100 suggestions-list"
-                                    style="z-index: 1000; display: none;"></ul>
-                            </div>
-                            <button type="submit" class="btn btn-primary mt-2">Assigner</button>
-                        </form>
+                        @if (isset($commande['estlivraison']) && $commande['estlivraison'])
+                            <form action="{{ route('responsable.assignerlivreur', $commande['id_commande']) }}"
+                                method="POST">
+                                @csrf
+                                <div class="position-relative">
+                                    <input type="text" class="form-control search-livreur"
+                                        data-command-id="{{ $commande['id_commande'] }}" placeholder="Rechercher un livreur">
+                                    <input type="hidden" name="idlivreur" id="idlivreur-{{ $commande['id_commande'] }}">
+                                    <ul id="suggestions-{{ $commande['id_commande'] }}"
+                                        class="list-group position-absolute w-100 suggestions-list"
+                                        style="z-index: 1000; display: none;"></ul>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">Assigner</button>
+                            </form>
+                        @else
+                            <span class="text-muted">Non livrable</span>
+                        @endif
                     </td>
                 </tr>
             @empty

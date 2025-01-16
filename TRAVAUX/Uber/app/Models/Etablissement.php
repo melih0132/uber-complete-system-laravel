@@ -24,11 +24,6 @@ class Etablissement extends Model
         'aemporter',
     ];
 
-    public static function getByRestaurateur($restaurateurId)
-    {
-        return self::where('idrestaurateur', $restaurateurId)->get();
-    }
-
     public function responsables()
     {
         return $this->belongsToMany(
@@ -46,17 +41,27 @@ class Etablissement extends Model
 
     public function horaires()
     {
-        return $this->hasMany(Horaires::class, 'idetablissement');
+        return $this->hasMany(Horaires::class, 'idetablissement', 'idetablissement');
     }
 
     public function categories()
     {
-        return $this->belongsToMany(CategoriePrestation::class, 'a_comme_categorie', 'idetablissement', 'idcategorieprestation');
+        return $this->belongsToMany(
+            CategoriePrestation::class,
+            'a_comme_categorie',
+            'idetablissement',
+            'idcategorieprestation'
+        );
     }
 
     public function produits()
     {
-        return $this->belongsToMany(Produit::class, 'est_situe_a_2', 'idetablissement', 'idproduit');
+        return $this->belongsToMany(
+            Produit::class,
+            'est_situe_a_2',
+            'idetablissement',
+            'idproduit'
+        );
     }
 
     public function commandes()
@@ -69,5 +74,11 @@ class Etablissement extends Model
             'idetablissement',
             'idpanier'
         );
+    }
+
+    // Méthodes
+    public static function getByRestaurateur($restaurateurId)
+    {
+        return self::where('idrestaurateur', $restaurateurId)->get();
     }
 }

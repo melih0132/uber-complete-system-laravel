@@ -329,17 +329,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
 }
 
 
-/* general typography */
-.leaflet-container {
-    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-size: 0.75rem;
-    line-height: 1.5;
-}
-
-
-/* general toolbar styles */
-
 .leaflet-bar {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
     border-radius: 4px;

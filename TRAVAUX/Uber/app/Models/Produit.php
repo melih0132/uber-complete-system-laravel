@@ -23,18 +23,32 @@ class Produit extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(CategorieProduit::class, 'a_3', 'idproduit', 'idcategorie');
+        return $this->belongsToMany(
+            CategorieProduit::class,
+            'produit_categorie',
+            'idproduit',
+            'idcategorie'
+        );
     }
 
     public function etablissements()
     {
-        return $this->belongsToMany(Etablissement::class, 'est_situe_a_2', 'idproduit', 'idetablissement');
+        return $this->belongsToMany(
+            Etablissement::class,
+            'est_situe_a_2',
+            'idproduit',
+            'idetablissement'
+        );
     }
 
     public function paniers()
     {
-        return $this->belongsToMany(Panier::class, 'contient_2', 'idproduit', 'idpanier')
-            ->withPivot('quantite', 'idetablissement')
+        return $this->belongsToMany(
+            Panier::class,
+            'contient_2',
+            'idproduit',
+            'idpanier'
+        )->withPivot('quantite', 'idetablissement')
             ->as('pivot');
     }
 }

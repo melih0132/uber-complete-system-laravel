@@ -15,8 +15,6 @@ class Reservation extends Model
 
     protected $fillable = [
         'idclient',
-        'idplanning',
-        'idvelo',
         'datereservation',
         'heurereservation',
         'pourqui',
@@ -31,9 +29,14 @@ class Reservation extends Model
     {
         return $this->hasOne(Course::class, 'idreservation');
     }
-    public function velo()
-    {
-        return $this->belongsTo(Velo::class, 'idvelo');
-    }
 
+    public function velos()
+    {
+        return $this->belongsToMany(
+            Velo::class,
+            'velo_reservation',
+            'idreservation',
+            'idvelo'
+        )->withPivot('dureereservation', 'prixreservation');
+    }
 }

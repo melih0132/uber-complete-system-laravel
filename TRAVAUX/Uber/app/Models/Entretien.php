@@ -12,12 +12,19 @@ class Entretien extends Model
     protected $primaryKey = 'identretien';
     public $timestamps = false;
 
+    protected $fillable = [
+        'idcoursier',
+        'dateentretien',
+        'status',
+        'resultat',
+        'rdvlogistiquedate',
+        'rdvlogistiquelieu',
+    ];
+
     protected $casts = [
         'dateentretien' => 'datetime',
         'rdvlogistiquedate' => 'datetime',
     ];
-
-    protected $fillable = ['idcourier', 'dateentretien', 'status'];
 
     public function coursier()
     {

@@ -55,6 +55,13 @@
                                 en
                                 attente</a>
                         </li>
+                        <li class="pr-1">
+                            <a data-baseweb="button" aria-label="Accéder aux courses"
+                                href="{{ route('livreur.livraisons.encours') }}" target="_self"
+                                class="header-link">Livraisons
+                                en
+                                cours</a>
+                        </li>
                     @endif
 
                     @if ($user && $user['role'] === 'restaurateur')
@@ -93,7 +100,7 @@
                         </li>
                     @endif
 
-                    @if (!$user || ($user['role'] === 'client' && $user['typeclient'] === 'Uber Eats'))
+                    @if ($user && $user['role'] === 'client')
                         <li class="pr-1">
                             <a href="{{ route('commande.mesCommandes') }}" class="header-link">Mes Commandes</a>
                         </li>
@@ -104,15 +111,18 @@
             <ul class="ul-links">
                 <div class="d-flex justify-content-start align-items-center">
                     <!-- Panier -->
-                    <li class="mx-3">
-                        <a href="{{ url('/panier') }}" aria-label="Panier">
-                            <i class="fas fa-cart-shopping panier"></i>
-                        </a>
-                    </li>
-                    <!-- Help -->
-                    <li class="li-links header-links mx-2">
-                        <a class="a-login" href="{{ url('/UberEats/guide') }}">Aide</a>
-                    </li>
+                    @if ($user && $user['role'] === 'client')
+                        <li class="mx-3">
+                            <a href="{{ url('/panier') }}" aria-label="Panier">
+                                <i class="fas fa-cart-shopping panier"></i>
+                            </a>
+                        </li>
+                        <!-- Help -->
+                        <li class="li-links header-links mx-2">
+                            <a class="a-login" href="{{ url('/UberEats/guide') }}">Aide</a>
+                        </li>
+                    @endif
+
                     <!-- Authentication Links -->
                     @if ($user)
                         <!-- Mon Compte -->
@@ -147,7 +157,7 @@
 
     <footer class="footer-container mt-5">
         <div class="footer-links">
-            <a href="{{ route('juridique.index') }}">Politique de Confidentialité</a>
+            <a href="{{ route('privacy') }}">Politique de Confidentialité</a>
         </div>
         <div class="footer-info">
             <p>&copy; {{ date('Y') }} Uber Eats. Tous droits réservés.</p>

@@ -55,6 +55,11 @@ h3 {
     display: flex;
 }
 
+.date-container label {
+    display: flex;
+    cursor: pointer;
+}
+
 .date-time-container {
     display: flex;
     align-items: center;
@@ -86,7 +91,7 @@ h3 {
 
 .date-time-container label:before {
     content: attr(data-icon);
-    font-family: Arial, sans-serif;
+
     font-size: 18px;
     color: #666;
     flex-shrink: 0;

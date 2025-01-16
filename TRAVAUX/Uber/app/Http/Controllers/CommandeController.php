@@ -21,7 +21,7 @@ use App\Models\Produit;
 use App\Models\Commande;
 
 use App\Models\Adresse;
-use App\Models\Code_postal;
+use App\Models\CodePostal;
 use App\Models\Ville;
 
 class CommandeController extends Controller
@@ -219,19 +219,22 @@ class CommandeController extends Controller
     {
         $validatedData = $request->validate([
             'modeLivraison' => 'required|in:livraison,retrait',
-            'adresse_livraison' => 'nullable|string|max:255',
-            'ville' => 'nullable|string|max:100',
-            'code_postal' => 'nullable|string|max:10',
+            'adresse_livraison' => 'nullable|required_if:modeLivraison,livraison|string|max:255',
+            'ville' => 'nullable|required_if:modeLivraison,livraison|string|max:255',
+            'code_postal' => 'nullable|required_if:modeLivraison,livraison|string|max:10',
         ]);
 
         Session::put('modeLivraison', $validatedData['modeLivraison']);
 
         if ($validatedData['modeLivraison'] === 'livraison') {
-            Session::put('adresseLivraison', [
+            $adresseLivraison = [
                 'adresse' => $validatedData['adresse_livraison'],
                 'ville' => $validatedData['ville'],
                 'code_postal' => $validatedData['code_postal'],
-            ]);
+            ];
+            Session::put('adresseLivraison', $adresseLivraison);
+        } else {
+            Session::forget('adresseLivraison');
         }
 
         return redirect()->route('commande.choisirCarteBancaire');
@@ -253,7 +256,7 @@ class CommandeController extends Controller
             })->get();
 
             if ($cartes->isEmpty()) {
-                return redirect()->route('client.profile')->withErrors([
+                return redirect()->route('myaccount')->withErrors([
                     'message' => 'Aucune carte bancaire associée à votre compte. Veuillez en ajouter une pour continuer.',
                 ]);
             }
@@ -269,15 +272,24 @@ class CommandeController extends Controller
     public function enregistrerCommande(Request $request)
     {
         $sessionUser = $request->session()->get('user');
-        $modeLivraison = Session::get('modeLivraison');
-        $adresseLivraison = Session::get('adresseLivraison');
-
         if (!$sessionUser) {
             return redirect()->route('login')->withErrors(['message' => 'Vous devez être connecté pour continuer.']);
         }
 
-        if (!$modeLivraison) {
-            return redirect()->route('commande.choixLivraison')->withErrors(['message' => 'Veuillez sélectionner un mode de livraison.']);
+        $modeLivraison = Session::get('modeLivraison');
+        $adresseLivraison = Session::get('adresseLivraison');
+        $idcb = $request->input('carte_id');
+
+        Session::put('carte_id', $request->input('carte_id'));
+
+        if ($modeLivraison === 'livraison' && (!$adresseLivraison || !is_array($adresseLivraison))) {
+            return redirect()->route('commande.choixLivraison')->withErrors([
+                'error' => 'Veuillez fournir une adresse de livraison.',
+            ]);
+        }
+
+        if (!$idcb) {
+            return redirect()->route('commande.choisirCarteBancaire')->withErrors(['message' => 'Veuillez sélectionner une carte bancaire.']);
         }
 
         $client = Client::findOrFail($sessionUser['id']);
@@ -290,7 +302,7 @@ class CommandeController extends Controller
         }
 
         $estLivraison = $modeLivraison === 'livraison';
-        $fraisLivraison = $estLivraison ? 5.00 : 0;
+        $fraisLivraison = $estLivraison ? 3.00 : 0;
 
         DB::beginTransaction();
 
@@ -300,13 +312,10 @@ class CommandeController extends Controller
             $commandes = [];
             foreach ($produitsParEtablissement as $idetablissement => $produits) {
                 $etablissement = Etablissement::findOrFail($idetablissement);
+
                 $adresseId = $estLivraison
                     ? $this->getOrCreateAdresse($adresseLivraison)->idadresse
                     : $etablissement->idadresse;
-
-                $idPays = $adresseLivraison
-                    ? Adresse::findOrFail($adresseId)->ville->idpays
-                    : $etablissement->adresse->ville->idpays;
 
                 $prixCommande = $produits->sum(function ($produit) {
                     $quantite = $produit->pivot->quantite ?? 1;
@@ -318,15 +327,18 @@ class CommandeController extends Controller
                     $prixCommande += $fraisLivraison;
                 }
 
+                $heureCreation = now();
+                $heureLivraison = (clone $heureCreation)->addMinutes(30);
+
                 $commande = Commande::create([
                     'idpanier' => $panier->idpanier,
                     'idlivreur' => null,
-                    'idcb' => null,
+                    'idcb' => $idcb,
                     'idadresse' => $adresseId,
                     'prixcommande' => $prixCommande,
                     'tempscommande' => 30,
-                    'heurecreation' => now()->addHour(),
-                    'heurecommande' => now()->addMinutes(90),
+                    'heurecreation' => $heureCreation,
+                    'heurecommande' => $heureLivraison,
                     'estlivraison' => $estLivraison,
                     'statutcommande' => 'En attente de paiement',
                 ]);
@@ -338,7 +350,7 @@ class CommandeController extends Controller
 
             Session::put('commandes', $commandes);
 
-            return redirect()->route('commande.paiementCarte');
+            return $this->paiementCarte($commandes[0]->idcommande);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -350,16 +362,22 @@ class CommandeController extends Controller
         }
     }
 
-    public function paiementCarte()
+    public function paiementCarte($idCommande)
     {
         $commandes = Session::get('commandes');
         if (!$commandes) {
             return redirect()->route('panier.index')->withErrors(['message' => 'Aucune commande en attente de paiement.']);
         }
 
-        $total = collect($commandes)->sum('prixcommande');
+        $total = collect($commandes)->sum(function ($commande) {
+            return is_numeric($commande['prixcommande']) ? $commande['prixcommande'] : 0;
+        });
 
-        // Intégration Stripe
+        if ($total <= 0) {
+            return redirect()->route('panier.index')
+                ->withErrors(['message' => 'Le montant total de la commande est invalide.']);
+        }
+
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
@@ -376,7 +394,7 @@ class CommandeController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode' => 'payment',
-                'success_url' => route('commande.confirmation', ['id' => 'replace_with_actual_id']) . '?session_id={CHECKOUT_SESSION_ID}',
+                'success_url' => route('commande.confirmation', ['id' => $idCommande]) . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('panier.index'),
             ]);
 
@@ -396,24 +414,60 @@ class CommandeController extends Controller
         Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            $session = Session::retrieve($sessionId);
-
-            if ($session->payment_status === 'paid') {
-                $commandes = Session::get('commandes');
-
-                foreach ($commandes as $commande) {
-                    $commande->update([
-                        'idcb' => Session::get('carte_id'),
-                        'statutcommande' => 'Paiement validé',
-                    ]);
-                }
-
-                Session::forget('commandes');
-
-                return view('commande.confirmation', ['message' => 'Votre paiement a été effectué avec succès !']);
+            $stripeSession = StripeSession::retrieve($sessionId);
+            if ($stripeSession->payment_status !== 'paid') {
+                return redirect()->route('panier.index')->withErrors(['message' => 'Paiement non validé.']);
             }
 
-            return redirect()->route('panier.index')->withErrors(['message' => 'Paiement non validé.']);
+            $commandesData = Session::get('commandes');
+            if (empty($commandesData)) {
+                return redirect()->route('panier.index')->withErrors(['message' => 'Aucune commande trouvée en session.']);
+            }
+
+            $carteId = intval(Session::get('carte_id'));
+            if (!$carteId) {
+                return redirect()->route('commande.choisirCarteBancaire')->withErrors(['message' => 'Carte bancaire non spécifiée.']);
+            }
+
+            foreach ($commandesData as $commandeData) {
+                $commande = Commande::find($commandeData['idcommande']);
+                if ($commande) {
+                    $commande->update([
+                        'idcb' => $carteId,
+                        'statutcommande' => 'Paiement validé',
+                    ]);
+
+                    // Mise à jour du panier (si applicable)
+                    if ($commande->panier) {
+                        $commande->panier->update(['prix' => $commande->prixcommande]);
+                    }
+                }
+            }
+
+            $clientId = Session::get('user')['id'] ?? null;
+            if (!$clientId) {
+                return redirect()->route('panier.index')->withErrors(['message' => 'Utilisateur non connecté.']);
+            }
+
+            $client = Client::find($clientId);
+            if (!$client) {
+                return redirect()->route('panier.index')->withErrors(['message' => 'Client introuvable.']);
+            }
+
+            $commande = Commande::with('panier.produits')->find($commandesData[0]['idcommande']);
+            if (!$commande) {
+                return redirect()->route('panier.index')->withErrors(['message' => 'Commande introuvable.']);
+            }
+
+            $produits = $commande->panier->produits;
+
+            Session::forget(['commandes', 'carte_id']);
+
+            return view('commande.confirmation', compact('client', 'commande', 'produits'))->with([
+                'success' => 'Votre paiement a été effectué avec succès !',
+            ]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            return redirect()->route('panier.index')->withErrors(['message' => 'Erreur Stripe : ' . $e->getMessage()]);
         } catch (\Exception $e) {
             return redirect()->route('panier.index')->withErrors(['message' => 'Erreur lors de la confirmation : ' . $e->getMessage()]);
         }
@@ -421,7 +475,7 @@ class CommandeController extends Controller
 
     private function getOrCreateAdresse(array $adresseLivraison)
     {
-        $codePostal = Code_postal::firstOrCreate([
+        $codePostal = CodePostal::firstOrCreate([
             'codepostal' => $adresseLivraison['code_postal'],
             'idpays' => 1,
         ]);

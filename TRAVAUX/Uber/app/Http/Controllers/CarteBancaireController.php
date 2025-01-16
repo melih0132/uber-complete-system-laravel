@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CarteBancaire;
+use Illuminate\Support\Facades\Crypt;
 
 class CarteBancaireController extends Controller
 {
@@ -47,21 +48,39 @@ class CarteBancaireController extends Controller
         $request->merge(['typereseaux' => $typereseaux]);
 
         $validated = $request->validate([
-            'numerocb' => ['required', 'digits:16', 'numeric'],
+            'numerocb' => ['required', 'numeric', 'between:13,19'],
             'dateexpirecb' => ['required', 'date_format:Y-m', 'after:today'],
             'cryptogramme' => ['required', 'digits:3', 'numeric'],
             'typecarte' => ['required', 'string', 'in:Crédit,Débit'],
-            'typereseaux' => ['required', 'string', 'in:Visa,MasterCard'], // Valider le type de réseau
+            'typereseaux' => ['required', 'string', 'in:Visa,MasterCard,Amex,Discover'],
         ]);
+
+        if (!$this->isEncrypted($validated['numerocb'])) {
+            $validated['numerocb'] = Crypt::encryptString($validated['numerocb']);
+        }
+
+        if (!$this->isEncrypted($validated['cryptogramme'])) {
+            $validated['cryptogramme'] = Crypt::encryptString($validated['cryptogramme']);
+        }
 
         $validated['dateexpirecb'] = $validated['dateexpirecb'] . '-01';
 
         $userSession = $request->session()->get('user');
-
         $carte = CarteBancaire::create($validated);
+
         $carte->clients()->attach($userSession['id']);
 
         return redirect()->route('carte-bancaire.index')->with('success', 'La carte a été ajoutée avec succès.');
+    }
+
+    private function isEncrypted($value)
+    {
+        try {
+            Crypt::decryptString($value);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function destroy($idcb, Request $request)
@@ -91,15 +110,15 @@ class CarteBancaireController extends Controller
         $bin = (int) substr($numerocb, 0, 6);
 
         if (substr($numerocb, 0, 1) == '4') {
-            return 'Visa'; // Commence par 4
+            return 'Visa';
         } elseif ($bin >= 222100 && $bin <= 272099 || ($bin >= 510000 && $bin <= 559999)) {
-            return 'MasterCard'; // MasterCard (BIN 222100-272099 ou 51-55)
+            return 'MasterCard';
         } elseif (substr($numerocb, 0, 2) == '34' || substr($numerocb, 0, 2) == '37') {
-            return 'Amex'; // American Express
+            return 'Amex';
         } elseif (substr($numerocb, 0, 4) == '6011' || ($bin >= 622126 && $bin <= 622925) || (substr($numerocb, 0, 3) >= '644' && substr($numerocb, 0, 3) <= '649') || substr($numerocb, 0, 2) == '65') {
-            return 'Discover'; // Discover
+            return 'Discover';
         }
 
-        return null; // Réseau non déterminé
+        return null;
     }
 }

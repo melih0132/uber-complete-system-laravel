@@ -13,11 +13,11 @@ class Panier extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idpanier',
         'idclient',
         'prix',
     ];
 
+    // Relations
     public function client()
     {
         return $this->belongsTo(Client::class, 'idclient', 'idclient');
@@ -31,16 +31,11 @@ class Panier extends Model
 
     public function etablissements()
     {
-        return $this->hasManyThrough(
-            Etablissement::class,
-            'contient_2',
-            'idpanier',
-            'idetablissement',
-            'idpanier',
-            'idetablissement'
-        )->distinct();
+        return $this->belongsToMany(Etablissement::class, 'contient_2', 'idpanier', 'idetablissement')
+            ->distinct();
     }
 
+    // Méthodes
     public function getTotalPrixAttribute()
     {
         return $this->produits->sum(function ($produit) {

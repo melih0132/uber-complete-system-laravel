@@ -20,7 +20,7 @@
                 {{ session('error') }}
             </div>
         @endif
-
+        <h1 class="text-center">Votre Panier</h1>
         <div class="cart">
             @if (count($produits) > 0)
                 @php

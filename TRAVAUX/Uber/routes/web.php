@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Models\LieuFavori;
 use App\Http\Controllers\ServiceCourseController;
 use App\Http\Controllers\CoursierController;
+use App\Http\Controllers\LivreurController;
+
 use App\Http\Controllers\CourseController;
 
 use App\Http\Controllers\ResponsableEnseigneController;
@@ -25,7 +27,10 @@ use App\Http\Controllers\CarteBancaireController;
 
 use App\Http\Controllers\EntretienController;
 use App\Http\Controllers\LogistiqueController;
+use App\Http\Controllers\AdministrationController;
 use App\Http\Controllers\FacturationController;
+
+use App\Http\Controllers\JuridiqueController;
 
 use App\Http\Controllers\BotManController;
 
@@ -72,86 +77,12 @@ Route::get('/favorites-suggestions', [CourseController::class, 'getFavorites'])-
 
 
 
-// ============================================================
-// * DEMANDE DE COURSE IMMÉDIATE
-// ============================================================
-// ? 1 - Affichage des prestations disponibles pour une demande immédiate
-Route::post('/course/immediate', [CourseController::class, 'index'])->name('course.immediate.index');
 
-// ? 2 - Visualisation des détails de la réservation immédiate
-Route::get('/course/immediate/details', [CourseController::class, 'showDetails'])->name('course.immediate.details');
 
-// ? 3 - Acceptation de la réservation immédiate proposée
-Route::post('/course/immediate/validate', [CourseController::class, 'validateImmediate'])->name('course.immediate.validate');
 
-// ? 4 - Recherche et notification des coursiers dans le secteur par le service course
-Route::post('/course/immediate/search-driver', [ServiceCourseController::class, 'searchDriverForImmediate'])->name('course.immediate.search-driver');
-Route::post('/course/immediate/ask-driver', [ServiceCourseController::class, 'askDriverForImmediate'])->name('course.immediate.ask-driver');
 
-// 5 - Coursier visualise toutes les courses proposées par le service course
-Route::get('/coursier/courses', [CoursierController::class, 'index'])->name('coursier.courses.index');
 
-// ? 6 - Coursier visualise les demandes spécifiques de courses immédiates
-Route::get('/coursier/courses/immediate', [CoursierController::class, 'listImmediateCourses'])->name('coursier.courses.immediate');
 
-// ? 7 - Coursier accepte une demande de course immédiate
-Route::post('/coursier/courses/immediate/start', [CoursierController::class, 'startImmediateCourse'])->name('coursier.immediate.start');
-
-// ? 8 - Client visualise la course acceptée par le coursier et peut indiquer son début
-Route::get('/course/immediate/detail', [CourseController::class, 'detailImmediate'])->name('course.immediate.detail');
-Route::post('/course/immediate/start', [CourseController::class, 'startImmediate'])->name('course.immediate.start');
-
-// ? 9 - Coursier indique le début de la course (détails inclus, tel que statut et informations associées)
-Route::get('/coursier/courses/immediate/detail', [CoursierController::class, 'detailImmediateCourse'])->name('coursier.immediate.detail');
-
-// ? 10 - Annulation de la course par le client (validation requise si course déjà démarrée)
-Route::post('/course/immediate/cancel', [CourseController::class, 'cancelImmediate'])->name('course.immediate.cancel');
-
-// ? 11 - Coursier termine la course
-Route::post('/coursier/courses/immediate/finish', [CoursierController::class, 'finishImmediateCourse'])->name('coursier.immediate.finish');
-
-// ? 12 - Client confirme que la course est terminée
-Route::post('/course/immediate/finish', [CourseController::class, 'finishImmediate'])->name('course.immediate.finish');
-
-// ? 13 - Client donne un pourboire et une note au coursier, génère une facture si demandé
-Route::post('/course/immediate/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.immediate.addTipRate');
-Route::post('/course/immediate/invoice/{idreservation}', [FacturationController::class, 'generateInvoiceCourse'])->name('course.immediate.invoice');
-
-// ============================================================
-// * DEMANDE DE COURSE NON IMMÉDIATE
-// ============================================================
-// ? 1 - Affichage des prestations disponibles pour une réservation non immédiate
-Route::post('/course/scheduled', [CourseController::class, 'indexScheduled'])->name('course.scheduled.index');
-
-// ? 2 - Visualisation des détails d'une réservation non immédiate
-Route::get('/course/scheduled/details', [CourseController::class, 'showScheduledDetails'])->name('course.scheduled.details');
-
-// ? 3 - Acceptation de la réservation non immédiate proposée
-Route::post('/course/scheduled/validate', [CourseController::class, 'validateScheduled'])->name('course.scheduled.validate');
-
-// ? 4 - Annulation de la réservation non immédiate
-Route::post('/course/scheduled/cancel', [CourseController::class, 'cancelScheduled'])->name('course.scheduled.cancel');
-
-// ? 5 - Visualisation par le client des informations de réservation programmée
-Route::get('/course/scheduled/detail', [CourseController::class, 'detailScheduled'])->name('course.scheduled.detail');
-
-// ? 6 - Recherche et notification des coursiers dans le secteur par le service course
-Route::post('/course/scheduled/search-driver', [ServiceCourseController::class, 'searchDriverForScheduled'])->name('course.scheduled.search-driver');
-Route::post('/course/scheduled/ask-driver', [ServiceCourseController::class, 'askDriverForScheduled'])->name('course.scheduled.ask-driver');
-
-// 7 - Coursier visualise toutes les courses proposées par le service course
-// Route::get('/coursier/courses', [CoursierController::class, 'index'])->name('coursier.courses.index');
-
-// ? 8 - Coursier accepte une demande de course non immédiate
-Route::post('/coursier/courses/scheduled/accept', [CoursierController::class, 'acceptScheduledCourse'])->name('coursier.scheduled.accept');
-
-// ? 9 - Coursier indique la prise en charge et la fin d'une réservation non immédiate
-Route::post('/coursier/courses/scheduled/start', [CoursierController::class, 'startScheduledCourse'])->name('coursier.scheduled.start');
-Route::post('/coursier/courses/scheduled/finish', [CoursierController::class, 'finishScheduledCourse'])->name('coursier.scheduled.finish');
-
-// ? 10 - Client donne un pourboire et une note au coursier pour une course non immédiate
-Route::post('/course/scheduled/add-tip-rate', [CourseController::class, 'addTipAndRate'])->name('course.scheduled.addTipRate');
-Route::post('/course/scheduled/invoice/{idreservation}', [FacturationController::class, 'generateInvoiceCourse'])->name('course.scheduled.invoice');
 
 
 
@@ -175,6 +106,8 @@ Route::get('/conducteurs/demandes/{id}', [LogistiqueController::class, 'afficher
 Route::post('/vehicules/{id}/complete-modification', [LogistiqueController::class, 'markModificationAsCompleted'])->name('vehicules.completeModification');
 
 // Coursier consulte les demandes de courses 'pas immédiate'
+Route::get('/coursier/courses', [CoursierController::class, 'index'])->name('coursier.courses.index');
+
 Route::post('/coursier/courses/accept/{idreservation}', [CoursierController::class, 'acceptTask'])->name('coursier.courses.accept');
 Route::post('/coursier/courses/cancel/{idreservation}', [CoursierController::class, 'cancelTask'])->name('coursier.courses.cancel');
 Route::post('/coursier/courses/finish/{idreservation}', [CoursierController::class, 'finishTask'])->name('coursier.courses.finish');
@@ -208,7 +141,7 @@ Route::post('/panier/commander/choix-livraison', [CommandeController::class, 'ch
 Route::get('/panier/commander/choix-carte', [CommandeController::class, 'choisirCarteBancaire'])->name('commande.choisirCarteBancaire');
 Route::post('/panier/commander/enregistrer-commande', [CommandeController::class, 'enregistrerCommande'])->name('commande.enregistrer');
 
-Route::match(['get', 'post'], '/panier/commander/paiement', [CommandeController::class, 'paiementCarte'])->name('commande.paiementCarte');
+// Route::match(['get', 'post'], '/panier/commander/paiement', [CommandeController::class, 'paiementCarte'])->name('commande.paiementCarte');
 
 Route::get('/commande/confirmation/{id}', [CommandeController::class, 'confirmation'])->name('commande.confirmation');
 
@@ -222,13 +155,14 @@ Route::post('/commandes/{id}/informer-refus', [CommandeController::class, 'infor
 
 
 // * POV LIVREUR
-Route::get('/coursier/livraisons', [CoursierController::class, 'index'])->name('coursier.livraisons.index');
+Route::get('/livreur/livraisons', [LivreurController::class, 'index'])->name('coursier.livraisons.index');
 
-// Coursiers Uber Eats
-Route::post('/coursier/livraisons/accept/{idreservation}', [CoursierController::class, 'acceptTask'])->name('coursier.livraisons.accept');
-Route::post('/coursier/livraisons/cancel/{idreservation}', [CoursierController::class, 'cancelTask'])->name('coursier.livraisons.cancel');
-Route::post('/coursier/livraisons/finish/{idreservation}', [CoursierController::class, 'finishTask'])->name('coursier.livraisons.finish');
+Route::get('/livreur/livraisons-affectees', [LivreurController::class, 'livraisonsEnCours'])->name('livreur.livraisons.encours');
+Route::put('/livreur/livraisons/{idcommande}/livree', [LivreurController::class, 'marquerLivree'])->name('livreur.livraisons.marquerLivree');
 
+Route::post('/coursier/livraisons/accept/{idreservation}', [LivreurController::class, 'acceptTaskLivreur'])->name('coursier.livraisons.accept');
+Route::post('/coursier/livraisons/cancel/{idreservation}', [LivreurController::class, 'cancelTaskLivreur'])->name('coursier.livraisons.cancel');
+Route::post('/coursier/livraisons/finish/{idreservation}', [LivreurController::class, 'finishTaskLivreur'])->name('coursier.livraisons.finish');
 
 
 
@@ -249,16 +183,16 @@ Route::post('/UberVelo', [VeloController::class, 'index'])->name('velo.index');
 Route::get('/UberVelo/velos/details-velo/{id}', [VeloController::class, 'showDetailsVelo'])->name('velo.details');
 Route::get('/UberVelo/velos/details-reservation/{id}', [VeloController::class, 'showReservationDetails'])->name('velo.reservation');
 
+// Route to validate reservation
 Route::post('/UberVelo/velos/reserver/{id}', [VeloController::class, 'validateReservation'])->name('velo.reserver');
 
-Route::get('/UberVelo/velos/confirmation/{id}', [VeloController::class, 'confirmation'])->name('velo.confirmation');
+// Route for Stripe Payment
+Route::get('/UberVelo/paiement', [VeloController::class, 'paiementReservation'])->name('velo.confirmation'); // Displays the payment page
 
-Route::get('/paiement', [VeloController::class, 'choixCarte'])->name('velo.paiement');
 
-Route::match(['get', 'post'], '/reservation-effectuer', [VeloController::class, 'finaliserPaiement'])->name('velo.fin-reservation');
+Route::match(['get', 'post'], '/UberVelo/reservation-effectuer', [VeloController::class, 'finaliserPaiement'])->name('velo.fin-reservation');
 
-Route::post('/reservation-effectuer', [VeloController::class, 'finaliserPaiement'])->name('velo.fin-reservation');
-
+/* Route::post('/UberVelo/velos/confirmation/{id}', [VeloController::class, 'confirmation'])->name('velo.confirmation'); */
 
 
 
@@ -336,7 +270,7 @@ Route::post('/security/update-password', [LoginController::class, 'updatePasswor
 // MFA
 Route::post('/activate-mfa', [SecurityController::class, 'activateMFA'])->name('activateMFA');
 
-Route::post('/send-otp', [SecurityController::class, 'sendOtp'])->name('sendOtp');
+Route::post('/send-otp', action: [SecurityController::class, 'sendOtp'])->name('sendOtp');
 
 Route::get('/otp', function () {
     return view('auth.otp');
@@ -357,8 +291,8 @@ Route::get('/interface-inscription', function () {
     return view('interfaces.interface-inscription');
 });
 
-Route::post('/register/passenger/form', [RegisterController::class, 'register'])->name('register');
-Route::post('/register/eats/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/passenger/form', [RegisterController::class, 'register'])->name('register')->middleware('throttle:3,10');
+Route::post('/register/eats/form', [RegisterController::class, 'register'])->name('register')->middleware('throttle:3,10');
 
 Route::get('/register/passenger', [RegisterController::class, 'showPassengerRegistrationForm'])->name('register.passenger');
 Route::get('/register/eats', [RegisterController::class, 'showEatsRegistrationForm'])->name('register.eats');
@@ -366,10 +300,10 @@ Route::get('/register/eats', [RegisterController::class, 'showEatsRegistrationFo
 // coursier
 Route::get('/interface-inscription-coursier', function () {
     return view('interfaces.interface-inscription-coursier');
-});
+})->name('login-coursier');
 
-Route::post('/register/driver/form', [RegisterController::class, 'register'])->name('register');
-Route::post('/register/deliverer/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/driver/form', [RegisterController::class, 'register'])->name('register')->middleware('throttle:3,10');
+Route::post('/register/deliverer/form', [RegisterController::class, 'register'])->name('register')->middleware('throttle:3,10');
 
 Route::get('/register/coursier/{role}', [RegisterController::class, 'registerCoursier'])->name('register.coursier');
 Route::get('/register/driver', [RegisterController::class, 'showDriverRegistrationForm'])->name('register.driver');
@@ -380,8 +314,8 @@ Route::get('/interface-inscription-manager', function () {
     return view('interfaces.interface-inscription-manager');
 });
 
-Route::post('/register/brandmanager/form', [RegisterController::class, 'register'])->name('register');
-Route::post('/register/restaurateur/form', [RegisterController::class, 'register'])->name('register');
+Route::post('/register/brandmanager/form', [RegisterController::class, 'register'])->name('register')->middleware('throttle:3,10');
+Route::post('/register/restaurateur/form', [RegisterController::class, 'register'])->name('register')->middleware('throttle:3,10');
 
 Route::get('/register/manager/{role}', [RegisterController::class, 'registerManager'])->name('register.manager');
 Route::get('/register/brandmanager', [RegisterController::class, 'showBrandManagerRegistrationForm'])->name('register.brandmanager');
@@ -390,7 +324,7 @@ Route::get('/register/restaurateur', [RegisterController::class, 'showRestaurate
 
 
 // ! Delete
-Route::delete('/user/delete', [DeleteController::class, 'destroy'])->name('user.delete');
+Route::delete('/client/delete', [JuridiqueController::class, 'demandeSuppression'])->name('user.delete');
 
 
 
@@ -430,6 +364,7 @@ Route::delete('/entretiens/supprimer/{id}', [EntretienController::class, 'suppri
 Route::post('/entretiens/{id}/valider', [EntretienController::class, 'validerCoursier'])->name('entretiens.validerCoursier');
 Route::post('/entretiens/{id}/refuser', [EntretienController::class, 'refuserCoursier'])->name('entretiens.refuserCoursier');
 
+
 // Service Logistique
 Route::get('/logistique/vehicules/validation', [LogistiqueController::class, 'index'])->name('logistique.vehicules');
 
@@ -446,6 +381,17 @@ Route::post('/logistique/vehicules/modifier/{id}', [LogistiqueController::class,
 Route::get('/logistique/modifications', [LogistiqueController::class, 'afficherModifications'])->name('logistique.modifications');
 Route::delete('/modifications/{index}', [LogistiqueController::class, 'supprimerModification'])->name('modifications.supprimer');
 
+
+// Service Adminisratif -  A FINIR
+Route::get('/admin', [AdministrationController::class, 'index'])->name('admin.index');
+
+Route::get('/admin/search-coursiers', [AdministrationController::class, 'searchCoursiers'])->name('admin.search-coursiers');
+
+Route::post('/admin/validation/initier', [AdministrationController::class, 'initierValidation'])->name('admin.validation.initier');
+Route::post('/admin/validation/relancer/{idcoursier}', [AdministrationController::class, 'relancerCoursier'])->name('admin.validation.relancer');
+Route::delete('/admin/validation/supprimer/{idcoursier}', [AdministrationController::class, 'supprimerCoursier'])->name('admin.validation.supprimer');
+
+
 // Service Facturation
 Route::get('/facturation/search-coursiers', [FacturationController::class, 'searchCoursiers'])->name('facturation.search-coursiers');
 
@@ -454,13 +400,19 @@ Route::get('/facturation', [FacturationController::class, 'index'])->name('factu
 Route::post('/facturation/filter', [FacturationController::class, 'filterTrips'])->name('facturation.filter');
 Route::post('/facturation/generate', [FacturationController::class, 'generateInvoice'])->name('facturation.generate');
 
-// Service Juridique
-Route::get('/juridique/cookie-politique', function () {
-    return view('juridique.cookie-politique');
-})->name('juridique.index');
 
-/* Route::get('/juridique/anonymisation', [ClientController::class, 'index'])->name('juridique.anonymisation');
-Route::post('/juridique/anonymisation', [ClientController::class, 'anonymiser']); */
+// Service Juridique
+Route::get('/juridique/anonymisation', [JuridiqueController::class, 'showAnonymisationForm'])->name('juridique.anonymisation');
+Route::post('/juridique/anonymisation', [JuridiqueController::class, 'anonymise'])->name('juridique.anonymisation.submit');
+
+Route::get('/privacy', function () {
+    return view('juridique.privacy');
+})->name('privacy');
+
+Route::get('/cgu', function () {
+    return view('juridique.cgu');
+})->name('cgu');
+
 
 // Service Commande
 Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.index');
@@ -468,6 +420,19 @@ Route::get('/commandes', [CommandeController::class, 'index'])->name('commandes.
 Route::post('/commandes/{id}/refuser', [CommandeController::class, 'enregistrerRefus'])->name('commande.refuser');
 Route::post('/commandes/{id}/rembourser', [CommandeController::class, 'rembourserCommande'])->name('commande.rembourser');
 Route::post('/commandes/{id}/mettre-a-jour-statut', [CommandeController::class, 'mettreAJourStatut'])->name('commande.mettreAJourStatut');
+
+
+// Service Course aka LE DIRECTEUR Course
+
+Route::get('/DirecteurCourse', [ServiceCourseController::class, 'index'])->name('serviceCourse.index');
+Route::get('/DirecteurCourse/analyse', [ServiceCourseController::class, 'analyse'])->name('serviceCourse.analyse');
+Route::get('/DirecteurCourse/analyse/statistiquesMensuelles', [ServiceCourseController::class, 'statistiquesMensuelles'])->name('serviceCourse.statistiquesCourses');
+Route::get('/DirecteurCourse/analyse/statistiquesMontants', [ServiceCourseController::class, 'statistiquesMontants'])->name('serviceCourse.statistiquesMontants');
+Route::get('/DirecteurCourse/analyse/statistiquesPrestations', [ServiceCourseController::class, 'statistiquesPrestations'])->name(name: 'serviceCourse.statistiquesPrestations');
+Route::get('/DirecteurCourse/analyse/StatisticsGeo', [ServiceCourseController::class, 'StatisticsGeo'])->name('serviceCourse.StatisticsGeo');
+
+
+
 
 
 

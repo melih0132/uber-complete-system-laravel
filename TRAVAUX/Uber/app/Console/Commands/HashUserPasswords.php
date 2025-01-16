@@ -8,7 +8,11 @@ use App\Models\Coursier;
 use App\Models\Livreur;
 use App\Models\Restaurateur;
 use App\Models\ResponsableEnseigne;
+use App\Models\CarteBancaire;
+
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class HashUserPasswords extends Command
 {
@@ -32,6 +36,9 @@ class HashUserPasswords extends Command
         $this->info('Traitement des mots de passe des responsables d\'enseignes...');
         $this->hashPasswords(ResponsableEnseigne::all(), 'responsable');
 
+        $this->info('Chiffrement des numéros de cartes bancaires des clients...');
+        $this->encryptCarteBancaire();
+
         $this->info('Tous les mots de passe des utilisateurs ont été traités.');
         return 0;
     }
@@ -39,9 +46,7 @@ class HashUserPasswords extends Command
     private function hashPasswords($users, $role)
     {
         foreach ($users as $user) {
-            // Vérifie si le mot de passe est déjà hashé
             if (strlen($user->motdepasseuser) !== 60) {
-                // Hachage du mot de passe
                 $user->motdepasseuser = Hash::make($user->motdepasseuser);
                 $user->save();
 
@@ -49,6 +54,36 @@ class HashUserPasswords extends Command
             } else {
                 $this->info("Le mot de passe du {$role} {$user->emailuser} est déjà hashé.");
             }
+        }
+    }
+
+    private function encryptCarteBancaire()
+    {
+        $cartes = CarteBancaire::all();
+
+        foreach ($cartes as $carte) {
+            if (!$this->isEncrypted($carte->numerocb)) {
+                $carte->numerocb = Crypt::encryptString($carte->numerocb);
+            }
+
+            if (!$this->isEncrypted($carte->cryptogramme)) {
+                $carte->cryptogramme = Crypt::encryptString($carte->cryptogramme);
+            }
+
+            $carte->save();
+            $this->info("Carte ID: {$carte->idcb} chiffrée avec succès.");
+        }
+
+        $this->info('Chiffrement des cartes terminé.');
+    }
+
+    private function isEncrypted($value)
+    {
+        try {
+            Crypt::decryptString($value);
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }

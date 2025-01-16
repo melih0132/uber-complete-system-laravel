@@ -34,7 +34,7 @@
                 $user = session('user');
             @endphp
             <ul>
-                @if (!$user || $user['role'] === 'client' && $user['typeclient'] === 'Uber')
+                @if (!$user || ($user['role'] === 'client' && $user['typeclient'] === 'Uber'))
                     <li>
                         <a data-baseweb="link" href="{{ url('./') }}" target="_self">
                             <img src="/img/Uber.png" alt="Uber Logo" class="logo-image"
@@ -62,15 +62,6 @@
                     <li>
                         <a href="{{ route('conducteurs.demandes', $user['id']) }}" class="header-links">Demandes
                             d'aménagement(s)</a>
-                    </li>
-                @endif
-
-                @if ($user && $user['role'] === 'livreur')
-                    <li class="pr-1">
-                        <a data-baseweb="button" aria-label="Accéder aux courses"
-                            href="{{ route('coursier.livraisons.index') }}" target="_self" class="header-links">Courses
-                            en
-                            attente</a>
                     </li>
                 @endif
 
@@ -135,6 +126,14 @@
                     </li>
                 @endif
 
+                @if ($user && $user['role'] === 'administratif')
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="Valider la finalisation"
+                            href="{{ route('admin.index') }}" target="_self" class="header-links">Finaliser création
+                            coursier</a>
+                    </li>
+                @endif
+
                 @if ($user && $user['role'] === 'facturation')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Voir les courses d'un coursier"
@@ -145,12 +144,12 @@
                 @if ($user && $user['role'] === 'course')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Voir les courses demandées"
-                            href="{{ route('service-course.index') }}" target="_self" class="header-links">Courses
+                            href="{{ route('serviceCourse.index') }}" target="_self" class="header-links">Courses
                             Demandées</a>
                     </li>
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Analyses et Performances"
-                            href="{{ route('service-course.analyse') }}" target="_self"
+                            href="{{ route('serviceCourse.analyse') }}" target="_self"
                             class="header-links">Analayses et Performances</a>
                     </li>
                 @endif
@@ -165,28 +164,28 @@
                 @if ($user && $user['role'] === 'juridique')
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Voir les courses demandées"
-                            href="{{ route('juridique.index') }}" target="_self" class="header-links">Politique de
+                            href="{{ route('privacy') }}" target="_self" class="header-links">Politique de
                             confidentialité</a>
                     </li>
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Analyses et Performances"
-                            href="{{ route('service-course.analyse') }}" target="_self"
+                            href="{{ route('juridique.anonymisation') }}" target="_self"
                             class="header-links">Anonymisation</a>
                     </li>
                 @endif
 
-                @if (!$user || $user['role'] === 'client' && $user['typeclient'] === 'Uber')
+                @if (!$user || ($user['role'] === 'client' && $user['typeclient'] === 'Uber'))
                     <li class="pr-1">
-                        <a href="{{ url('./') }}" class="header-links">Réserver un Uber</a>
-                    </li>
-                    <li class="pr-1">
-                        <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Eats"
-                            href="{{ url('/UberEats') }}" target="_self" class="header-links">Uber&nbsp;Eats
-                        </a>
+                        <a href="{{ url('./') }}" class="header-links">Déplacez-vous avec Uber</a>
                     </li>
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Velo"
                             href="{{ route('velo.show') }}" target="_self" class="header-links">Uber&nbsp;Velo
+                        </a>
+                    </li>
+                    <li class="pr-1">
+                        <a data-baseweb="button" aria-label="En savoir plus sur Uber&nbsp;Eats"
+                            href="{{ url('/UberEats') }}" target="_self" class="header-links">Uber&nbsp;Eats
                         </a>
                     </li>
                     <li class="pr-1">
@@ -196,7 +195,7 @@
                     </li>
                 @endif
             </ul>
-            <ul class="d-flex align-items-center">
+            <ul class="ul-link-login d-flex align-items-center">
                 @if ($user)
                     <li class="pr-1">
                         <a data-baseweb="button" aria-label="Accéder à votre compte" href="{{ url('/myaccount') }}"
@@ -229,13 +228,13 @@
     <footer>
         <div class="footer-container mt-5">
             <div class="footer-links">
-                <a href="{{ route('juridique.index') }}">Politique de Cookies</a>
+                <a href="{{ route('privacy') }}">Politique de Cookies</a>
             </div>
             <div class="footer-info">
                 <p>&copy; {{ date('Y') }} Uber. Tous droits réservés.</p>
                 <p>
                     Ce site utilise des cookies pour améliorer l'expérience utilisateur.
-                    <a href="{{ route('juridique.index') }}">En savoir plus</a>.
+                    <a href="{{ route('privacy') }}">En savoir plus</a>.
                 </p>
             </div>
         </div>

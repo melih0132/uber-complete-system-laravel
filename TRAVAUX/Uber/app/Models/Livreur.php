@@ -28,6 +28,13 @@ class Livreur extends Model
         'notemoyenne',
     ];
 
+    protected $casts = [
+        'datenaissance' => 'date',
+        'datedebutactivite' => 'date',
+        'notemoyenne' => 'float',
+    ];
+
+
     public function entreprise()
     {
         return $this->belongsTo(Entreprise::class, 'identreprise');
@@ -40,7 +47,7 @@ class Livreur extends Model
 
     public function horaires()
     {
-        return $this->hasMany(HorairesLivreur::class, 'idlivreur');
+        return $this->hasMany(Horaires::class, 'idlivreur', 'idlivreur');
     }
 
     public function commandes()

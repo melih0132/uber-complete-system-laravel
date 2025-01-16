@@ -8,18 +8,33 @@
 
 @section('content')
     <section>
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="section-header text-center">
             <h1>Votre trajet touche à sa fin !</h1>
             <p class="subtitle">Merci de confirmer votre fin de course ci-dessous.</p>
+            <p class="subtitle">Remarque : il faut que votre coursier valide la fin de la course avant que vous puissiez
+                valider.</p>
         </div>
 
         <div class="d-flex flex-column justify-content-center align-items-center mt-4">
             <p>
                 <i class="fas fa-route"></i>
-                Distance parcourue : <strong>{{ $course['distance'] ?? 'Non disponible' }} km</strong>
+                Distance parcourue : <strong>{{ $distance ?? 'Non disponible' }} km</strong>
             </p>
             @php
-                $adjusted_time = $course['temps'] ?? 0;
+                $adjusted_time = $temps ?? 0;
                 $hours = floor($adjusted_time / 60);
                 $minutes = $adjusted_time % 60;
                 $formatted_time = sprintf('%2dh%02d minutes', $hours, $minutes);
@@ -30,25 +45,20 @@
             </p>
             <p>
                 <i class="fas fa-euro-sign"></i>
-                Prix total : <strong>{{ $course['prixcourse'] ?? 'Non spécifié' }} €</strong>
+                Prix total : <strong>{{ $prixcourse ?? 'Non spécifié' }} €</strong>
             </p>
         </div>
-
-        @if ($statutcourse == 'Terminée')
-
-
 
         <div class="d-flex justify-content-center mt-3">
 
             <form method="POST" class="mx-2" action="{{ route('course.addTipRate') }}" id="complete-course-form">
                 @csrf
-                <input type="hidden" name="idreservation" value="{{ $course['idreservation'] }}">
+                <input type="hidden" name="idreservation" value="{{ $idreservation }}">
                 <button type="submit" class="btn-valider">
                     <i class="fas fa-check-circle"></i> Terminer la Course
                 </button>
             </form>
         </div>
-        @endif
     </section>
 @endsection
 

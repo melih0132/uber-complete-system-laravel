@@ -23,15 +23,12 @@ class Otp extends Model
 
     protected $casts = [
         'utilise' => 'boolean',
+        'dategeneration' => 'datetime',
+        'dateexpiration' => 'datetime',
     ];
 
     public function client()
     {
         return $this->belongsTo(Client::class, 'idclient', 'idclient');
-    }
-
-    public function isValid()
-    {
-        return !$this->utilise && now()->lessThanOrEqualTo($this->dateexpiration);
     }
 }

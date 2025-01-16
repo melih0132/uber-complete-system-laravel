@@ -4,9 +4,9 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4">Service Commande - Liste des Commandes</h1>
+        <h1 class="mb-4 text-center">Service Commande - Liste des Commandes</h1>
 
-        @if (session('success'))
+        {{-- @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
@@ -16,7 +16,7 @@
             <div class="alert alert-danger">
                 {{ session('error') }}
             </div>
-        @endif
+        @endif --}}
 
         @if ($commandes->isEmpty())
             <p class="text-center">Aucune commande n'a été trouvée.</p>

@@ -40,6 +40,7 @@
                     <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir un rôle</option>
                     <option value="rh" {{ old('role') === 'rh' ? 'selected' : '' }}>RH</option>
                     <option value="logistique" {{ old('role') === 'logistique' ? 'selected' : '' }}>Logistique</option>
+                    <option value="administratif" {{ old('role') === 'administratif' ? 'selected' : '' }}>Administratif</option>
                     <option value="facturation" {{ old('role') === 'facturation' ? 'selected' : '' }}>Facturation</option>
                     <option value="course" {{ old('role') === 'course' ? 'selected' : '' }}>Course</option>
                     <option value="commande" {{ old('role') === 'commande' ? 'selected' : '' }}>Commande</option>

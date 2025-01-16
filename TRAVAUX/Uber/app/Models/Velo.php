@@ -20,11 +20,6 @@ class Velo extends Model
         'estdisponible',
     ];
 
-    public function startAddress()
-    {
-        return $this->belongsTo(Adresse::class, 'adr_idadresse', 'idadresse');
-    }
-
     public function adresse()
     {
         return $this->belongsTo(Adresse::class, 'idadresse', 'idadresse');

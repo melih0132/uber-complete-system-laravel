@@ -17,7 +17,7 @@ use App\Models\ResponsableEnseigne;
 use App\Models\Restaurateur;
 
 use App\Models\Adresse;
-use App\Models\Code_postal;
+use App\Models\CodePostal;
 use App\Models\Ville;
 
 use Illuminate\Support\Facades\DB;
@@ -174,10 +174,6 @@ class RegisterController extends Controller
             'idclient' => $client->idclient,
             'prix' => 0,
         ]);
-
-        PlanningReservation::create([
-            'idclient' => $client->idclient,
-        ]);
     }
 
     private function createLivreur(Request $request, $idadresse)
@@ -255,7 +251,7 @@ class RegisterController extends Controller
             $adresseEntreprise = null;
 
             if (!empty($request->adresseEntreprise) && !empty($request->villeEntreprise) && !empty($request->codepostalEntreprise)) {
-                $codePostalEntreprise = Code_postal::firstOrCreate([
+                $codePostalEntreprise = CodePostal::firstOrCreate([
                     'codepostal' => $request->codepostalEntreprise,
                     'idpays' => 1 // Exemple pour le pays par défaut
                 ]);
@@ -304,7 +300,7 @@ class RegisterController extends Controller
 
     private function getOrCreateAdresse(Request $request)
     {
-        $codePostal = Code_postal::firstOrCreate([
+        $codePostal = CodePostal::firstOrCreate([
             'codepostal' => $request->codepostal,
             'idpays' => 1
         ]);

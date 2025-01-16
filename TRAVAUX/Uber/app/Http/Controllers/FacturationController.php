@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\Coursier;
 use App\Models\Course;
 use App\Models\Entretien;
 use App\Models\Vehicule;
+
 use App\Models\Facture;
 use Mpdf\Mpdf as PDF;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -124,128 +127,92 @@ class FacturationController extends Controller
             ->header('Content-Type', 'application/pdf');
     }
 
-
     public function generateInvoiceCourse(Request $request, $idreservation)
     {
         $validated = $request->validate([
             'pourboire' => 'nullable|numeric|min:0|max:80',
-            'notecourse' =>'nullable|numeric|min:0|max:5'
+            'notecourse' => 'nullable|numeric|min:0|max:5',
         ]);
 
-        // ceci fonctionne mais dès qu'on l'enlève, elle ne marche plus
         $pourboire = $validated['pourboire'] ?? 0;
         $note = $validated['notecourse'] ?? null;
 
         $locale = $request->input('locale', 'fr');
         app()->setLocale($locale);
 
-        $course = DB::table('course as c')
-            ->join('coursier as cou', 'cou.idcoursier', '=', 'c.idcoursier')
-            ->join('reservation as r', 'c.idreservation', '=', 'r.idreservation')
-            ->join('client as cl', 'r.idclient', '=', 'cl.idclient')
-            ->join('adresse as a_start', 'c.idadresse', '=', 'a_start.idadresse')
-            ->join('adresse as a_end', 'c.adr_idadresse', '=', 'a_end.idadresse')
-            ->join('type_prestation as tp', 'c.idprestation', '=', 'tp.idprestation')
-            ->select(
-                'c.idcourse',
-                'cou.nomuser as chauffeur',
-                'c.prixcourse',
-                'c.pourboire',
-                'c.distance',
-                'c.temps',
-                'c.datecourse',
-                'c.heurecourse',
-                'a_start.libelleadresse as startAddress',
-                'a_end.libelleadresse as endAddress',
-                'tp.libelleprestation',
-                'r.datereservation',
-                'r.heurereservation',
-                'cl.*',
-                'cou.idcoursier',
-                'cou.notemoyenne'
-
-            )
-            ->where('c.idreservation', $idreservation)
+        // Tentative de récupération de la course et de ses relations
+        $course = Course::with(['coursier', 'reservation.client', 'startAddress', 'endAddress', 'prestations'])
+            ->where('idreservation', $idreservation)
             ->first();
 
+        if (!$course) {
+            abort(404, 'Course not found');
+        }
 
-        $TVA = DB::table('pays')
-            ->select(
-                'pourcentagetva',
-            )
-            ->where('nompays', 'France')
-            ->first();
+        // Manipulation des données récupérées
+        $dateCourse = Carbon::parse($course->datecourse)->locale('fr')->isoFormat('D MMMM YYYY');
+        $dureeCourse = gmdate('H:i:s', $course->temps ?? 0);
 
-        $datecourse = Carbon::parse($course->datecourse)
-            ->locale('fr')
-            ->isoFormat('D MMMM YYYY');
-
-
-        $duree_course = Carbon::parse($course->temps)->format('H:i:s');
+        // Calcul TVA
+        $tvaRate = DB::table('pays')->where('nompays', 'France')->value('pourcentagetva') ?? 20;
 
         $data = [
-            'idclient' => $course->idclient,
-            'idcoursier' => $course->idcoursier,
-            'company_name' => "Uber",
+            'idclient' => $course->reservation->client->idclient,
+            'idcoursier' => $course->coursier->idcoursier,
+            'company_name' => 'Uber',
             'idcourse' => $course->idcourse,
-            'chauffeur' => $course->chauffeur,
-            'startAddress' => $course->startAddress,
-            'endAddress' => $course->endAddress,
+            'chauffeur' => $course->coursier->nomuser,
+            'startAddress' => $course->startAddress->libelleadresse ?? '',
+            'endAddress' => $course->endAddress->libelleadresse ?? '',
             'prixcourse' => $course->prixcourse,
-            'datecourse' => $datecourse,
-            'duree_course' => $duree_course,
+            'datecourse' => $dateCourse,
+            'duree_course' => $dureeCourse,
             'pourboire' => $pourboire,
-            'datereservation' => $course->datereservation,
-            'heurereservation' => $course->heurereservation,
+            'datereservation' => $course->reservation->datereservation,
+            'heurereservation' => $course->reservation->heurereservation,
             'heurecourse' => $course->heurecourse,
-            'libelleprestation' => $course->libelleprestation,
-            'pourcentagetva' => $TVA->pourcentagetva,
-            'monnaie' => '€'
+            'libelleprestation' => $course->prestations->libelleprestation ?? '',
+            'pourcentagetva' => $tvaRate,
+            'monnaie' => '€',
         ];
 
+        // Mise à jour de la note et du pourboire si nécessaire
+        if ($note !== null) {
+            $newAverage = ($course->coursier->notemoyenne
+                ? ($note + $course->coursier->notemoyenne) / 2
+                : $note);
 
-
-        if ($note != null) {
-            DB::table('coursier')->where('idcoursier',$data['idcoursier'] )
-            ->update( ['notemoyenne' => ($note+ $course->notemoyenne)/2]);
-
-
-            DB::table('course')->where('idreservation',$idreservation )
-            ->update( ['notecourse' => $note]);
+            $course->coursier->update(['notemoyenne' => $newAverage]);
+            $course->update(['notecourse' => $note]);
         }
 
-
-        if ($pourboire != 0){
-            DB::table('course')->where('idreservation',$idreservation )
-            ->update( ['pourboire' => $data['pourboire']]);
-
+        if ($pourboire > 0) {
+            $course->update(['pourboire' => $pourboire]);
         }
 
-        $datefacture = Carbon::now('Europe/Paris');
+        // Mise à jour ou création de la facture
+        Facture::updateOrCreate([
+            'idreservation' => $idreservation,
+        ], [
+            'idpays' => 1,
+            'idclient' => $data['idclient'],
+            'datefacture' => Carbon::now('Europe/Paris'),
+            'montantreglement' => $data['prixcourse'] * (1 + $tvaRate / 100) + $pourboire,
+        ]);
 
-
-            Facture::updateOrCreate([
-                'idreservation' => $idreservation,
-                'idpays' => 1,
-                'idclient' => $data['idclient'] ,
-                'datefacture' => $datefacture,
-                'montantreglement' => $data['prixcourse'] * 20 / 100 + $data['prixcourse'] + $pourboire
-            ]);
-
-
-
+        // Générer le PDF
         $html = view('facturation.facture', $data)->render();
-
         $pdf = new PDF([
             'mode' => 'utf-8',
             'format' => 'A4',
         ]);
-
         $pdf->WriteHTML($html);
 
-        return response($pdf->Output("Facture_" . $idreservation . "pdf", 'I'), 200)
+        // Retourner la réponse avec le PDF généré
+        return response($pdf->Output("Facture_{$idreservation}.pdf", 'I'), 200)
             ->header('Content-Type', 'application/pdf');
     }
+
 
     private function authorizeAccess(Request $request)
     {

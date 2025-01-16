@@ -14,7 +14,6 @@ class Adresse extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idadresse',
         'libelleadresse',
         'idville',
     ];
@@ -22,5 +21,30 @@ class Adresse extends Model
     public function ville()
     {
         return $this->belongsTo(Ville::class, 'idville', 'idville');
+    }
+
+    public function commandes()
+    {
+        return $this->hasMany(Commande::class, 'idadresse', 'idadresse');
+    }
+
+    public function lieuFavoris()
+    {
+        return $this->hasMany(LieuFavori::class, 'idadresse', 'idadresse');
+    }
+
+    public function velos()
+    {
+        return $this->hasMany(Velo::class, 'idadresse', 'idadresse');
+    }
+
+    public function entreprises()
+    {
+        return $this->hasMany(Entreprise::class, 'idadresse', 'idadresse');
+    }
+
+    public function coursiers()
+    {
+        return $this->hasMany(Coursier::class, 'idadresse', 'idadresse');
     }
 }

@@ -74,6 +74,15 @@ class SecurityController extends Controller
 
 
 
+
+
+
+
+
+
+
+
+
     public function activateMFA(Request $request)
     {
         $sessionUser = $request->session()->get('user');
@@ -117,21 +126,25 @@ class SecurityController extends Controller
 
     private function sendSmsWithNexmo($recipientPhone, $message)
     {
-        $basic  = new Basic("e4cf7363", "QuSONeu3MW7FEEG9");
+        $basic = new Basic(env('VONAGE_KEY'), env('VONAGE_SECRET'));
         $client = new ClientVonage($basic);
 
-        $response = $client->sms()->send(
-            new \Vonage\SMS\Message\SMS($recipientPhone, "Uber", $message)
-        );
+        $cleanMessage = preg_replace('/\[.*?\]$/', '', $message);
 
-        /* dd($response); */
+        try {
+            $response = $client->sms()->send(
+                new SMS($recipientPhone, "Uber", $cleanMessage)
+            );
 
-        $message = $response->current();
+            $sentMessage = $response->current();
 
-        if ($message->getStatus() == 0) {
-            echo "The message was sent successfully\n";
-        } else {
-            echo "The message failed with status: " . $message->getStatus() . "\n";
+            if ($sentMessage->getStatus() == 0) {
+                echo "The message was sent successfully.\n";
+            } else {
+                echo "The message failed with status: " . $sentMessage->getStatus() . "\n";
+            }
+        } catch (\Exception $e) {
+            echo "Error sending SMS: " . $e->getMessage() . "\n";
         }
     }
 
@@ -145,8 +158,6 @@ class SecurityController extends Controller
         }
 
         $user = Client::find($sessionUser['id']);
-
-        /* dd($user); */
 
         if (!$user) {
             return back()->withErrors(['Utilisateur introuvable.']);
@@ -163,7 +174,8 @@ class SecurityController extends Controller
 
         $otpCode = mt_rand(100000, 999999);
 
-        $dateGeneration = now()->addHour(1);
+        $reelNow = now();
+        $dateGeneration = $reelNow;
         $dateExpiration = (clone $dateGeneration)->addMinutes(5);
 
         Otp::create([
@@ -174,7 +186,7 @@ class SecurityController extends Controller
             'utilise'        => false,
         ]);
 
-        $message = "Votre code OTP est : $otpCode. Il expire dans 5 minutes.";
+        $message = "Votre code de vérification est : $otpCode.";
 
         try {
             $formattedPhone = $this->formatPhoneNumber($user->telephone);
@@ -200,7 +212,7 @@ class SecurityController extends Controller
     public function verifyOtp(Request $request)
     {
         $request->validate([
-            'codeotp' => 'required|digits:6',
+            'codeotp' => 'required|digits:6', // S'assurer que le code OTP est composé de 6 chiffres
         ]);
 
         $mfaUser = $request->session()->get('mfa_user');
@@ -212,14 +224,11 @@ class SecurityController extends Controller
 
         $user = Client::find($mfaUser['id']);
 
-        /* dd($user); */
-
         if (!$user) {
             return redirect()->route('login')
                 ->withErrors(['Utilisateur introuvable.']);
         }
 
-        // Verify OTP
         $otp = Otp::where('idclient', $user->idclient)
             ->where('codeotp', $request->codeotp)
             ->where('utilise', false)
@@ -231,6 +240,12 @@ class SecurityController extends Controller
         }
 
         $otp->update(['utilise' => true]);
+
+        $request->session()->put('user', [
+            'id' => $user->idclient,
+            'role' => $mfaUser['role'],
+            'typeclient' => $user->typeclient,
+        ]);
 
         return redirect()->route('myaccount')
             ->with('success', 'Connexion réussie.');
@@ -251,14 +266,16 @@ class SecurityController extends Controller
             return back()->withErrors(['Utilisateur introuvable.']);
         }
 
+        $reelNow = now();
+
         // Generate a new OTP
         $otpCode = mt_rand(100000, 999999);
 
         Otp::create([
             'idclient'       => $user->idclient,
             'codeotp'        => $otpCode,
-            'dategeneration' => now(),
-            'dateexpiration' => now()->addMinutes(5),
+            'dategeneration' => $reelNow,
+            'dateexpiration' => $reelNow->addMinutes(5),
             'utilise'        => false,
         ]);
 

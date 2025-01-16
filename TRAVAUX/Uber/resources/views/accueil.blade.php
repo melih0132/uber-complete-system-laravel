@@ -16,24 +16,30 @@
         <script src="{{ asset('js/leaflet.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="{{ asset('js/main.js') }}" defer></script>
-
     @endsection
+
+
 
     @section('content')
         <section>
             <div class="main-container">
                 <div class="row p-4">
                     <div class="col-12 col-sm-6">
-                        <h1 class="pb-4">Allez où vous voulez avec Uber</h1>
+                        <h1 class="pb-4">Commandez ou planifiez une course</h1>
                         <form action="{{ route('course.index') }}" method="POST">
                             @csrf
+
+                            <div>
+                                <h6>Ajoutez les détails de votre course, montez à bord et c'est parti.</h6>
+                            </div>
 
                             <div class="address-input-container">
                                 <!-- Adresse de départ -->
                                 <label for="startAddress" class="form-label"></label>
                                 <div class="input-with-dropdown">
-                                    <input type="text" id="startAddress" name="startAddress" placeholder="Adresse de départ"
-                                        oninput="fetchSuggestions(this, 'startSuggestions')" required class="form-control">
+                                    <input type="text" id="startAddress" name="startAddress"
+                                        placeholder="Adresse de départ" oninput="fetchSuggestions(this, 'startSuggestions')"
+                                        required>
                                     <button type="button" class="dropdown-toggle" id="startFavoritesToggle">
                                         <i class="fas fa-star"></i>
                                     </button>
@@ -49,7 +55,7 @@
                                 <label for="endAddress" class="form-label"></label>
                                 <div class="input-with-dropdown">
                                     <input type="text" id="endAddress" name="endAddress" placeholder="Adresse d'arrivée"
-                                        oninput="fetchSuggestions(this, 'endSuggestions')" required class="form-control">
+                                        oninput="fetchSuggestions(this, 'endSuggestions')" required>
                                     <button type="button" class="dropdown-toggle" id="endFavoritesToggle">
                                         <i class="fas fa-star"></i>
                                     </button>
@@ -67,7 +73,8 @@
                                         {{ old('tripDate', isset($tripDate) ? \Carbon\Carbon::parse($tripDate)->translatedFormat('d F Y') : 'Aujourd\'hui') }}
                                     </label>
                                     <input type="date" id="tripDate" name="tripDate"
-                                        value="{{ old('tripDate', $tripDate ?? date('Y-m-d')) }}" onchange="updateDateLabel()">
+                                        value="{{ old('tripDate', $tripDate ?? date('Y-m-d')) }}"
+                                        onchange="updateDateLabel()">
                                 </div>
 
                                 <div id="customTimePicker" class="date-time-container mt-3">
@@ -102,7 +109,7 @@
             </div>
         </section>
 
-        @yield('Prestation')
+        @yield('TypePrestation')
 
         <section>
             <div class="main-container mt-5">
@@ -154,12 +161,13 @@
                         Web, y compris les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou
                         cliquez sur « Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins.
                         Pour en savoir plus, consultez notre
-                        <a href="{{ url('/juridique/cookie-politique') }}">
+                        <a href="{{ url('/juridique/privacy') }}">
                             Déclaration relative aux cookies
                         </a>
                     </p>
                     <div class="d-flex justify-content-end">
-                        <button id="cookie-settings" class="text-decoration-underline mx-4">Paramètres des cookies</button>
+                        <button id="cookie-settings" class="text-decoration-underline mx-4">Paramètres des
+                            cookies</button>
                         <button id="cookie-reject" class="mx-2">Refuser</button>
                         <button id="cookie-accept" class="">Accepter</button>
                     </div>
@@ -191,7 +199,8 @@
                             </div>
                             <div id="cookie-settings-description">
                                 <p data-baseweb="typo-paragraphsmall">
-                                    Les cookies essentiels sont nécessaires aux fonctionnalités fondamentales de notre site ou
+                                    Les cookies essentiels sont nécessaires aux fonctionnalités fondamentales de notre site
+                                    ou
                                     de
                                     nos services,
                                     telles que la connexion au compte, l'authentification et la sécurité du site.

@@ -165,6 +165,15 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label for="consentement_cgu">
+                    En créant un compte Uber, vous acceptez les <a href="{{ route('cgu') }}" target="_blank">conditions
+                        générales d'utilisation</a>
+                    et la
+                    <a href="{{ route('privacy') }}" target="_blank">politique de confidentialité</a>.
+                </label>
+            </div>
+
             <!-- Notifications -->
             @if (session('success') || session('error'))
                 <div class="alert-message @if (session('success')) success @elseif(session('error')) error @endif"

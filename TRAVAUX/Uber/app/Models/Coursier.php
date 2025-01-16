@@ -13,8 +13,6 @@ class Coursier extends Model
     protected $primaryKey = "idcoursier";
     public $timestamps = false;
 
-    public $incrementing = true;
-
     protected $fillable = [
         'idcoursier',
         'identreprise',
@@ -26,7 +24,6 @@ class Coursier extends Model
         'telephone',
         'emailuser',
         'motdepasseuser',
-        'idadresse',
         'numerocartevtc',
         'iban',
         'datedebutactivite',
@@ -47,9 +44,9 @@ class Coursier extends Model
         return $this->belongsTo(Entreprise::class, 'identreprise');
     }
 
-    public function adresseDepart()
+    public function adresse()
     {
-        return $this->belongsTo(Adresse::class, 'idadresse');
+        return $this->belongsTo(Adresse::class, 'idadresse', 'idadresse');
     }
 
     public function entretien()
@@ -62,7 +59,8 @@ class Coursier extends Model
         return $this->hasMany(Vehicule::class, 'idcoursier', 'idcoursier');
     }
 
-    protected $attributes = [
-        'notemoyenne' => 0,
-    ];
+    public function horaires()
+    {
+        return $this->hasMany(Horaires::class, 'idcoursier', 'idcoursier');
+    }
 }

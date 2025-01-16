@@ -82,7 +82,7 @@
     });
 </script>
 
-@section('Prestation')
+@section('TypePrestation')
     <section>
 
         <div class="container">

@@ -16,9 +16,12 @@
                     <li><strong>Type :</strong> {{ $type == 'course' ? 'Course' : 'Livraison' }}</li>
                     <li><strong>Client :</strong> {{ $taskDetails->genreuser }} {{ $taskDetails->nomuser }}
                         {{ $taskDetails->prenomuser }}</li>
-                    <li><strong>Adresse de départ :</strong> {{ $taskDetails->libelle_idadresse ?? 'Non spécifiée' }}</li>
-                    <li><strong>Adresse de destination :</strong>
-                        {{ $taskDetails->libelle_adr_idadresse ?? 'Non spécifiée' }}</li>
+                    @if ($type == 'course')
+                        <li><strong>Adresse de départ :</strong> {{ $taskDetails->libelle_idadresse ?? 'Non spécifiée' }}
+                        </li>
+                        <li><strong>Adresse de destination :</strong>
+                            {{ $taskDetails->libelle_adr_idadresse ?? 'Non spécifiée' }}</li>
+                    @endif
                     <li><strong>Ville :</strong> {{ $taskDetails->nomville ?? 'Non spécifiée' }}</li>
                     <li><strong>Prix estimé :</strong>
                         {{ $type == 'course' ? $taskDetails->prixcourse : $taskDetails->prixcommande }} €</li>
@@ -35,7 +38,7 @@
                     action="{{ route($type == 'course' ? 'coursier.courses.finish' : 'coursier.livraisons.finish', ['idreservation' => $id]) }}"
                     class="mt-2">
                     @csrf
-                    <button type="submit" class="btn-reserver btn-primary">Fin de la tâche</button>
+                    <button type="submit" class="btn-valider">Fin de la tâche</button>
                 </form>
             </div>
         </div>

@@ -26,6 +26,7 @@ class Vehicule extends Model
         'couleur',
         'statusprocessuslogistique',
         'demandemodification',
+        'demandemodificationeffectue',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class Vehicule extends Model
         'estconfortable' => 'boolean',
         'estrecent' => 'boolean',
         'estluxueux' => 'boolean',
+        'demandemodificationeffectue' => 'boolean',
     ];
 
     public function coursier()
@@ -43,6 +45,6 @@ class Vehicule extends Model
 
     public function prestations()
     {
-        return $this->belongsToMany(Prestation::class, 'a_comme_type', 'idvehicule', 'idprestation');
+        return $this->belongsToMany(TypePrestation::class, 'a_comme_type', 'idvehicule', 'idprestation');
     }
 }

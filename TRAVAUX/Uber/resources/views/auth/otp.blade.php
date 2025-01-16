@@ -37,12 +37,12 @@
                                 <label for="codeotp">Code OTP</label>
                                 <input type="text" name="codeotp" id="codeotp" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-3">Vérifier</button>
+                            <button type="submit" class="btn-login mt-3">Vérifier</button>
                         </form>
 
                         <form method="POST" action="{{ route('resendOtp') }}" class="mt-3">
                             @csrf
-                            <button type="submit" class="btn btn-secondary">Renvoyer le Code OTP</button>
+                            <button type="submit" class="btn-login">Renvoyer le Code OTP</button>
                         </form>
                     </div>
                 </div>

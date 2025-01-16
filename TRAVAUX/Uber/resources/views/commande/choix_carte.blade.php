@@ -35,7 +35,6 @@
                 @foreach ($cartes as $carte)
                     <label>
                         <input type="radio" id="carte_{{ $carte->idcb }}" name="carte_id" value="{{ $carte->idcb }}">
-                        
                         <span>
                             **** **** **** {{ substr($carte->numerocb, -4) }} - Exp.
                             {{ date('m/Y', strtotime($carte->dateexpirecb)) }}
@@ -45,6 +44,7 @@
             </div>
             <button type="submit" class="btn-panier">Utiliser cette carte</button>
         </form>
+
         <a href="{{ route('carte-bancaire.create') }}" class="btn-panier text-decoration-none">Ajouter une nouvelle carte
             bancaire</a>
     </div>
@@ -75,13 +75,10 @@
         cardNumberInput.addEventListener('input', (event) => {
             let input = event.target.value;
 
-            // Supprime tous les espaces
             input = input.replace(/\s+/g, '');
 
-            // Ajoute un espace tous les 4 chiffres
             input = input.replace(/(\d{4})/g, '$1 ').trim();
 
-            // Met à jour la valeur dans le champ
             event.target.value = input;
         });
     </script>

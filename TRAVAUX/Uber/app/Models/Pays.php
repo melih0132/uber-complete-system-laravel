@@ -14,14 +14,13 @@ class Pays extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idpays',
         'nompays',
         'pourcentagetva',
     ];
 
     public function codePostaux()
     {
-        return $this->hasMany(Code_postal::class, 'idpays', 'idpays');
+        return $this->hasMany(CodePostal::class, 'idpays', 'idpays');
     }
 
     public function villes()

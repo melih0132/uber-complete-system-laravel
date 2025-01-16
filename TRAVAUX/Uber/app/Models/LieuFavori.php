@@ -26,6 +26,6 @@ class LieuFavori extends Model
 
     public function adresse()
     {
-        return $this->belongsTo(Adresse::class, 'idadresse');
+        return $this->belongsTo(Adresse::class, 'idadresse', 'idadresse');
     }
 }

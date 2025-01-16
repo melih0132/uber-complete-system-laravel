@@ -41,8 +41,22 @@
         </div>
         <hr/>
         <h2 class="text-decoration-underline mt-5 mb-4">Panier</h2>
-        <p>Sur cette page vous pouvez gérer votre panier, puis poursuivre votre commande  </p>
+        <p>Sur cette page vous pouvez gérer votre panier, puis poursuivre votre commande.  </p>
         <img class="img-fluid my-5" src="{{ asset('img/guide-ubereat/panier.png') }}">
+        <hr/>
+        <h2 class="text-decoration-underline mt-5 mb-4">Mode de livraison</h2>
+        <p>Sur cette page choisissez si vous voulez être livré ou si vous préférez allé retirer votre commande.<br>
+           Si vous souhaitez être livré, il vous faut renseigner vos coordonnées de livraison.<br>
+           Vous pouvez ensuite passer au paiement.</p>
+        <img class="img-fluid my-5" src="{{ asset('img/guide-ubereat/modelivraison.png') }}">
+        <hr/>
+        <h2 class="text-decoration-underline mt-5 mb-4">Paiement</h2>
+        <p style="font-size: 1.1rem;">Dans un premier temps sélectionnez la carte bancaire que vous souhaitez utiliser puis cliquez sur "Utiliser cette carte",<br>
+           sinon cliquez sur "Ajouter une nouvelle carte bancaire".  </p>
+        <img class="img-fluid my-4" src="{{ asset('img/guide-ubereat/choixcarte.png') }}">
+        <p>Sur notre site nous utilisons Stripe pour un paiement sécurisé, remplissez toutes les informations comme expliqué ci-dessous puis cliquez sur "Payer".<br>
+           Dans le cadre d'un paiement de test, saisissez comme numéro de carte : 4242 4242 4242 4242.   </p>
+        <img class="img-fluid my-4" src="{{ asset('img/guide-ubereat/stripe.png') }}">
     </div>
 </section>
 @endsection

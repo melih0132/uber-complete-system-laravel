@@ -195,7 +195,7 @@
 
                             <!-- Pagination des établissements -->
                             <div class="d-flex justify-content-center mt-4">
-                                {{ $etablissements->appends(request()->except('page'))->onEachSide(1)->links('pagination::bootstrap-4') }}
+                                {{ $etablissements->appends(request()->all())->onEachSide(1)->links('pagination::bootstrap-4') }}
                             </div>
                         @endif
                     </div>
@@ -237,7 +237,7 @@
 
                     <!-- Pagination des produits -->
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $produits->appends(request()->except('page'))->onEachSide(1)->links('pagination::bootstrap-4') }}
+                        {{ $produits->appends(request()->all())->links('pagination::bootstrap-4') }}
                     </div>
                 @endif
             </div>
@@ -254,9 +254,10 @@
             const rightButton = document.getElementById('btn-right');
             const cards = document.querySelectorAll('.minimal-carousel-card');
             const inputHidden = document.getElementById('categorie_restaurant');
+            const searchButton = document.querySelector('.btn-panier'); // Bouton Rechercher
 
             // Si des éléments du carrousel n’existent pas, on n’applique pas la logique
-            if (!track || !leftButton || !rightButton || cards.length === 0 || !inputHidden) {
+            if (!track || !leftButton || !rightButton || cards.length === 0 || !inputHidden || !searchButton) {
                 return;
             }
 
@@ -349,6 +350,11 @@
                 currentPosition = Math.min(currentPosition, maxScroll);
                 updateSlide();
             }
+
+            // Afficher un message d'information ou une alerte
+            function showMessage(message) {
+                alert(message); // Utilise une simple alerte
+            }
         });
     </script>
     <script>
@@ -379,17 +385,17 @@
         });
     </script>
     <script>
-    var botmanWidget = {
-        frameEndpoint: '/botman/chat',
-        introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
-        chatServer: '/botman',
-        mainColor: '#000000',
-        bubbleBackground: '#FFFFFF',
-        bubbleAvatarUrl: '../img/UberLogo.png',
-        title: 'Assistant Uber',
-        headerTextColor: '#FFFFFF',
-        placeholderText: 'Écrivez votre message ici...',
-    };
-</script>
-<script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+        var botmanWidget = {
+            frameEndpoint: '/botman/chat',
+            introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
+            chatServer: '/botman',
+            mainColor: '#06C16A',
+            bubbleBackground: '#06C16A',
+            bubbleAvatarUrl: '../img/UberEatsPetit.png',
+            title: 'Assistant Uber',
+            headerTextColor: '#000000',
+            placeholderText: 'Écrivez votre message ici...',
+        };
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 @endsection

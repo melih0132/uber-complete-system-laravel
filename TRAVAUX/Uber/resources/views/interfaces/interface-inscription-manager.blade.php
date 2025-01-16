@@ -13,7 +13,7 @@
             <div class="col-12 col-sm-6 interface d-flex align-items-center">
                 <a href="{{ route('register.manager', ['role' => 'responsable']) }}" class="text-decoration-none">
                     <div class="bloc-interface">
-                        <h2>Devenez Brand Manager</h2>
+                        <h2>Devenez Responsable d'enseigne sur Uber Eats</h2>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
                             <path d="m22.2 12-6.5 9h-3.5l5.5-7.5H2v-3h15.7L12.2 3h3.5l6.5 9Z" fill="currentColor"></path>
                         </svg>
@@ -23,7 +23,7 @@
             <div class="col-12 col-sm-6 interface d-flex align-items-center">
                 <a href="{{ route('register.manager', ['role' => 'restaurateur']) }}" class="text-decoration-none">
                     <div class="bloc-interface">
-                        <h2>Devenez Restaurateur</h2>
+                        <h2>Devenez Restaurateur <br>sur Uber Eats</h2>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
                             <path d="m22.2 12-6.5 9h-3.5l5.5-7.5H2v-3h15.7L12.2 3h3.5l6.5 9Z" fill="currentColor"></path>
                         </svg>

@@ -16,34 +16,56 @@
             </div>
         @endif
 
-        <form action="{{ route('juridique.anonymiser') }}" method="POST">
+        <!-- Search Bar -->
+        <form method="GET" action="{{ route('juridique.anonymisation') }}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control"
+                    placeholder="Rechercher un client (par prénom, nom ou email)" value="{{ request('search') }}">
+                <button type="submit" class="btn-uber mx-2">Rechercher</button>
+            </div>
+        </form>
+
+        <!-- Client Table -->
+        <form action="{{ route('juridique.anonymisation') }}" method="POST">
             @csrf
             <table class="table">
                 <thead>
                     <tr>
                         <th>Sélectionner</th>
+                        <th>Prénom</th>
                         <th>Nom</th>
                         <th>Email</th>
                         <th>Téléphone</th>
-                        <th>Date d'inscription</th>
+                        <th>Dernière date de connexion</th>
+                        <th>Demande de suppression</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($clients as $client)
+                    @forelse ($clients as $client)
                         <tr>
                             <td>
-                                <input type="checkbox" name="client_ids[]" value="{{ $client->id }}">
+                                <input type="checkbox" name="client_ids[]" value="{{ $client->idclient }}" />
                             </td>
-                            <td>{{ $client->name }}</td>
-                            <td>{{ $client->email }}</td>
-                            <td>{{ $client->phone }}</td>
-                            <td>{{ $client->created_at }}</td>
+                            <td>{{ $client->prenomuser }}</td>
+                            <td>{{ $client->nomuser }}</td>
+                            <td>{{ $client->emailuser }}</td>
+                            <td>{{ $client->telephone }}</td>
+                            <td>{{ $client->last_connexion ? $client->last_connexion->format('d/m/Y H:i') : 'N/A' }}</td>
+                            <td>{{ $client->demande_suppression ? 'Oui' : 'Non' }}</td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center">Aucun client trouvé.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
 
-            <button type="submit" class="btn btn-danger">Anonymiser les données sélectionnées</button>
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn-uber">Anonymiser les données sélectionnées</button>
+                {{ $clients->links('pagination::bootstrap-4') }}
+            </div>
         </form>
     </div>
 @endsection

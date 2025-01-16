@@ -8,18 +8,64 @@
     transition: all 0.3s ease-in-out;
 }
 
+@font-face {
+    font-family: 'Uber Move Bold';
+    src: url('/fonts/UberMoveBold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Uber Move Medium';
+    src: url('/fonts/UberMoveMedium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
 html {
+    font-family: 'Uber Move Bold', sans-serif;
     scroll-behavior: smooth;
     transition: font-size 0.3s ease-in-out;
 }
 
 h1 {
+    font-family: 'Uber Move Bold';
+    font-weight: bold;
+}
+
+h2 {
+    font-family: 'Uber Move Bold';
     display: block;
     font-weight: bold;
 }
-h2 {
+
+h3 {
+    font-family: 'Uber Move Bold';
     display: block;
     font-weight: bold;
+}
+
+h4 {
+    font-family: 'Uber Move Bold';
+    display: block;
+    font-weight: 700;
+}
+
+h5 {
+    font-family: 'Uber Move Bold';
+    display: block;
+    font-weight: 600;
+}
+
+h6 {
+    font-family: 'Uber Move Bold';
+    display: block;
+    font-size: 0.8rem;
+}
+
+p {
+    font-family: 'Uber Move Medium';
+    font-weight: 500;
 }
 
 .logo-image {
@@ -95,7 +141,6 @@ ul {
     color: #FFFFFF;
     border-radius: 30px;
     padding: 10px 12px;
-    font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 16px;
     font-weight: 600 !important;
     line-height: 112px;
@@ -169,6 +214,13 @@ ul {
     gap: 2rem;
 }
 
+.ul-link-login {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    gap: 10px;
+}
+
 .ul-links {
     display: flex;
     -webkit-box-flex: 1;
@@ -177,9 +229,7 @@ ul {
     -webkit-box-pack: start;
     justify-content: flex-start;
     list-style: none;
-    margin: 0px 24px;
-    margin-bottom: 15px;
-    margin-top: 15px;
+    margin: 15px 24px;
     overflow: hidden;
     visibility: visible;
     padding: 0px !important;
@@ -341,13 +391,16 @@ input {
     color: rgb(0, 0, 0);
     position: fixed;
     bottom: 40px;
+    right: 65rem;
     transform: translate(20px, 20px);
     padding: 10px;
     z-index: 1000;
 }
+
 .div-cookie-setings {
     gap: 20px;
 }
+
 .cookie-settings-banner.show {
     display: block;
 }
@@ -373,7 +426,7 @@ input {
 
 .cookie-settings-banner label .text {
     color: rgb(0, 0, 0);
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: Uber Move BoldText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -385,10 +438,12 @@ input {
     cursor: pointer;
     border: 3px solid rgb(94, 94, 94);
 }
+
 .cookie-settings-checkbox {
     gap: 8px;
     flex-basis: 40%;
 }
+
 .cookie-settings-banner .description {
     font-size: 14px;
     color: #555;
@@ -450,9 +505,17 @@ input {
     background: #ffffff;
 }
 
+#toc a {
+    color: #000000;
+}
+
 @media (max-width: 768px) {
     #toc {
         position: relative;
         margin-bottom: 20px;
     }
+}
+.table-uber {
+    background-color: rgb(0, 0, 0);
+    color: #fff;
 }

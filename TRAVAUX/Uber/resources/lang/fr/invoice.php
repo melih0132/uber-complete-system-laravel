@@ -12,7 +12,7 @@ return [
     'course_date' => 'Date de course',
     'course_time' => 'Heure de course',
     'payment_method' => 'Méthode de paiement',
-    'prestation' => 'Prestation',
+    'prestation' => 'TypePrestation',
     'total_ht' => 'TOTAL HT',
     'vat_amount' => 'MONTANT TVA',
     'invoice_total' => 'TOTAL DE LA FACTURE',

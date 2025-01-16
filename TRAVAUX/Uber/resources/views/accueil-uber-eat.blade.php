@@ -75,7 +75,7 @@
                     Web, y compris les réseaux sociaux. Personnalisez vos préférences dans les paramètres des cookies ou
                     cliquez sur « Refuser » si vous ne souhaitez pas que nous utilisions des cookies à ces fins.
                     Pour en savoir plus, consultez notre
-                    <a href="{{ url('/juridique/cookie-politique') }}">
+                    <a href="{{ url('/juridique/privacy') }}">
                         Déclaration relative aux cookies
                     </a>
                 </p>
@@ -136,11 +136,11 @@
             frameEndpoint: '/botman/chat',
             introMessage: "Bienvenue ! Je suis votre assistant Uber. Comment puis-je vous aider ?",
             chatServer: '/botman',
-            mainColor: '#000000',
-            bubbleBackground: '#FFFFFF',
-            bubbleAvatarUrl: 'img/UberLogo.png',
+            mainColor: '#06C16A',
+            bubbleBackground: '#06C16A',
+            bubbleAvatarUrl: 'img/UberEatsPetit.png',
             title: 'Assistant Uber',
-            headerTextColor: '#FFFFFF',
+            headerTextColor: '#000000',
             placeholderText: 'Écrivez votre message ici...',
         };
     </script>

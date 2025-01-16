@@ -26,26 +26,33 @@ use App\Models\Etablissement;
 
 use App\Models\Adresse;
 use App\Models\Ville;
-use App\Models\Code_postal;
+use App\Models\CodePostal;
+
+use App\Models\LieuFavori;
 
 use GPBMetadata\Google\Cloud\Dialogflow\V2\Session;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 
 // use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
     private $serviceAccounts = [
+        'rh' => [
+            'email' => 'rh@uber.com',
+            'password' => 'ressourceh123',
+        ],
         'logistique' => [
             'email' => 'logistique@uber.com',
             'password' => 'logistique123',
         ],
+        'administratif' => [
+            'email' => 'administratif@uber.com',
+            'password' => 'administratif123',
+        ],
         'facturation' => [
             'email' => 'facturation@uber.com',
             'password' => 'facturation123',
-        ],
-        'rh' => [
-            'email' => 'rh@uber.com',
-            'password' => 'ressourceh123',
         ],
         'course' => [
             'email' => 'course@uber.com',
@@ -66,7 +73,7 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', 'in:client,coursier,livreur,responsable,restaurateur,rh,logistique,facturation,course,commande,juridique'],
+            'role' => ['required', 'in:client,coursier,livreur,responsable,restaurateur,rh,logistique,facturation,administratif,course,commande,juridique'],
         ]);
 
         if ($credentials['role'] === 'client') {
@@ -77,11 +84,26 @@ class LoginController extends Controller
                     ->withInput($request->only('email', 'role'));
             }
 
-            $request->session()->put('user', [
-                'id' => $user->idclient,
-                'role' => $credentials['role'],
-                'typeclient' => $user->typeclient,
-            ]);
+            $user->update(['last_connexion' => now()]);
+
+            if ($user->mfa_activee) {
+                $request->session()->put('mfa_user', [
+                    'id' => $user->idclient,
+                    'role' => $credentials['role'],
+                ]);
+
+                // Réutiliser sendOtp de SecurityController pour envoyer un OTP
+                $otpController = new SecurityController();
+                $otpController->sendOtp($request);
+
+                return redirect()->route('otp')->with('success', 'Un code OTP a été envoyé sur votre téléphone.');
+            } else {
+                $request->session()->put('user', [
+                    'id' => $user->idclient,
+                    'role' => $credentials['role'],
+                    'typeclient' => $user->typeclient,
+                ]);
+            }
 
             // Redirection basée sur le type de client
             if ($user->isUberClient()) {
@@ -153,16 +175,18 @@ class LoginController extends Controller
 
             // Redirige en fonction du rôle
             switch ($credentials['role']) {
+                case 'rh':
+                    return redirect()->route('entretiens.index')->with('success', 'Connexion réussie.');
                 case 'logistique':
                     return redirect()->route('logistique.vehicules')->with('success', 'Connexion réussie.');
                 case 'facturation':
                     return redirect()->route('facturation.index')->with('success', 'Connexion réussie.');
-                case 'rh':
-                    return redirect()->route('entretiens.index')->with('success', 'Connexion réussie.');
+                case 'administratif':
+                    return redirect()->route('admin.index')->with('success', 'Connexion réussie.');
                 case 'juridique':
-                    return redirect()->route('juridique.index')->with('success', 'Connexion réussie.');
+                    return redirect()->route('privacy')->with('success', 'Connexion réussie.');
                 case 'course':
-                    return redirect()->route('dashboard.course')->with('success', 'Connexion réussie.');
+                    return redirect()->route('serviceCourse.index')->with('success', 'Connexion réussie.');
                 case 'commande':
                     return redirect()->route('commandes.index')->with('success', 'Connexion réussie.');
                 default:
@@ -277,9 +301,18 @@ class LoginController extends Controller
             return redirect()->route('login')->withErrors(['Utilisateur introuvable. Veuillez vous reconnecter.']);
         }
 
-        $ubereatsRoles = ['livreur', 'restaurateur', 'responsable', 'commande'];
-        $isUberEatsClient = ($sessionUser['role'] === 'client' && isset($sessionUser['typeclient']) && $sessionUser['typeclient'] === 'Uber Eats');
-        $isUberEatsUser = in_array($sessionUser['role'], $ubereatsRoles) || $isUberEatsClient;
+        $rolesUberEats = ['livreur', 'restaurateur', 'responsable', 'commande'];
+        $isUberEatsClient = false;
+        $isUberEatsUser = false;
+        if (isset($sessionUser['role'])) {
+            $role = $sessionUser['role'];
+
+            if ($role === 'client' && isset($sessionUser['typeclient']) && $sessionUser['typeclient'] === 'Uber Eats') {
+                $isUberEatsClient = true;
+            }
+
+            $isUberEatsUser = in_array($role, $rolesUberEats) || $isUberEatsClient;
+        }
 
         $layout = $isUberEatsUser ? 'layouts.ubereats' : 'layouts.app';
 
@@ -334,6 +367,7 @@ class LoginController extends Controller
             'idville' => 'required|integer|exists:ville,idville',
             'nomlieu' => 'required|string|max:100',
         ]);
+
 
         $sessionUser = $request->session()->get('user');
 
@@ -415,5 +449,26 @@ class LoginController extends Controller
         $request->session()->forget('user');
 
         return redirect('/')->with('success', 'Vous avez été déconnecté avec succès.');
+    }
+
+    // app/Http/Controllers/LoginController.php
+
+    public function favoritesSuggestions(Request $request)
+    {
+        $sessionUser = $request->session()->get('user');
+
+        if (!$sessionUser || $sessionUser['role'] !== 'client') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $client = Client::with(['lieuFavoris.adresse.ville'])->find($sessionUser['id']);
+
+        if (!$client) {
+            return response()->json(['error' => 'Client not found'], 404);
+        }
+
+        $favorites = $client->lieuFavoris;
+
+        return response()->json($favorites);
     }
 }

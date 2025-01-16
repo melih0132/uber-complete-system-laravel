@@ -14,7 +14,6 @@ class Ville extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idville',
         'nomville',
         'idpays',
         'idcodepostal',
@@ -22,7 +21,7 @@ class Ville extends Model
 
     public function codePostal()
     {
-        return $this->belongsTo(Code_postal::class, 'idcodepostal', 'idcodepostal');
+        return $this->belongsTo(CodePostal::class, 'idcodepostal', 'idcodepostal');
     }
 
     public function pays()
@@ -35,4 +34,3 @@ class Ville extends Model
         return $this->hasMany(Adresse::class, 'idville', 'idville');
     }
 }
-

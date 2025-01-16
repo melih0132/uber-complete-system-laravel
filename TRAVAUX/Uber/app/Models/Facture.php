@@ -15,20 +15,13 @@ class Facture extends Model
 
     protected $fillable = [
         'idfacture',
-        'idcourse',
-        'idvelo',
         'idcommande',
         'idpays',
         'idclient',
         'montantreglement',
         'datefacture',
-        'quantite'
+        'quantite',
     ];
-
-    public function course()
-    {
-        return $this->belongsTo(Course::class, 'idcourse');
-    }
 
     public function commande()
     {
@@ -43,10 +36,5 @@ class Facture extends Model
     public function pays()
     {
         return $this->belongsTo(Pays::class, 'idpays');
-    }
-
-    public function velo()
-    {
-        return $this->belongsTo(Velo::class, 'idvelo');
     }
 }

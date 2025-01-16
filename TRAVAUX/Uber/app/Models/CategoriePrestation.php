@@ -28,21 +28,4 @@ class CategoriePrestation extends Model
             'idetablissement'
         );
     }
-
-    public function produits()
-    {
-        return $this->hasManyThrough(
-            Produit::class,
-            Etablissement::class,
-            'idcategorieprestation',
-            'idproduit',
-            'idcategorieprestation',
-            'idetablissement'
-        );
-    }
-
-    public static function getByLibelle($libelle)
-    {
-        return self::where('libellecategorieprestation', 'LIKE', "%$libelle%")->get();
-    }
 }

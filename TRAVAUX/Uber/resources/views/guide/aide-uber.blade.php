@@ -43,10 +43,22 @@
             <img class="img-fluid w-100 my-3" src="{{ asset('img/guide-uber/prestation.png') }}">
             <hr />
             <h2 class="text-decoration-underline mt-4 mb-2">Détails de la course</h2>
-            <p>Une fois  votre type de prestation choisi vous accéderez à une page récapitulative les détails de la
-                réservation.</br>
+            <p>Une fois  votre type de prestation choisi vous accéderez à une page récapitulative les détails de la réservation.</br>
                 Vous pourrez alors valider celle-ci ou l'annuler.</p>
             <img class="img-fluid w-100 my-3" src="{{ asset('img/guide-uber/detailcourse.png') }}">
+            <hr />
+            <h2 class="text-decoration-underline mt-5 mb-2">Recherche de coursier</h2>
+            <p>Après avoir valider les détails de la course, votre demande de course sera transmis à tous les coursiers<br> du secteur,
+                vous serez alors en attente de coursier.</p>
+            <div class="row my-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <img class="img-fluid" src="{{ asset('img/guide-uber/chauffeurwait.png') }}">
+                </div>
+                <p class="ml-4 mt-4">Lorsqu'un coursier aura accepté votre course, l'interface changera et vous pourrez valider le coursier.</p>
+                <div class="col-12 d-flex justify-content-center mt-2">
+                    <img class="img-fluid" src="{{ asset('img/guide-uber/chauffeurfind.png') }}">
+                </div>
+            </div>
             <hr />
             <h2 class="text-decoration-underline mt-4 mb-2">Fin de la course</h2>
             <p>Une fois votre course terminée vous accéderez à ce petit bandeau afin de valider la fin de votre course.</p>

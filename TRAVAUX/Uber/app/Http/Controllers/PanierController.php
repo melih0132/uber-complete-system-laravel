@@ -102,7 +102,7 @@ class PanierController extends Controller
 
             $panierDb->update(['prix' => $montantTotal]);
 
-            return redirect()->back()->with('success', 'Produit ajouté au panier avec succès!');
+            return redirect()->back()->with('success', 'Produit ajouté au panier avec succès !');
         }
 
         $panier = Session::get('panier', []);

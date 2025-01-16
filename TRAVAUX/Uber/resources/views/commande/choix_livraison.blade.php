@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-
+    {{-- Alertes de succès ou d'erreur --}}
     @if (session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -24,20 +24,22 @@
         <h1>Choisissez votre mode de livraison</h1>
         <form method="POST" action="{{ route('commande.choixLivraisonStore') }}">
             @csrf
-            <div class="radio-group">
+
+            {{-- Choix du mode de livraison --}}
+            <div class="radio-group mb-4">
                 <label>
                     <input type="radio" name="modeLivraison" value="livraison"
-                        {{ old('modeLivraison') == 'livraison' ? 'checked' : '' }} required>
+                        {{ old('modeLivraison') === 'livraison' ? 'checked' : '' }} required>
                     Livraison à domicile
                 </label>
                 <label>
                     <input type="radio" name="modeLivraison" value="retrait"
-                        {{ old('modeLivraison') == 'retrait' ? 'checked' : '' }}>
+                        {{ old('modeLivraison') === 'retrait' ? 'checked' : '' }}>
                     Retrait sur place
                 </label>
             </div>
 
-            <!-- Champ d'adresse de livraison -->
+            {{-- Champs pour l'adresse de livraison (affichés uniquement si "livraison") --}}
             <div id="adresseLivraisonContainer" class="my-3" style="display: none;">
                 <label for="adresse_livraison">Adresse de livraison :</label>
                 <input type="text" id="adresse_livraison" name="adresse_livraison" class="form-control"
@@ -52,34 +54,34 @@
                     placeholder="Entrez votre code postal" value="{{ old('code_postal') }}">
             </div>
 
+            {{-- Bouton de soumission --}}
             <button type="submit" class="btn-panier">Continuer</button>
         </form>
     </div>
-
 @endsection
 
 @section('js')
     <script>
-        // Script pour afficher ou masquer le champ d'adresse, ville et code postal en fonction du choix
         document.addEventListener('DOMContentLoaded', function() {
             const modeLivraisonInputs = document.querySelectorAll('input[name="modeLivraison"]');
             const adresseLivraisonContainer = document.getElementById('adresseLivraisonContainer');
+            const addressFields = ['adresse_livraison', 'ville', 'code_postal'];
 
             function toggleAdresseLivraison() {
                 const selectedMode = document.querySelector('input[name="modeLivraison"]:checked').value;
-                if (selectedMode === 'livraison') {
-                    adresseLivraisonContainer.style.display = 'block';
-                } else {
-                    adresseLivraisonContainer.style.display = 'none';
-                }
+                const isDelivery = selectedMode === 'livraison';
+
+                adresseLivraisonContainer.style.display = isDelivery ? 'block' : 'none';
+                addressFields.forEach(fieldId => {
+                    document.getElementById(fieldId).required = isDelivery;
+                });
             }
 
             modeLivraisonInputs.forEach(input => {
                 input.addEventListener('change', toggleAdresseLivraison);
             });
 
-            // Initialisation : Vérifier si "livraison" est déjà sélectionné
-            toggleAdresseLivraison();
+            toggleAdresseLivraison(); // Initialise l'état au chargement
         });
     </script>
 @endsection

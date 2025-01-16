@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/app.blade.css') }}">
+@endsection
+
 @section('content')
     <div class="container">
         <h1>Détails de la Réservation</h1>
@@ -15,11 +19,17 @@
                 <p><strong>Disponibilité :</strong> {{ $velos['disponibilite'] }}</p>
                 <p><strong>Date de réservation :</strong> {{ $tripDate }}</p>
                 <p><strong>Heure de réservation :</strong> {{ $tripTime }}</p>
-                <p><strong>Durée de la réservation :</strong> {{ $durationLabel }}</p>
-                <p><strong>Prix estimé :</strong> {{ $price }} €</p>
+                <p><strong>Durée choisie :</strong> {{ $formattedDuration }}</p>
+                <p><strong>Prix de la réservation :</strong> {{ $priceReservation }} €</p>
+
             </div>
         </div>
-        <button type="button" class="btn btn-primary mt-3" onclick="window.history.back();">Retour</button>
-        <a href="{{ route('velo.confirmation', ['id' => $velos['veloId']]) }}" class="btn btn-primary mt-3">Confirmer la réservation</a>
+
+        <button type="button" class="btn-uber mt-3" onclick="window.history.back();">Retour</button>
+
+        <form action="{{ route('velo.confirmation') }}" method="GET">
+            @csrf
+            <button type="submit" class="btn-uber mt-3">Confirmer la réservation</button>
+        </form>
     </div>
 @endsection

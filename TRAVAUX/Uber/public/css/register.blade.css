@@ -1,10 +1,18 @@
 /* Global Styles */
 body {
-    font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: #f9f9f9;
     color: #333;
     margin: 0;
     padding: 0;
+}
+
+a {
+    color: #818181;
+}
+
+a:hover {
+    color: #747474;
+    text-decoration: black solid underline;
 }
 
 h1,
@@ -166,20 +174,4 @@ input[type="checkbox"] {
         font-size: 0.9rem;
         padding: 8px;
     }
-}
-
-/* Progress Bar */
-.progress {
-    height: 5px;
-    background-color: #ddd;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 20px;
-}
-
-.progress-bar {
-    height: 5px;
-    background-color: #000;
-    width: 0;
-    transition: width 0.3s ease;
 }

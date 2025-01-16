@@ -55,7 +55,7 @@ function setStartMarker(lat, lon, address) {
     .addTo(map)
     .bindPopup(`<b>Départ :</b><br>${address}`) // Текст всплывающего окна
     .openPopup();
-
+console.log('ee', address)
   map.setView([lat, lon], 15); // Центрируем карту на маркер
   startCoords = { lat, lon }; // Сохраняем координаты
 }
@@ -84,7 +84,7 @@ async function fetchSuggestions(inputElement, suggestionsListId) {
   // Effacer les suggestions précédentes
   suggestionsList.innerHTML = "";
 
-  if (query.length < 3) return; // Commencer la recherche seulement après avoir saisi 3 caractères
+  if (query.length < 2) return; // Commencer la recherche seulement après avoir saisi 2 caractères
 
   // Debounce to limit API calls
   clearTimeout(debounceTimer);
@@ -151,6 +151,8 @@ async function fetchSuggestions(inputElement, suggestionsListId) {
     }
   }, 300); // Adjust the debounce delay as needed
 }
+
+
 
 // Fonction principale pour calculer l'itinéraire
 async function voirPrix(event) {
@@ -330,7 +332,6 @@ function fetchFavorites() {
     .get("/favorites-suggestions") // Запрос к серверу
     .then((response) => {
       const favorites = response.data;
-
       if (!Array.isArray(favorites)) {
         console.error("Данные фаворитов имеют некорректный формат:", favorites);
         return;
@@ -366,17 +367,16 @@ function populateFavoritesDropdown(favorites, dropdownId, inputId, type) {
       }
 
       // Формирование текста: адрес, город
-      const city = favorite.adresse && favorite.adresse.ville ? favorite.adresse.ville.nomville : "Ville inconu";
-      const addressText = `${favorite.libelleadresse}, ${city}`;
+      const addressText = `${favorite.libelleadresse}, ${favorite.nomville}`;
 
-      console.log(favorite.libelleadresse);
+
 
       const item = document.createElement("li");
       item.textContent = `${favorite.nomlieu} - ${addressText}`;
       item.classList.add("suggestion-item"); // Ajouter une classe pour le style
 
       item.addEventListener("click", async () => {
-        document.getElementById(inputId).value = favorite.libelleadresse;
+        document.getElementById(inputId).value = favorite.libelleadresse +', ' + favorite.nomville;
         dropdown.classList.remove("show"); // Скрыть выпадающий список после выбора
 
         try {
@@ -396,11 +396,12 @@ function populateFavoritesDropdown(favorites, dropdownId, inputId, type) {
           const result = results[0];
           const lat = parseFloat(result.lat);
           const lon = parseFloat(result.lon);
+          const adresse = favorite.libelleadresse +', ' + favorite.nomville
 
           if (type === "start") {
-            setStartMarker(lat, lon, favorite.libelleadresse);
+            setStartMarker(lat, lon, adresse);
           } else if (type === "end") {
-            setEndMarker(lat, lon, favorite.libelleadresse);
+            setEndMarker(lat, lon, adresse);
           }
         } catch (error) {
           console.error("Erreur lors du géocodage de l'adresse favorite:", error);

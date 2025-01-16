@@ -19,6 +19,11 @@ class CategorieProduit extends Model
 
     public function produits()
     {
-        return $this->belongsToMany(Produit::class, 'a_3', 'idcategorie', 'idproduit');
+        return $this->belongsToMany(
+            Produit::class,
+            'produit_categorie',
+            'idcategorie',
+            'idproduit'
+        );
     }
 }

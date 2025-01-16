@@ -8,7 +8,7 @@
 
 @section('content')
     <div class="container">
-        {{-- Notifications de succès ou d'erreur --}}
+        {{-- Alertes de succès ou d'erreur --}}
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -23,28 +23,26 @@
 
         {{-- Message de remerciement --}}
         <h3 class="text-muted text-center mb-4">
-            Merci {{ $client->genreuser }} {{ $client->nomuser }} {{ $client->prenomuser }},
+            Merci {{ $client->genreuser ?? '' }} {{ $client->nomuser ?? '' }} {{ $client->prenomuser ?? '' }},
             votre commande a été enregistrée avec succès !
         </h3>
-        <div>
-            <h3 class="text-muted text-center mt-4">
-                Merci de noter le numéro de commande qui servira au livreur !
-            </h3>
-        </div>
+        <h4 class="text-center text-muted mb-4">
+            Notez le numéro de commande qui servira au livreur !
+        </h4>
 
         {{-- Détails de la commande --}}
         <div class="card mt-4">
             <div class="card-header">Détails de la commande</div>
             <div class="card-body">
                 <ul class="list-group">
-                    <li class="list-group-item"><strong>Numéro :</strong> #{{ $commande->idcommande }}</li>
+                    <li class="list-group-item"><strong>Numéro commande :</strong> #{{ $commande->idcommande }}</li>
                     <li class="list-group-item">
-                        <strong>Type Commande :</strong>
                         @if ($commande->estlivraison)
-                            Livraison à l'adresse :
-                            {{ $commande->adresse->libelleadresse ?? 'Adresse non spécifiée' }})
+                            Livraison à l'adresse : {{ $commande->adresse->libelleadresse ?? 'Non spécifiée' }},
+                            {{ $commande->adresse->ville->nomville ?? 'Non spécifiée' }}
+                            ({{ $commande->adresse->ville->codePostal->codepostal ?? 'Non spécifié' }})
                         @else
-                            Retrait
+                            Retrait sur place
                         @endif
                     </li>
                     <li class="list-group-item"><strong>Temps estimé :</strong> {{ $commande->tempscommande }} minutes</li>
@@ -65,6 +63,7 @@
                                 <th>Produit</th>
                                 <th>Établissement</th>
                                 <th>Quantité</th>
+                                <th>Prix unitaire (€)</th>
                                 <th>Total (€)</th>
                             </tr>
                         </thead>
@@ -76,22 +75,23 @@
                                     <td>
                                         {{ $produit->etablissements->firstWhere('idetablissement', $produit->pivot->idetablissement)->nometablissement ?? 'Non spécifié' }}
                                     </td>
-                                    <td>{{ $produit->pivot->quantite }}</td>
-                                    <td>{{ number_format($produit->prixproduit * $produit->pivot->quantite, 2) }}</td>
+                                    <td>{{ $produit->pivot->quantite ?? 1 }}</td>
+                                    <td>{{ number_format($produit->prixproduit, 2) }}</td>
+                                    <td>{{ number_format($produit->prixproduit * ($produit->pivot->quantite ?? 1), 2) }}
+                                    </td>
                                 </tr>
-                                @php $total += $produit->prixproduit * $produit->pivot->quantite; @endphp
+                                @php $total += $produit->prixproduit * ($produit->pivot->quantite ?? 1); @endphp
                             @endforeach
                             @if ($commande->estlivraison)
                                 <tr>
-                                    <td colspan="3">Frais de Livraison</td>
-                                    <td colspan="2">4,60</td>
+                                    <td colspan="4"><strong>Frais de Livraison</strong></td>
+                                    <td>{{ number_format(4.6, 2) }}</td>
                                 </tr>
                             @endif
                             <tr>
-                                <td colspan="3"><strong>Total</strong></td>
-                                <td colspan="2">
+                                <td colspan="4"><strong>Total</strong></td>
+                                <td>
                                     {{ $commande->estlivraison ? number_format($total + 4.6, 2) : number_format($total, 2) }}
-                                    €
                                 </td>
                             </tr>
                         </tbody>
@@ -102,8 +102,8 @@
 
         {{-- Bouton retour --}}
         <div class="text-center mt-4">
-            <a href="{{ route('panier.vider') }}" class="btn-panier text-decoration-none mb-4">
-                Retour à l'accueil
+            <a href="{{ route('commande.mesCommandes') }}" class="btn-panier text-decoration-none">
+                Voir mes commandes
             </a>
         </div>
     </div>

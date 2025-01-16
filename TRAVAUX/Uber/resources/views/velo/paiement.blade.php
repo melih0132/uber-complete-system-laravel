@@ -10,7 +10,6 @@
     <div class="container">
         <h1>Choisissez une carte bancaire</h1>
 
-        {{-- Affichage des messages de succès ou d'erreur --}}
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -23,7 +22,6 @@
             </div>
         @endif
 
-        {{-- Contenu principal --}}
         @if ($cartes->isEmpty())
             <p class="empty-message">Aucune carte enregistrée. Veuillez ajouter une carte pour continuer.</p>
         @endif
@@ -75,13 +73,10 @@
         cardNumberInput.addEventListener('input', (event) => {
             let input = event.target.value;
 
-            // Supprime tous les espaces
             input = input.replace(/\s+/g, '');
 
-            // Ajoute un espace tous les 4 chiffres
             input = input.replace(/(\d{4})/g, '$1 ').trim();
 
-            // Met à jour la valeur dans le champ
             event.target.value = input;
         });
     </script>

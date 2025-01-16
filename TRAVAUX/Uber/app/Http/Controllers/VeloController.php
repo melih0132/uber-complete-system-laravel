@@ -21,8 +21,9 @@ class VeloController extends Controller
     {
         return view('velo.index');
     }
+
     public function index(Request $request)
-    {//dd($request->all());
+    {
         $user = session('user');
 
         if (!$user) {
@@ -30,33 +31,28 @@ class VeloController extends Controller
         }
 
         $startAddress = $request->input('startAddress');
-        $tripDate = $request->input('tripDate');
-        $tripTime = $request->input('tripTime');
-        $duration = $request->input('duration');
-        $durationText = $this->getDurationText($request->input('duration', 0));
-        $tripDate = Carbon::parse($tripDate)->format('Y-m-d');
+        $tripDate = $request->input('tripDate', Carbon::now()->format('Y-m-d'));
+        $tripTime = $request->input('tripTime', Carbon::now()->format('H:i'));
 
-        if (empty($tripTime)) {
-            $tripTime = Carbon::now('Europe/Paris')->format('H:i:sP');
-            $tripTime = $this->roundToPreviousHalfHour($tripTime);
-        } else {
-            $tripTime = Carbon::createFromFormat('H:i', $tripTime, 'Europe/Paris')->format('H:i');
+        $duration = $request->input('duration', 0);
+        $durationText = $this->getDurationText($duration);
+        $price = $this->calculatePrice($duration);
+
+        try {
+            $tripDateFormatted = Carbon::parse($tripDate)->format('d-m-Y');
+            $tripTime = Carbon::parse($tripTime)->format('H:i');
+            $jourSemaine = $this->getJourSemaine($tripDate);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Date ou heure invalide.');
         }
 
-        $tripDateFormatted = Carbon::parse($tripDate)->format('d-m-Y');
-        $jourSemaine = $this->getJourSemaine($tripDate);
+        $city = strtoupper(trim(explode(',', $startAddress)[0] ?? ''));
 
-        $parts = explode(',', $startAddress);
-        $city = count($parts) >= 2 ? trim($parts[count($parts) - 2]) : trim($parts[0]);
-        $city = strtoupper($city);
-
-        $bicycles = DB::table('velo as v')
-            ->join('adresse as ad', 'v.idadresse', '=', 'ad.idadresse')
-            ->join('ville as vi', 'ad.idville', '=', 'vi.idville')
-            ->join('velo_reservation as rv' , 'rv.idreservation', 'v.idvelo')
-            ->where(DB::raw('UPPER(vi.nomville)'), $city)
-            ->where('v.estdisponible', true)
-            ->select('v.*', 'ad.libelleadresse as startAddress')
+        $bicycles = Velo::with('adresse.ville')
+            ->whereHas('adresse.ville', function ($query) use ($city) {
+                $query->where(DB::raw('UPPER(nomville)'), $city);
+            })
+            ->where('estdisponible', true)
             ->get();
 
         return view('velo.index', [
@@ -65,12 +61,32 @@ class VeloController extends Controller
             'tripDate' => $tripDateFormatted,
             'tripTime' => $tripTime,
             'jourSemaine' => $jourSemaine,
-            'duration'=> $duration,
+            'duration' => $duration,
             'durationText' => $durationText,
+            'price' => $price,
             'city' => $city,
         ]);
-
     }
+
+    public function convertDurationToHoursMinutes($duration)
+    {
+        $hours = floor($duration / 60);
+        $minutes = $duration % 60;
+
+        $formattedDuration = '';
+        if ($hours > 0) {
+            $formattedDuration .= $hours . ' heure' . ($hours > 1 ? 's' : '');
+        }
+        if ($minutes > 0) {
+            if ($formattedDuration) {
+                $formattedDuration .= ' et ';
+            }
+            $formattedDuration .= $minutes . ' minute' . ($minutes > 1 ? 's' : '');
+        }
+
+        return $formattedDuration ?: '0 minute';
+    }
+
 
     private function getJourSemaine($date)
     {
@@ -86,9 +102,20 @@ class VeloController extends Controller
         return $parsedTime->format('H:i');
     }
 
+    public function showDetailsVelo($id)
+    {
+        $velo = Velo::with('adresse')->find($id);
+
+        if (!$velo) {
+            return redirect()->route('velo.index')->with('error', 'Vélo introuvable.');
+        }
+
+        return view('velo.velo-details', ['velo' => $velo]);
+    }
+
     private function getDurationText($duration)
     {
-        switch($duration) {
+        switch ($duration) {
             case 1:
                 return '0 à 30 minutes';
             case 2:
@@ -103,37 +130,65 @@ class VeloController extends Controller
                 return 'Non spécifiée';
         }
     }
-    public function showDetailsVelo($id)
-    {
-        $velo = Velo::with('adresse')->find($id);
-
-        if (!$velo) {
-            return redirect()->route('velo.index')->with('error', 'Vélo introuvable.');
-        }
-
-        return view('velo.velo-details', ['velo' => $velo]);
-    }
-
 
     private function calculatePrice($duration)
     {
-        $pricePerHour = 10;
-        return ceil($duration / 60) * $pricePerHour;
+        switch ($duration) {
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 10;
+            case 4:
+                return 15;
+            case 5:
+                return 30;
+            default:
+                return 0;
+        }
     }
-
 
     public function showReservationDetails($id, Request $request)
     {
         $bicycle = Velo::with('adresse')->find($id);
+
         if (!$bicycle) {
             return redirect()->back()->with('error', 'Vélo introuvable.');
         }
 
-        $duration = $request->input('duration', 0);
+        $reservation = DB::table('velo_reservation')
+            ->where('idvelo', $id)
+            ->first();
 
-        $durationLabel = $this->getDurationText($duration);
+        if (!$reservation) {
+            return redirect()->back()->with('error', 'Aucune réservation trouvée pour ce vélo.');
+        }
 
-        $price = $this->calculatePrice($duration);
+        $duration = $reservation->dureereservation;
+        $priceReservation = $reservation->prixreservation;
+
+        $durationText = $this->getDurationText($duration);
+        $formattedDuration = $this->convertDurationToHoursMinutes($duration);
+
+        $tripDate = $request->input('tripDate', Carbon::now()->format('Y-m-d'));
+        $tripTime = $request->input('tripTime', Carbon::now()->format('H:i'));
+
+        try {
+            $tripDate = Carbon::parse($tripDate)->format('Y-m-d');
+            $tripTime = Carbon::parse($tripTime)->format('H:i');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Date ou heure invalide.');
+        }
+
+        $request = session()->put('reservation', [
+            'idreservation' => $reservation->idreservation,
+            'veloId' => $bicycle->idvelo,
+            'tripDate' => $tripDate,
+            'tripTime' => $tripTime,
+            'price' => $reservation->prixreservation,
+            'duration' => $reservation->dureereservation,
+        ]);
 
         return view('velo.reservation-details', [
             'velos' => [
@@ -142,76 +197,119 @@ class VeloController extends Controller
                 'numerovelo' => $bicycle->numerovelo,
                 'disponibilite' => $bicycle->estdisponible ? 'Disponible' : 'Indisponible',
             ],
-            'tripDate' => Carbon::parse($request->input('tripDate'))->format('Y-m-d'),
-            'tripTime' => Carbon::parse($request->input('tripTime'))->format('H:i'),
-            'duration' => $request->input('duration'),
-            'durationLabel' => $durationLabel,
-            'price' => $price,
+            'tripDate' => $tripDate,
+            'tripTime' => $tripTime,
+            'duration' => $duration,
+            'durationText' => $durationText,
+            'formattedDuration' => $formattedDuration,
+            'priceReservation' => $priceReservation,
         ]);
     }
-
     public function validateReservation(Request $request, $id)
     {
         $userSession = $request->session()->get('user');
         $client = Client::find($userSession['id']);
         $velo = Velo::find($id);
+
         if (!$velo) {
-            return redirect()->back()->with('error', 'Vélo non trouvé');
-        }
+            return redirect()->back()->with('error', 'Vélo non trouvé.');
+        };
 
         if (!$velo->estdisponible) {
             return redirect()->back()->with('error', 'Le vélo est déjà réservé.');
-        }
+        };
 
-        $tripDate = $request->input('tripDate');
-        $tripTime = $request->input('tripTime');
+        $tripDate = $request->input('tripDate', Carbon::now()->format('Y-m-d'));
+        $tripTime = $request->input('tripTime', Carbon::now()->format('H:i'));
+
         try {
-            $tripDate = trim($tripDate);
-            $tripTime = trim($tripTime);
-            $tripDateTime = Carbon::createFromFormat('Y-m-d H:i', $tripDate . ' ' . $tripTime, 'Europe/Paris');
+            $tripDate = Carbon::parse($tripDate)->format('Y-m-d');
+            $tripTime = Carbon::parse($tripTime)->format('H:i');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Format de date ou d\'heure invalide.');
-        }
+            return redirect()->back()->with('error', 'Date ou heure invalide.');
+        };
 
-        $currentDateTime = Carbon::now('Europe/Paris');
-        if ($tripDateTime->lessThan($currentDateTime)) {
-            return redirect()->back()->with('error', 'La date ou l\'heure de réservation est invalide ou déjà passée.');
-        }
-
-        $velo->estdisponible = false;
-        $velo->save();
-
-        Reservation::create([
+        $reservation = Reservation::create([
             'idclient' => $client->idclient,
-            'idplanning' => $client->idclient,
             'idvelo' => $velo->idvelo,
-            'datereservation' => $tripDateTime->format('Y-m-d'),
-            'heurereservation' => $tripDateTime->format('H:i'),
-            'pourqui' => $request->input('pourqui', 'moi'),
+            'datereservation' => $tripDate,
+            'heurereservation' => $tripTime,
+            'prixreservation' => $this->calculatePrice($request->input('duration', 0)),
+            'dureereservation' => $request->input('duration', 0),
         ]);
 
-        return view('velo.confirmation', [
-            'message' => 'Votre réservation de vélo a été enregistrée.',
-            'tripDate' => $tripDateTime->format('Y-m-d'),
-            'tripTime' => $tripDateTime->format('H:i'),
-            'velo' => $velo,
-        ]);
+        if (!$reservation) {
+            return redirect()->back()->with('error', 'Erreur lors de la création de la réservation.');
+        };
+
+        return redirect()->route('velo.confirmation')->with('success', 'Réservation validée. Procédez au paiement.');
+    }
+    public function paiementReservation()
+    {
+        $reservation = session('reservation');
+
+        $totalAmount = $reservation['price'] * 100;
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $stripeSession = StripeSession::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [
+                    [
+                        'price_data' => [
+                            'currency' => 'eur',
+                            'product_data' => [
+                                'name' => 'Réservation Vélo',
+                            ],
+                            'unit_amount' => $totalAmount,
+                        ],
+                        'quantity' => 1,
+                    ],
+                ],
+                'mode' => 'payment',
+                'success_url' => route('velo.confirmation', ['id' => $reservation['veloId']]) . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('velo.index'),
+            ]);
+
+            return redirect($stripeSession->url);
+        } catch (\Exception $e) {
+            return back()->withErrors(['message' => 'Erreur Stripe : ' . $e->getMessage()]);
+        }
     }
 
     public function confirmation($id, Request $request)
-    { //dd($request);
+    {
+        $reservation = $request->session()->get('reservation');
+
+        if (!$reservation) {
+            return redirect()->route('velo.index')->with('error', 'Réservation introuvable.');
+        }
+
         $velo = Velo::find($id);
 
         if (!$velo) {
             return redirect()->route('velo.index')->with('error', 'Vélo non trouvé.');
         }
 
+        $velo->estdisponible = false;
+        $velo->save();
+
+        $reservationData = Reservation::find($reservation['idreservation']);
+        $reservationData->update(['status' => 'Paid']);
+
+        $request->session()->forget('reservation');
+
         return view('velo.confirmation', [
             'velo' => $velo,
-            'tripDate' => $request->input('tripDate'),
-            'tripTime' => $request->input('tripTime'),
+            'tripDate' => $reservation['tripDate'],
+            'tripTime' => $reservation['tripTime'],
+            'price' => $reservation['price'],
+            'durationText' => $this->getDurationText($reservation['duration']),
+            'duration' => $reservation['duration'],
         ]);
     }
+
     public function choixCarte(Request $request)
     {
         $userSession = $request->session()->get('user');
@@ -229,43 +327,13 @@ class VeloController extends Controller
         ]);
     }
 
-    /* public function paiementCarte()
-    {
-        $commandes = Session::get('commandes');
-        if (!$commandes) {
-            return redirect()->route('velo.index')->withErrors(['message' => 'Aucune reservation.']);
-        }
-
-        $total = collect($commandes)->sum('prixcommande');
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        try {
-            $stripeSession = StripeSession::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => 'Commande UberEats',
-                        ],
-                        'unit_amount' => $total * 100,
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => route('commande.confirmation', ['id' => 'replace_with_actual_id']) . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('panier.index'),
-            ]);
-
-            return redirect($stripeSession->url);
-        } catch (\Exception $e) {
-            return back()->withErrors(['message' => 'Erreur Stripe : ' . $e->getMessage()]);
-        }
-    } */
     public function finaliserPaiement(Request $request)
     {
-        return redirect()->route('velo.fin-reservation')->with('success', 'Votre paiement a été effectué avec succès.');
-    }
+        $carte_id = $request->input('carte_id');
 
+        if (!$carte_id) {
+            return redirect()->route('velo.paiement')->with('error', 'Veuillez sélectionner une carte bancaire.');
+        }
+        return view('velo.fin-reservation');
+    }
 }

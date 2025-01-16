@@ -3,7 +3,7 @@
 @section('title', 'Inscription Restaurateur')
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/auth.blade.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/register.blade.css') }}">
 @endsection
 
 @section('js')
@@ -14,49 +14,76 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Inscription Restaurateur</h1>
 
-        <form action="{{ route('register') }}" method="POST"
-            class="form-register d-flex flex-column justify-content-center">
+        <form action="{{ route('register') }}" method="POST" class="form-register">
             @csrf
-            <div class="form-group mb-3">
-                <label for="nomuser">Nom :</label>
-                <input type="text" name="nomuser" id="nomuser" class="form-control" required maxlength="50"
-                    placeholder="Nom du restaurateur">
+
+            <!-- Informations personnelles -->
+            <div class="form-section">
+                <h5>Informations personnelles</h5>
+
+                <div class="form-group">
+                    <label for="nomuser">Nom :</label>
+                    <input type="text" name="nomuser" id="nomuser" class="form-control" required maxlength="50"
+                        placeholder="Nom du restaurateur">
+                </div>
+
+                <div class="form-group">
+                    <label for="prenomuser">Prénom :</label>
+                    <input type="text" name="prenomuser" id="prenomuser" class="form-control" required maxlength="50"
+                        placeholder="Prénom du restaurateur">
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label for="prenomuser">Prénom :</label>
-                <input type="text" name="prenomuser" id="prenomuser" class="form-control" required maxlength="50"
-                    placeholder="Prénom du restaurateur">
+            <!-- Coordonnées personnelles -->
+            <div class="form-section">
+                <h5>Coordonnées personnelles</h5>
+
+                <div class="form-group">
+                    <label for="telephone">Téléphone :</label>
+                    <input type="text" name="telephone" id="telephone" class="form-control" required
+                        pattern="^(06|07)[0-9]{8}$|^\+?[1-9][0-9]{1,14}$"
+                        title="Numéro de téléphone valide (06 ou 07 suivi de 8 chiffres ou format international)"
+                        placeholder="06XXXXXXXX" inputmode="tel" oninput="validatePhoneNumberInput(this)">
+                    <small>Exemple : 0612345678 ou +33123456789</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailuser">Email :</label>
+                    <input type="email" name="emailuser" id="emailuser" class="form-control" required maxlength="200"
+                        placeholder="Email professionnel">
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label for="telephone">Téléphone :</label>
-                <input type="text" name="telephone" id="telephone" class="form-control" required
-                    pattern="^(06|07)[0-9]{8}$|^\+?[1-9][0-9]{1,14}$"
-                    title="Numéro de téléphone valide (06 ou 07 suivi de 8 chiffres ou format international)"
-                    placeholder="06XXXXXXXX" inputmode="tel" oninput="validatePhoneNumberInput(this)">
-                <small>Exemple : 0612345678 ou +33123456789</small>
+            <!-- Sécurité -->
+            <div class="form-section">
+                <h5>Sécurité</h5>
+
+                <div class="form-group">
+                    <label for="motdepasseuser">Mot de passe :</label>
+                    <input type="password" id="motdepasseuser" name="motdepasseuser" class="form-control" required
+                        minlength="8" placeholder="Mot de passe sécurisé" oninput="checkPasswordStrength()">
+                    <small>Votre mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial
+                        (;!?$#).</small>
+                    <div id="password-strength" class="mt-2" style="font-weight: bold;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="motdepasseuser_confirmation">Confirmation du mot de passe :</label>
+                    <input type="password" name="motdepasseuser_confirmation" id="motdepasseuser_confirmation"
+                        class="form-control" required placeholder="Confirmez votre mot de passe">
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label for="emailuser">Email :</label>
-                <input type="email" name="emailuser" id="emailuser" class="form-control" required maxlength="200"
-                    placeholder="Email professionnel">
+            <!-- Consentement et CGU -->
+            <div class="form-group">
+                <label for="consentement_cgu">
+                    En créant un compte Uber, vous acceptez les <a href="{{ route('cgu') }}" target="_blank">conditions
+                        générales d'utilisation</a> et la
+                    <a href="{{ route('privacy') }}" target="_blank">politique de confidentialité</a>.
+                </label>
             </div>
 
-            <div class="form-group mb-3">
-                <label for="motdepasseuser">Mot de passe :</label>
-                <input type="password" id="motdepasseuser" name="motdepasseuser" class="form-control" required
-                    minlength="8" placeholder="Mot de passe sécurisé" oninput="checkPasswordStrength()">
-                <div id="password-strength" class="mt-2" style="font-weight: bold;"></div>
-            </div>
-
-            <div class="form-group mb-3">
-                <label for="motdepasseuser_confirmation">Confirmation du mot de passe :</label>
-                <input type="password" name="motdepasseuser_confirmation" id="motdepasseuser_confirmation"
-                    class="form-control" required placeholder="Confirmez votre mot de passe">
-            </div>
-
+            <!-- Notifications -->
             @if (session('success') || session('error'))
                 <div class="alert-message @if (session('success')) success @elseif(session('error')) error @endif"
                     role="alert">
@@ -64,6 +91,8 @@
                 </div>
             @endif
 
+            <!-- Actions -->
+            <input type="hidden" name="role" value="restaurateur">
             <button type="submit" class="btn-login mt-4">S'inscrire</button>
         </form>
     </div>
