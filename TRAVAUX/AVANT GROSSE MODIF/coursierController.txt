@@ -1,0 +1,505 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+use App\Models\Course;
+use App\Models\Coursier;
+
+use App\Models\Livreur;
+use App\Models\Commande;
+
+use App\Models\Entretien;
+use App\Models\Vehicule;
+
+class CoursierController extends Controller
+{
+    private function isCoursierEligible($coursierId)
+    {
+        $entretienValid = Entretien::where('idcoursier', $coursierId)
+            ->where('resultat', 'Retenu')
+            ->whereNotNull('rdvlogistiquedate')
+            ->whereNotNull('rdvlogistiquelieu')
+            ->exists();
+
+        $vehiculeValid = Vehicule::where('idcoursier', $coursierId)
+            ->where('statusprocessuslogistique', 'Validé')
+            ->exists();
+
+        // Le coursier est éligible si il est retenue à l'entretien rh et a un véhicule validé par le service logistique
+        return $entretienValid && $vehiculeValid;
+    }
+
+    public function entretien(Request $request)
+    {
+        $user = session('user');
+
+        if (!$user) {
+            return redirect()->route('myaccount')->with('error', 'Accès refusé.');
+        }
+
+        $entretien = Entretien::where('idcoursier', $user['id'])->first();
+
+        if (!$entretien) {
+            return redirect()->route('myaccount')->with('error', 'Aucun entretien trouvé.');
+        }
+
+        switch ($entretien->status) {
+            case 'En attente':
+                return view('entretien.en-attente', compact('entretien'));
+
+            case 'Planifié':
+                return view('entretien.planifie', compact('entretien'));
+
+            case 'Terminée':
+                return view('entretien.termine', compact('entretien'));
+
+            case 'Annulée':
+                return view('entretien.annule', compact('entretien'));
+
+            default:
+                return redirect()->route('myaccount')->with('error', 'Statut d\'entretien inconnu.');
+        }
+    }
+
+    public function validerEntretien($entretienId)
+    {
+        $entretien = Entretien::findOrFail($entretienId);
+
+        $entretien->status = 'Planifié';
+        $entretien->save();
+
+        return redirect()->route('coursier.entretien')->with('success', 'Entretien planifié avec succès.');
+    }
+
+    public function annulerEntretien($entretienId)
+    {
+        $entretien = Entretien::findOrFail($entretienId);
+
+        $entretien->status = 'Annulée';
+        $entretien->save();
+
+        return redirect()->route('coursier.entretien')->with('error', 'Entretien annulé.');
+    }
+
+    public function planifie(Request $request)
+    {
+        $user = session('user');
+
+        if (!$user) {
+            return redirect()->route('myaccount')->with('error', 'Accès refusé.');
+        }
+
+        $entretien = Entretien::where('idcoursier', $user['id'])->where('status', 'Plannifié')->first();
+
+        if (!$entretien) {
+            return redirect()->route('coursier.entretien')->with('error', 'Aucun entretien planifié trouvé.');
+        }
+
+        return view('entretien.planifie', compact('entretien'));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function index(Request $request)
+    {
+        $user = session('user');
+
+        if (!$user) {
+            return redirect()->route('login-coursier')->with('error', 'Vous devez être connecté pour accéder à cette section.');
+        }
+
+        $userRole = $user['role'] ?? null;
+
+        if ($userRole === 'coursier' && !$this->isCoursierEligible($user['id'])) {
+            return redirect()->route('myaccount')->with('error', 'Accès refusé : vous n\'êtes pas éligible.');
+        }
+
+        $routeName = $request->route()->getName();
+        $isCoursesRoute = str_contains($routeName, 'courses');
+
+        $villeCoursier = DB::table('coursier as cou')
+            ->join('adresse as a', 'cou.idadresse', '=', 'a.idadresse')
+            ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
+            ->leftJoin('code_postal as cp', 'v.idcodepostal', '=', 'cp.idcodepostal')
+            ->where('cou.idcoursier', $user['id'])
+            ->select('v.nomville')
+            ->first();
+
+        $villeLivreur = DB::table('livreur as liv')
+            ->join('adresse as a', 'liv.idadresse', '=', 'a.idadresse')
+            ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
+            ->where('liv.idlivreur', $user['id'])
+            ->value('v.nomville');
+
+        if ($isCoursesRoute) {
+            $tasks = DB::table('course as co')
+                ->join('reservation as r', 'co.idreservation', '=', 'r.idreservation')
+                ->join('client as c', 'r.idclient', '=', 'c.idclient')
+                ->join('adresse as a', 'co.idadresse', '=', 'a.idadresse')
+                ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
+                ->leftJoin('code_postal as cp', 'v.idcodepostal', '=', 'cp.idcodepostal')
+                ->join('adresse as a2', 'co.adr_idadresse', '=', 'a2.idadresse')
+                ->where('statutcourse', 'En attente')
+                ->where('v.nomville', $villeCoursier->nomville)
+                ->select(
+                    'c.nomuser',
+                    'c.prenomuser',
+                    'c.genreuser',
+                    'co.idadresse',
+                    'a.libelleadresse as libelle_idadresse',
+                    'co.adr_idadresse',
+                    'r.idreservation',
+                    'co.datecourse',
+                    'co.heurecourse',
+                    'a2.libelleadresse as libelle_adr_idadresse',
+                    'v.nomville',
+                    'cp.codepostal',
+                    'co.prixcourse',
+                    'co.statutcourse',
+                    'co.distance',
+                    'co.temps'
+                )
+                ->orderBy('idreservation')
+                ->get();
+        } else {
+            $tasks = Commande::with(['adresseDestination.ville', 'panier.client'])
+                ->whereNull('idlivreur')
+                ->where('statutcommande', 'Paiement validé')
+                ->where('estlivraison')
+                ->when($villeLivreur, fn($query) => $query->whereHas('adresseDestination.ville', fn($q) => $q->where('nomville', $villeLivreur)))
+                ->orderBy('heurecreation', 'asc')
+                ->get();
+        }
+
+        $rolesUberEats = ['livreur', 'restaurateur', 'responsable', 'commande'];
+        $isUberEatsClient = false;
+        $isUberEatsUser = false;
+        if ($userRole) {
+            $role = $userRole;
+
+            if ($role === 'client' && isset($user['typeclient']) && $user['typeclient'] === 'Uber Eats') {
+                $isUberEatsClient = true;
+            }
+
+            $isUberEatsUser = in_array($role, $rolesUberEats) || $isUberEatsClient;
+        }
+
+        $layout = $isUberEatsUser ? 'layouts.ubereats' : 'layouts.app';
+
+        return view('conducteurs.course-en-attente', [
+            'layout' => $layout,
+            'tasks' => $tasks,
+            'type' => $isCoursesRoute ? 'courses' : 'livraisons'
+        ]);
+    }
+
+    public function acceptTask(Request $request, $idreservation)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'coursier') {
+            return redirect()->route('login-coursier')->with('error', 'Vous devez être connecté en tant que coursier pour accéder à cette section.');
+        }
+
+        try {
+            DB::transaction(function () use ($idreservation, $user) {
+                $course = DB::table('course')
+                    ->where('idreservation', $idreservation)
+                    ->whereNull('idcoursier')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$course) {
+                    throw new \Exception('Course introuvable ou déjà assignée.');
+                }
+
+                DB::table('course')->where('idreservation', $idreservation)
+                    ->update([
+                        'idcoursier' => $user['id'],
+                        'statutcourse' => 'En cours'
+                    ]);
+            });
+
+            $taskDetails = DB::table('course as co')
+                ->join('reservation as r', 'co.idreservation', '=', 'r.idreservation')
+                ->join('client as c', 'r.idclient', '=', 'c.idclient')
+                ->leftJoin('adresse as a', 'co.idadresse', '=', 'a.idadresse')
+                ->leftJoin('ville as v', 'a.idville', '=', 'v.idville')
+                ->leftJoin('adresse as a2', 'co.adr_idadresse', '=', 'a2.idadresse')
+                ->where('co.idreservation', $idreservation)
+                ->select(
+                    'r.idreservation',
+                    'c.nomuser',
+                    'c.prenomuser',
+                    'c.genreuser',
+                    'a.libelleadresse as libelle_idadresse',
+                    'a2.libelleadresse as libelle_adr_idadresse',
+                    'v.nomville',
+                    'co.prixcourse',
+                    'co.distance',
+                    'co.temps',
+                    'co.statutcourse'
+                )
+                ->first();
+
+            return view('conducteurs.detail-course', [
+                'layout' => 'layouts.ubereats',
+                'type' => 'course',
+                'id' => $idreservation,
+                'taskDetails' => $taskDetails
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('coursier.courses.index')->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+
+    public function acceptTaskLivreur(Request $request, $idcommande)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'livreur') {
+            return redirect()->route('login-coursier')->with('error', 'Accès refusé.');
+        }
+
+        try {
+            DB::transaction(function () use ($idcommande, $user) {
+                $commande = Commande::where('idcommande', $idcommande)
+                    ->whereNull('idlivreur')
+                    ->where('statutcommande', 'Paiement validé')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $commande->update([
+                    'idlivreur' => $user['id'],
+                    'statutcommande' => 'En cours'
+                ]);
+            });
+
+            return redirect()->route('livreur.livraisons.index')->with('success', 'Livraison acceptée avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->route('livreur.livraisons.index')->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function cancelTask(Request $request, $idreservation)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'coursier') {
+            return redirect()->route('login-coursier')->withErrors(['message' => 'Accès refusé.']);
+        }
+
+        try {
+            DB::transaction(function () use ($idreservation, $user) {
+                $course = DB::table('course')
+                    ->where('idreservation', $idreservation)
+                    ->where('idcoursier', $user['id'])
+                    ->where('statutcourse', 'En cours')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$course) {
+                    throw new \Exception('Course introuvable ou déjà annulée.');
+                }
+
+                DB::table('course')->where('idreservation', $idreservation)
+                    ->update([
+                        'statutcourse' => 'En attente',
+                        'idcoursier' => null
+                    ]);
+            });
+
+            return redirect()->route('coursier.courses.index')->with('success', 'Course annulée avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->route('coursier.courses.index')->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+
+    public function cancelTaskLivreur(Request $request, $idcommande)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'livreur') {
+            return redirect()->route('login-coursier')->withErrors(['message' => 'Accès refusé.']);
+        }
+
+        try {
+            DB::transaction(function () use ($idcommande, $user) {
+                $commande = Commande::where('idcommande', $idcommande)
+                    ->where('idlivreur', $user['id'])
+                    ->where('statutcommande', 'En cours')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $commande->update([
+                    'statutcommande' => 'En attente',
+                    'idlivreur' => null
+                ]);
+            });
+
+            return redirect()->route('livreur.livraisons.index')->with('success', 'Livraison annulée avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->route('livreur.livraisons.index')->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function finishTask(Request $request, $idreservation)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'coursier') {
+            return redirect()->route('login-coursier')->withErrors(['message' => 'Accès refusé.']);
+        }
+
+        try {
+            DB::transaction(function () use ($idreservation, $user) {
+                $course = DB::table('course')
+                    ->where('idreservation', $idreservation)
+                    ->where('idcoursier', $user['id'])
+                    ->where('statutcourse', 'En cours')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$course) {
+                    throw new \Exception('Course introuvable ou déjà terminée.');
+                }
+
+                DB::table('course')->where('idreservation', $idreservation)
+                    ->update(['statutcourse' => 'Terminée']);
+            });
+
+            return redirect()->route('coursier.courses.index')->with('success', 'Course marquée comme terminée.');
+        } catch (\Exception $e) {
+            return redirect()->route('coursier.courses.index')->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+
+    public function finishTaskLivreur(Request $request, $idcommande)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'livreur') {
+            return redirect()->route('login-coursier')->withErrors(['message' => 'Accès refusé.']);
+        }
+
+        try {
+            DB::transaction(function () use ($idcommande, $user) {
+                $commande = Commande::where('idcommande', $idcommande)
+                    ->where('idlivreur', $user['id'])
+                    ->where('statutcommande', 'En cours')
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                $commande->update(['statutcommande' => 'Livrée']);
+            });
+
+            return redirect()->route('livreur.livraisons.index')->with('success', 'Livraison marquée comme terminée.');
+        } catch (\Exception $e) {
+            return redirect()->route('livreur.livraisons.index')->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function livraisonsEnCours(Request $request)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'livreur') {
+            return redirect()->route('myaccount')->withErrors(['message' => 'Accès refusé.']);
+        }
+
+        try {
+            $livraison = Commande::with('adresseDestination.ville')
+                ->where('idlivreur', $user['id'])
+                ->where('statutcommande', 'En cours')
+                ->first();
+
+            return view('conducteurs.livraisons-en-cours', compact('livraison'));
+        } catch (\Exception $e) {
+            return redirect()->route('myaccount')->withErrors(['message' => 'Erreur : ' . $e->getMessage()]);
+        }
+    }
+
+    public function marquerLivree($idcommande)
+    {
+        $user = session('user');
+
+        if (!$user || $user['role'] !== 'livreur') {
+            return redirect()->route('myaccount')->withErrors(['message' => 'Accès refusé.']);
+        }
+
+        try {
+            // Vérifier et mettre à jour la commande
+            $commande = Commande::where('idcommande', $idcommande)
+                ->where('idlivreur', $user['id'])
+                ->where('statutcommande', 'En cours')
+                ->first();
+
+            if (!$commande) {
+                return redirect()->route('livreur.livraisons.encours')->withErrors(['message' => 'Commande introuvable.']);
+            }
+
+            $commande->update(['statutcommande' => 'Livrée']);
+
+            return redirect()->route('livreur.livraisons.encours')->with('success', 'Livraison marquée comme terminée.');
+        } catch (\Exception $e) {
+            return redirect()->route('livreur.livraisons.encours')->withErrors(['message' => 'Erreur : ' . $e->getMessage()]);
+        }
+    }
+}
