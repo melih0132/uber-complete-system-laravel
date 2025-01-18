@@ -1,0 +1,178 @@
+/* Global Styles */
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #818181;
+}
+
+a:hover {
+    color: #747474;
+    text-decoration: black solid underline;
+}
+
+h1,
+h5,
+h2 {
+    font-weight: bold;
+    color: #000;
+    margin: 20px 0;
+}
+
+/* Alert Messages */
+.alert-message {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.alert-message.success {
+    background-color: #e8f5e9;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+}
+
+.alert-message.error {
+    background-color: #ffebee;
+    color: #F44336;
+    border: 1px solid #F44336;
+}
+
+/* Card Style */
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    color: #000;
+    margin-bottom: 15px;
+}
+
+/* Form Styles */
+.form-register {
+    max-width: 400px;
+    margin: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px 20px;
+}
+
+.form-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h5 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #000;
+}
+
+/* Input Fields */
+label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Buttons */
+.btn-login {
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    background: #000;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.btn-login:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* Password Strength Indicator */
+#password-strength {
+    font-size: 0.85rem;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* Checkbox and Radio */
+input[type="radio"],
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.checkbox-input {
+    accent-color: #000;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    .form-register {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+}
