@@ -317,10 +317,10 @@ CREATE TABLE ENTRETIEN (
     RESULTAT VARCHAR(20) NULL,
     RDVLOGISTIQUEDATE TIMESTAMP NULL,
     RDVLOGISTIQUELIEU VARCHAR(255) NULL,
-    CONSTRAINT CK_DATEENTRETIEN CHECK (
-        DATEENTRETIEN >= CURRENT_DATE
-        OR DATEENTRETIEN IS NULL
-    ),
+    /* CONSTRAINT CK_DATEENTRETIEN CHECK (
+     DATEENTRETIEN >= CURRENT_DATE
+     OR DATEENTRETIEN IS NULL
+     ), */
     CONSTRAINT CK_STATUS_ENTRETIEN CHECK (
         STATUS IN ('En attente', 'Planifié', 'Terminée', 'Annulée')
     ),
@@ -328,10 +328,10 @@ CREATE TABLE ENTRETIEN (
         RESULTAT IN ('Retenu', 'Rejeté')
         OR RESULTAT IS NULL
     ),
-    CONSTRAINT CK_RDVLOGISTIQUEDATE CHECK (
-        RDVLOGISTIQUEDATE >= CURRENT_DATE
-        OR RDVLOGISTIQUEDATE IS NULL
-    ),
+    /*     CONSTRAINT CK_RDVLOGISTIQUEDATE CHECK (
+     RDVLOGISTIQUEDATE >= CURRENT_DATE
+     OR RDVLOGISTIQUEDATE IS NULL
+     ), */
     CONSTRAINT PK_ENTRETIEN PRIMARY KEY (IDENTRETIEN)
 );
 /*==============================================================*/
@@ -644,8 +644,6 @@ CREATE TABLE VILLE (
     IDPAYS INT4 NULL,
     IDCODEPOSTAL INT4 NULL,
     NOMVILLE VARCHAR(50) NOT NULL,
-    LATITUDE NUMERIC(10, 6) NULL,
-    LONGITUDE NUMERIC(10, 6) NULL,
     CONSTRAINT PK_VILLE PRIMARY KEY (IDVILLE)
 );
 /*==============================================================*/
@@ -875,50 +873,48 @@ INSERT INTO VILLE (
         IDVILLE,
         IDPAYS,
         IDCODEPOSTAL,
-        NOMVILLE,
-        LATITUDE,
-        LONGITUDE
+        NOMVILLE
     )
-VALUES (1, 1, 1, 'Paris', 48.8566, 2.3522),
-    (2, 1, 2, 'Lyon', 45.7640, 4.8357),
-    (3, 1, 3, 'Marseille', 43.2965, 5.3698),
-    (4, 1, 4, 'Bordeaux', 44.8378, -0.5792),
-    (5, 1, 5, 'Nice', 43.7102, 7.2620),
-    (6, 1, 6, 'Nantes', 47.2184, -1.5536),
-    (7, 1, 7, 'Montpellier', 43.6117, 3.8772),
-    (8, 1, 8, 'Strasbourg', 48.5734, 7.7521),
-    (9, 1, 9, 'Dijon', 47.3220, 5.0415),
-    (10, 1, 10, 'Versailles', 48.8014, 2.1301),
-    (11, 1, 11, 'Annecy', 45.8992, 6.1294),
-    (12, 1, 12, 'Toulouse', 43.6047, 1.4442),
-    (13, 1, 13, 'Lille', 50.6292, 3.0573),
-    (14, 1, 14, 'Rennes', 48.1173, -1.6778),
-    (15, 1, 15, 'Le Havre', 49.4944, 0.1070),
-    (16, 1, 16, 'Reims', 49.2583, 4.0317),
-    (17, 1, 17, 'Saint-Étienne', 45.4397, 4.3872),
-    (18, 1, 18, 'Le Mans', 48.0061, 0.1996),
-    (19, 1, 19, 'Amiens', 49.8951, 2.3024),
-    (20, 1, 20, 'Brest', 48.3904, -4.4861),
-    (21, 1, 21, 'Clermont-Ferrand', 45.7772, 3.0870),
-    (22, 1, 22, 'Toulon', 43.1258, 5.9303),
-    (23, 1, 23, 'Angers', 47.4784, -0.5632),
-    (24, 1, 24, 'Nîmes', 43.8367, 4.3601),
-    (25, 1, 25, 'Tours', 47.3941, 0.6848),
-    (26, 1, 26, 'Caen', 49.1811, -0.3700),
-    (27, 1, 27, 'Montargis', 48.0000, 2.7500),
-    (28, 1, 28, 'Perpignan', 42.6887, 2.8948),
-    (29, 1, 29, 'Chambery', 45.5646, 5.9178),
-    (30, 1, 30, 'Colmar', 48.0816, 7.3556),
-    (31, 1, 31, 'Vannes', 47.6582, -2.7603),
-    (32, 1, 32, 'Aix-en-Provence', 43.5297, 5.4474),
-    (33, 1, 33, 'Biarritz', 43.4832, -1.5586),
-    (34, 1, 34, 'Grenoble', 45.1885, 5.7245),
-    (35, 1, 35, 'Orléans', 47.9029, 1.9093),
-    (36, 1, 36, 'Avignon', 43.9493, 4.8055),
-    (37, 1, 37, 'Nancy', 48.6921, 6.1844),
-    (38, 1, 38, 'Lorient', 47.7475, -3.3666),
-    (39, 1, 39, 'La Rochelle', 46.1591, -1.1511),
-    (40, 1, 40, 'Sète', 43.4036, 3.6932);
+VALUES (1, 1, 1, 'Paris'),
+    (2, 1, 2, 'Lyon'),
+    (3, 1, 3, 'Marseille'),
+    (4, 1, 4, 'Bordeaux'),
+    (5, 1, 5, 'Nice'),
+    (6, 1, 6, 'Nantes'),
+    (7, 1, 7, 'Montpellier'),
+    (8, 1, 8, 'Strasbourg'),
+    (9, 1, 9, 'Dijon'),
+    (10, 1, 10, 'Versailles'),
+    (11, 1, 11, 'Annecy'),
+    (12, 1, 12, 'Toulouse'),
+    (13, 1, 13, 'Lille'),
+    (14, 1, 14, 'Rennes'),
+    (15, 1, 15, 'Le Havre'),
+    (16, 1, 16, 'Reims'),
+    (17, 1, 17, 'Saint-Étienne'),
+    (18, 1, 18, 'Le Mans'),
+    (19, 1, 19, 'Amiens'),
+    (20, 1, 20, 'Brest'),
+    (21, 1, 21, 'Clermont-Ferrand'),
+    (22, 1, 22, 'Toulon'),
+    (23, 1, 23, 'Angers'),
+    (24, 1, 24, 'Nîmes'),
+    (25, 1, 25, 'Tours'),
+    (26, 1, 26, 'Caen'),
+    (27, 1, 27, 'Montargis'),
+    (28, 1, 28, 'Perpignan'),
+    (29, 1, 29, 'Chambery'),
+    (30, 1, 30, 'Colmar'),
+    (31, 1, 31, 'Vannes'),
+    (32, 1, 32, 'Aix-en-Provence'),
+    (33, 1, 33, 'Biarritz'),
+    (34, 1, 34, 'Grenoble'),
+    (35, 1, 35, 'Orléans'),
+    (36, 1, 36, 'Avignon'),
+    (37, 1, 37, 'Nancy'),
+    (38, 1, 38, 'Lorient'),
+    (39, 1, 39, 'La Rochelle'),
+    (40, 1, 40, 'Sète');
 INSERT INTO ADRESSE (
         IDADRESSE,
         IDVILLE,
@@ -941,20 +937,8 @@ VALUES (
         '2.3177342414855957'
     ),
     (3, 1, '27 Rue Navier', '48.8956048', '2.3260394'),
-    (
-        4,
-        1,
-        '18 Rue Chaligny',
-        '48.8464411',
-        '2.383824'
-    ),
-    (
-        5,
-        1,
-        '51 Rue Censier',
-        '48.8393942',
-        '2.3504293'
-    ),
+    (4, 1, '18 Rue Chaligny', '48.8464411', '2.383824'),
+    (5, 1, '51 Rue Censier', '48.8393942', '2.3504293'),
     (
         6,
         1,
@@ -1018,13 +1002,7 @@ VALUES (
         '45.76651382446289',
         '4.861818790435791'
     ),
-    (
-        15,
-        2,
-        '1 Rue Burdeau',
-        '45.7702242',
-        '4.8311841'
-    ),
+    (15, 2, '1 Rue Burdeau', '45.7702242', '4.8311841'),
     (
         16,
         2,
@@ -1250,13 +1228,7 @@ VALUES (
         '43.7044425',
         '7.2520955'
     ),
-    (
-        49,
-        5,
-        '40 Rue Trachel',
-        '43.7061171',
-        '7.2588862'
-    ),
+    (49, 5, '40 Rue Trachel', '43.7061171', '7.2588862'),
     (
         50,
         5,
@@ -1715,13 +1687,7 @@ VALUES (
         '48.8053751',
         '2.1425404'
     ),
-    (
-        118,
-        11,
-        '52 Rue Du Pont',
-        '45.910986',
-        '6.160169'
-    ),
+    (118, 11, '52 Rue Du Pont', '45.910986', '6.160169'),
     (
         119,
         1,
@@ -1862,13 +1828,7 @@ VALUES (
         '49.4976415',
         '0.1135947'
     ),
-    (
-        139,
-        16,
-        '7 Rue Du Dr Jacquin',
-        '49.25',
-        '4.03333'
-    ),
+    (139, 16, '7 Rue Du Dr Jacquin', '49.25', '4.03333'),
     (
         140,
         16,
@@ -2247,13 +2207,7 @@ VALUES (
         '45.188326',
         '5.719524'
     ),
-    (
-        194,
-        2,
-        '17 Rue Neuve',
-        ' 45.7584635',
-        '5.0575184'
-    ),
+    (194, 2, '17 Rue Neuve', ' 45.7584635', '5.0575184'),
     (
         195,
         2,
