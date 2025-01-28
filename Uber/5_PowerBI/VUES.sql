@@ -1,0 +1,42 @@
+CREATE VIEW v_nombre_courses_par_mois AS
+SELECT 
+    DATE_TRUNC('month', DATECOURSE) AS mois,
+    COUNT(IDCOURSE) AS nombre_courses
+FROM COURSE
+GROUP BY DATE_TRUNC('month', DATECOURSE)
+ORDER BY mois;
+
+
+CREATE VIEW v_montant_courses_par_mois AS
+SELECT 
+    DATE_TRUNC('month', DATECOURSE) AS mois,
+    SUM(PRIXCOURSE) AS montant_total
+FROM COURSE
+GROUP BY DATE_TRUNC('month', DATECOURSE)
+ORDER BY mois;
+
+
+CREATE VIEW v_nombre_courses_par_vehicule AS
+SELECT 
+    tp.LIBELLEPRESTATION AS type_vehicule,
+    COUNT(c.IDCOURSE) AS nombre_courses
+FROM COURSE c
+JOIN A_COMME_TYPE act ON c.IDPRESTATION = act.IDPRESTATION
+JOIN TYPE_PRESTATION tp ON act.IDPRESTATION = tp.IDPRESTATION
+GROUP BY tp.LIBELLEPRESTATION
+ORDER BY nombre_courses DESC;
+
+
+CREATE VIEW v_montant_courses_par_ville AS
+SELECT 
+    v.NOMVILLE AS ville,
+    p.NOMPAYS AS pays,
+    SUM(c.PRIXCOURSE) AS montant_total,
+    v.LATITUDE,
+    v.LONGITUDE
+FROM COURSE c
+JOIN ADRESSE a ON c.IDADRESSE = a.IDADRESSE
+JOIN VILLE v ON a.IDVILLE = v.IDVILLE
+JOIN PAYS p ON v.IDPAYS = p.IDPAYS
+GROUP BY v.NOMVILLE, p.NOMPAYS, v.LATITUDE, v.LONGITUDE
+ORDER BY montant_total DESC;
