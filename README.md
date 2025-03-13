@@ -42,7 +42,7 @@ The goal of this project is to build a data management system that supports the 
    - Created with PowerAMC and based on the relational model for PostgreSQL.  
    - Includes tables for Users, Trips, Payments, Ratings, Reservations, and others.
 
-2. **Data Population:**
+2. **Data Population at first:**
    - 80 restaurant listings and 30 drivers with detailed profiles.
    - 50 users distributed across France, including 100 reservations and payment details.
    - For some customers, stored credit card references for easier payments.
@@ -67,13 +67,10 @@ The goal of this project is to build a data management system that supports the 
 ---
 
 ### **Development**
-1. **Functional Application Deployment:**
-   - Fully deployed application simulating Uber functionalities, with web API and database integration.
-   
-2. **Source Code:**
+1. **Source Code:**
    - All source code is available in the repository, including backend API and database handling.
 
-3. **Architecture Summary:**
+2. **Architecture Summary:**
    - The application utilizes **ORM (Object-Relational Mapping)** for database management, PostgreSQL for storage, and a simple API for managing requests between the frontend and the database.
 
 ---
@@ -136,12 +133,12 @@ The goal of this project is to build a data management system that supports the 
 ---
 
 ## **Technologies Used**
-- **Database:** PostgreSQL, pgAdmin4
-- **Backend:** Laravel
+- **Database:** PostgreSQL, pgAdmin4, SQL
+- **Backend:** Laravel, PHP, Blade
 - **Data Visualization:** Power BI
 - **API Integration:** RESTful API
 - **Security:** Data Encryption, XSS Prevention, Cookie Management
-- **Project Management:** Azure DevOps, GitHub
+- **Project Management:** Azure DevOps, GitHub, Git
 
 ---
 
