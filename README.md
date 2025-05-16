@@ -42,11 +42,12 @@ The goal of this project is to build a data management system that supports the 
    - Created with PowerAMC and based on the relational model for PostgreSQL.  
    - Includes tables for Users, Trips, Payments, Ratings, Reservations, and others.
 
-2. **Data Population at first:**
-   - 80 restaurant listings and 30 drivers with detailed profiles.
-   - 50 users distributed across France, including 100 reservations and payment details.
-   - For some customers, stored credit card references for easier payments.
-   - Additional custom data to simulate real-world use cases.
+2. **Data Population at First:**
+
+   * Includes various restaurant listings, drivers, and users with detailed profiles.
+   * Contains sample reservations and payment data to simulate real-world scenarios.
+   * Some users have stored credit card references for streamlined payments.
+   * Custom datasets are included to support application testing and validation.
 
 3. **SQL Scripts:**
    - Scripts for database creation, table setup, and data population.  
