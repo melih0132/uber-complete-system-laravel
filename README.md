@@ -57,7 +57,7 @@ The goal of this project is to build a data management system that supports the 
 ### **Database Setup and Usage**
 1. **Clone the GitHub Repository:**
    ```bash
-   git clone https://github.com/melih0132/UBER.git
+   git clone https://github.com/melih0132/uber-complete-system-laravel.git
    ```
 
 2. **Setup PostgreSQL Database:**
